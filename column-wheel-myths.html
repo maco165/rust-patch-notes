@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>賭けの輪に必勝パターンはあるのか | Rust Analysis</title>
-<meta name="description" content="Bandit Camp の賭けの輪 (ルーレット) にまつわる 7 つの話を、サーバーの処理を読んだ結果から 1 つずつ確かめます。結論は、パターンはありません。">
+<title>ルーレットに必勝パターンはあるのか | Rust Analysis</title>
+<meta name="description" content="Bandit Camp のルーレットにまつわる 7 つの話を、サーバーの処理を読んだ結果から 1 つずつ確かめます。結論は、パターンはありません。">
 <meta name="theme-color" content="#f2f4f5" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15181a" media="(prefers-color-scheme: dark)">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
@@ -9,8 +9,8 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Rust Analysis">
 <meta property="og:locale" content="ja_JP">
-<meta property="og:title" content="賭けの輪に必勝パターンはあるのか | Rust Analysis">
-<meta property="og:description" content="Bandit Camp の賭けの輪 (ルーレット) にまつわる 7 つの話を、サーバーの処理を読んだ結果から 1 つずつ確かめます。結論は、パターンはありません。">
+<meta property="og:title" content="ルーレットに必勝パターンはあるのか | Rust Analysis">
+<meta property="og:description" content="Bandit Camp のルーレットにまつわる 7 つの話を、サーバーの処理を読んだ結果から 1 つずつ確かめます。結論は、パターンはありません。">
 <meta property="og:url" content="https://maco165.github.io/rust-patch-notes/column-wheel-myths.html">
 <meta property="og:image" content="https://maco165.github.io/rust-patch-notes/og.png">
 <meta property="og:image:width" content="1200">
@@ -28,48 +28,68 @@
   <span class="ra-site-meta">データ 2026-11-05 まで</span>
   <a class="ra-site-link" href="https://github.com/maco165/rust-patch-notes" rel="noopener"><i class="ra-ico ra-ico-github" aria-hidden="true"></i>GitHub</a>
 </header>
-<main class="ra-page"><article class="ra-prose"><p class="ra-patch-meta"><a class="ra-link" href="columns.html">コラム</a><time datetime="2026-11-12">2026-11-12</time><span><i class="ra-ico ra-ico-economy" aria-hidden="true"></i> 経済・店</span><span class="ra-src ra-src-export"><i class="ra-ico ra-ico-export" aria-hidden="true"></i>本体の書き出し 2026-11-07</span></p><h1 class="ra-prose-title">賭けの輪に必勝パターンはあるのか</h1><p class="ra-prose-lead">Bandit Camp の賭けの輪 (ルーレット) にまつわる 7 つの話を、サーバーの処理を読んだ結果から 1 つずつ確かめます。結論は、パターンはありません。</p><h2 class="ra-section">先に結論</h2>
-<ul><li><strong>パターンはありません。</strong> 当たりの区画は、回し始めの瞬間に 25 区画から等しい確率で 1 つ選ばれます。前の結果も、時刻も、賭けた人や額も使われません。</li><li><strong>どの色に賭けても、続けるほど減ります。</strong> 平均の戻りは、黄・緑・青が −4%、紫が −12%、赤が −16% です。</li><li><strong>損をいちばん小さくするなら黄。</strong> 黄・緑・青は平均の戻りが同じで、違うのは当たり外れの振れ幅だけです。</li></ul>
-<p>サーバー本体 (2026-11-07 の版) の処理とデータを、起動せずに読んで確かめました。</p>
-<h2 class="ra-section">輪はこう動いている</h2>
-<p>1 回の流れは次の 4 段です。</p>
-<ol><li><strong>賭けの受け付け (45 秒)。</strong> 端末にスクラップを置けるのはこの間だけです。</li><li><strong>回し始め。</strong> この瞬間に当たりの区画が決まり、同時に賭けが締め切られます。</li><li><strong>回転 (最低 13〜18 秒と、減速の数秒)。</strong> 決まった区画へ向かって回るだけの時間です。</li><li><strong>配当。</strong> 当たった色の賭けは「額 × (1 + 倍率)」になって戻り、ほかの色の賭けは消えます。</li></ol>
-<p>2 段目でしていることを、言葉で書くとこうなります。</p>
+<main class="ra-page"><article class="ra-prose"><p class="ra-patch-meta"><a class="ra-link" href="columns.html">コラム</a><time datetime="2026-11-12">2026-11-12</time><span><i class="ra-ico ra-ico-economy" aria-hidden="true"></i> 経済・店</span><span class="ra-src ra-src-export"><i class="ra-ico ra-ico-export" aria-hidden="true"></i>本体の書き出し 2026-11-07</span></p><h1 class="ra-prose-title">ルーレットに必勝パターンはあるのか</h1><p class="ra-prose-lead">Bandit Camp のルーレットにまつわる 7 つの話を、サーバーの処理を読んだ結果から 1 つずつ確かめます。結論は、パターンはありません。</p><div class="ra-callout">
+<p class="ra-callout-label">結論</p>
+<p class="ra-callout-main">パターンはありません</p>
+<p>当たりのマスは、回し始めの瞬間に 25 マスから等しい確率で 1 つ選ばれます。前の結果も、時刻も、賭けた人や額も使われません。</p>
+</div>
+<ul class="ra-facts">
+<li><span class="ra-facts-n">1/25</span><span class="ra-facts-l">どのマスも同じ確率</span></li>
+<li><span class="ra-facts-n">−4%</span><span class="ra-facts-l">1・3・5 に賭けたときの平均の戻り</span></li>
+<li><span class="ra-facts-n">−16%</span><span class="ra-facts-l">20 に賭けたときの平均の戻り</span></li>
+</ul>
+<p>どの数字に賭けても、続けるほど減ります。損をいちばん小さくするなら 1 です。</p>
+<p>この記事では、ルーレットのマスを、ゲームの中の表示と同じ <strong>1・3・5・10・20</strong> の数字で呼びます。数字は当たったときの倍率です。</p>
+<h2 class="ra-section">ルーレットはこう動いている</h2>
+<h3>1 回の流れ</h3>
+<ol class="ra-timeline" aria-label="ルーレットの 1 回の流れ">
+<li style="--w:45"><strong>賭けの受け付け</strong><span>45 秒</span><small>スクラップを置けるのはこの間だけ</small></li>
+<li class="ra-timeline-hot" style="--w:14"><strong>回し始め</strong><span>一瞬</span><small>当たりが決まり、同時に賭けを締め切る</small></li>
+<li style="--w:22"><strong>回転</strong><span>13〜18 秒 + 減速</span><small>決まったマスへ向かって回るだけ</small></li>
+<li style="--w:14"><strong>配当</strong><span>一瞬</span><small>当たりは戻り、外れは消える</small></li>
+</ol>
+<p>当たりが決まるのは、輪が回り始める<strong>前</strong>です。回っている間は、もう結果は変わりません。</p>
+<h3>当たりを決めるときに使うもの、使わないもの</h3>
+<div class="ra-uses">
+<div><p class="ra-uses-head ra-uses-yes">使うもの</p><ul><li>マスの数 (25)</li><li>その場で作り直した乱数</li></ul></div>
+<div><p class="ra-uses-head ra-uses-no">使わないもの</p><ul><li>前の回の結果</li><li>時刻、回の番号</li><li>サーバーの人数</li><li>賭けた額</li><li>賭けた人</li><li>輪の回り方</li></ul></div>
+</div>
+<p>回し始めの処理を、言葉で書くとこうなります。</p>
 <pre class="ra-code">回し始めるとき:
   新しい種を 1 つ作り、その種で乱数を作り直す
-  当たりの区画 = 0 番から 24 番のうち、等しい確率で 1 つ
+  当たりのマス = 0 番から 24 番のうち、等しい確率で 1 つ
   止まる角度と、回る時間の長さを決める
   賭けを締め切る</pre>
-<p>大事なのは 2 点です。乱数を<strong>毎回作り直している</strong>ことと、当たりを決めるのと<strong>同じ処理の中で</strong>賭けを締め切っていることです。以下の話は、ほとんどがこの 2 点で片付きます。</p>
+<h3>25 マスの並び</h3>
+<div class="ra-strip" role="img" aria-label="25 マスの並び。1 が 12 マス、3 が 6 マス、5 が 4 マス、10 が 2 マス、20 が 1 マス"><span>3</span><span>1</span><span>10</span><span>1</span><span>3</span><span>1</span><span>5</span><span>1</span><span>5</span><span>3</span><span>1</span><span>10</span><span>1</span><span>3</span><span>1</span><span>5</span><span>1</span><span>3</span><span>1</span><span class="ra-strip-hot">20</span><span>1</span><span>3</span><span>1</span><span>5</span><span>1</span></div>
+<p>1 は 1 つおきに入り、20 は 1 マスだけです。調べた 7 台は、すべて同じ並びでした。</p>
+<h3>数字ごとの当たる確率</h3>
+<ol class="ra-gbars ra-plain" style="--max:48" aria-label="数字ごとの当たる確率"><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">1 (12 マス)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:48"></span></span><span class="ra-gbar-n">48%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">3 (6 マス)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:24"></span></span><span class="ra-gbar-n">24%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">5 (4 マス)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:16"></span></span><span class="ra-gbar-n">16%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">10 (2 マス)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:8"></span></span><span class="ra-gbar-n">8%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">20 (1 マス)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:4"></span></span><span class="ra-gbar-n">4%</span></span></li></ol>
+<p>当たりやすさを決めるのは、その数字のマスの数だけです。</p>
 <h2 class="ra-section">よく聞く話を確かめる</h2>
-<h3>「しばらく赤が出ていないから、そろそろ赤が来る」</h3>
-<p><strong>成り立ちません。</strong> 当たりを決める処理は、前の回の結果をどこにも使っていません。乱数も回すたびに新しい種で作り直されるので、前の回とつながる道がありません。赤が 100 回出ていなくても、次に赤が出る確率は 4% のままです。</p>
-<h3>「輪の回り方を見れば、止まる場所が読める」</h3>
-<p><strong>読めても賭けられません。</strong> 止まる場所は回し始めの時点で決まっていて、その時点で賭けは締め切られています。回転は、決まった結果を見せるための動きです。途中の速さや減速の入り方は、結果を変えません。</p>
-<h3>「時間帯や、サーバーの人数で出やすい色が変わる」</h3>
-<p><strong>変わりません。</strong> 当たりを決める処理が使うのは、区画の数 (25) だけです。時刻、プレイヤーの数、輪の番号は入っていません。</p>
-<h3>「大きく賭けると外れやすい」</h3>
-<p><strong>関係ありません。</strong> 当たりを決める処理は、賭けた額も、誰が賭けたかも見ていません。賭けの中身が読まれるのは、当たりが決まった後の配当のときだけです。</p>
-<h3>「赤の隣は出やすい。区画の並びに意味がある」</h3>
-<p><strong>並びは関係ありません。</strong> 当たりは「区画の番号」で選ばれ、どの番号も 1/25 です。色ごとの当たりやすさを決めるのは、その色の区画の数だけです。</p>
-<div class="ra-strip" role="img" aria-label="輪の 25 区画の並び。黄 12、緑 6、青 4、紫 2、赤 1"><span>緑</span><span>黄</span><span>紫</span><span>黄</span><span>緑</span><span>黄</span><span>青</span><span>黄</span><span>青</span><span>緑</span><span>黄</span><span>紫</span><span>黄</span><span>緑</span><span>黄</span><span>青</span><span>黄</span><span>緑</span><span>黄</span><span class="ra-strip-hot">赤</span><span>黄</span><span>緑</span><span>黄</span><span>青</span><span>黄</span></div>
-<p>黄は 1 つおきに入り、赤は 1 区画だけです。調べた 7 台の輪は、すべて同じ並びでした。</p>
-<h3>「外れたら倍にして賭け直せば、最後は勝てる」</h3>
-<p><strong>平均の戻りは変わりません。</strong> 毎回の結果が前の結果と関係しないので、賭ける額の順序を変えても、1 回あたりの平均の戻りは同じです。外れが続くと賭け金だけが急に増えます。黄でも、10 回続けて外れることが 1,000 回に 1 回ほど起きます。</p>
-<h3>「全色に賭ければ負けない」</h3>
-<p><strong>必ず当たりますが、平均で減ります。</strong> 5 色に 1 ずつ賭けると、5 賭けて平均 4.6 が戻ります (−8%)。当たった色以外の賭けは、その回で消えるからです。</p>
-<h2 class="ra-section">色ごとの確率と戻り</h2>
-<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">色</th><th scope="col">区画</th><th scope="col">当たる確率</th><th scope="col">当たったときの戻り</th><th scope="col">平均の戻り</th><th scope="col">10 回続けて外れる確率</th></tr></thead><tbody><tr><td>黄</td><td>12</td><td>48%</td><td>賭けた額の 2 倍</td><td>−4%</td><td>0.1%</td></tr><tr><td>緑</td><td>6</td><td>24%</td><td>4 倍</td><td>−4%</td><td>6.4%</td></tr><tr><td>青</td><td>4</td><td>16%</td><td>6 倍</td><td>−4%</td><td>17.5%</td></tr><tr><td>紫</td><td>2</td><td>8%</td><td>11 倍</td><td>−12%</td><td>43.4%</td></tr><tr><td>赤</td><td>1</td><td>4%</td><td>21 倍</td><td>−16%</td><td>66.5%</td></tr></tbody></table></div>
-<p>平均の戻りは「当たる確率 × 戻りの倍数 − 1」です。黄なら 12/25 × 2 − 1 = −0.04 で、100 スクラップを賭け続けると 1 回あたり平均 4 スクラップ減ります。</p>
-<ol class="ra-gbars ra-loss" style="--max:16" aria-label="100 スクラップを賭けたときに平均で減る量"><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">黄</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:4"></span></span><span class="ra-gbar-n">−4</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">緑</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:4"></span></span><span class="ra-gbar-n">−4</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">青</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:4"></span></span><span class="ra-gbar-n">−4</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">紫</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:12"></span></span><span class="ra-gbar-n">−12</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">赤</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:16"></span></span><span class="ra-gbar-n">−16</span></span></li></ol>
-<p>紫と赤は、同じ額を賭けたときの平均の減りが、黄・緑・青の 3〜4 倍です。</p>
+<div class="ra-myth"><p class="ra-myth-q">「しばらく 20 が出ていないから、そろそろ 20 が来る」</p><p class="ra-myth-a"><span class="ra-verdict">成り立たない</span>前の回の結果は、どこにも使われていません。乱数も回すたびに作り直されます。20 が 100 回出ていなくても、次に 20 が出る確率は 4% のままです。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">「輪の回り方を見れば、止まる場所が読める」</p><p class="ra-myth-a"><span class="ra-verdict">読めても賭けられない</span>止まる場所は回し始めの時点で決まっていて、その時点で賭けは締め切られています。途中の速さや減速の入り方は、結果を変えません。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">「時間帯や、サーバーの人数で出やすい数字が変わる」</p><p class="ra-myth-a"><span class="ra-verdict">変わらない</span>当たりを決める処理が使うのは、マスの数 (25) だけです。時刻も、プレイヤーの数も入っていません。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">「大きく賭けると外れやすい」</p><p class="ra-myth-a"><span class="ra-verdict">関係ない</span>当たりを決める処理は、賭けた額も、誰が賭けたかも見ていません。賭けの中身が読まれるのは、当たりが決まった後の配当のときだけです。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">「20 の隣は出やすい。マスの並びに意味がある」</p><p class="ra-myth-a"><span class="ra-verdict">関係ない</span>当たりは「マスの番号」で選ばれ、どの番号も 1/25 です。並びは当たりやすさに関係しません。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">「外れたら倍にして賭け直せば、最後は勝てる」</p><p class="ra-myth-a"><span class="ra-verdict">平均の戻りは変わらない</span>毎回の結果が前の結果と関係しないので、賭ける額の順序を変えても平均の戻りは同じです。外れが続くと賭け金だけが急に増えます。1 でも、10 回続けて外れることが 1,000 回に 1 回ほど起きます。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">「全部の数字に賭ければ負けない」</p><p class="ra-myth-a"><span class="ra-verdict">必ず当たるが、平均で減る</span>5 つの数字に 1 ずつ賭けると、5 賭けて平均 4.6 が戻ります (−8%)。当たった数字以外の賭けは、その回で消えるからです。</p></div>
+<h2 class="ra-section">数字ごとの確率と戻り</h2>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">数字</th><th scope="col">マス</th><th scope="col">当たる確率</th><th scope="col">当たったときの戻り</th><th scope="col">平均の戻り</th><th scope="col">10 回続けて外れる確率</th></tr></thead><tbody><tr><td>1</td><td>12</td><td>48%</td><td>賭けた額の 2 倍</td><td>−4%</td><td>0.1%</td></tr><tr><td>3</td><td>6</td><td>24%</td><td>4 倍</td><td>−4%</td><td>6.4%</td></tr><tr><td>5</td><td>4</td><td>16%</td><td>6 倍</td><td>−4%</td><td>17.5%</td></tr><tr><td>10</td><td>2</td><td>8%</td><td>11 倍</td><td>−12%</td><td>43.4%</td></tr><tr><td>20</td><td>1</td><td>4%</td><td>21 倍</td><td>−16%</td><td>66.5%</td></tr></tbody></table></div>
+<p>当たると「賭けた額 × (1 + 数字)」が戻ります。平均の戻りは「当たる確率 × 戻りの倍数 − 1」で、1 なら 12/25 × 2 − 1 = −0.04 です。</p>
+<h3>100 スクラップを賭けたときに、平均で減る量</h3>
+<ol class="ra-gbars ra-loss" style="--max:16" aria-label="100 スクラップを賭けたときに平均で減る量"><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">1</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:4"></span></span><span class="ra-gbar-n">−4</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">3</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:4"></span></span><span class="ra-gbar-n">−4</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">5</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:4"></span></span><span class="ra-gbar-n">−4</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">10</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:12"></span></span><span class="ra-gbar-n">−12</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">20</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:16"></span></span><span class="ra-gbar-n">−16</span></span></li></ol>
+<p>10 と 20 は、同じ額を賭けたときの平均の減りが、1・3・5 の 3〜4 倍です。</p>
 <h2 class="ra-section">それでも偏って見える理由</h2>
-<p>確率どおりでも、結果は偏って見えます。赤は 4% なので、25 回続けて赤が出ないことは 36% の確率で起きます。3 回に 1 回は「25 回回しても赤が来ない」わけです。逆に、黄が 5 回続くことも 2.5% の確率で起き、40 回に 1 回ほど見られます。</p>
-<p>人は連続や偏りに理由を探しますが、ここではそれが確率どおりの姿です。</p>
+<ul class="ra-facts">
+<li><span class="ra-facts-n">36%</span><span class="ra-facts-l">25 回続けて 20 が出ない確率</span></li>
+<li><span class="ra-facts-n">2.5%</span><span class="ra-facts-l">1 が 5 回続く確率 (40 回に 1 回ほど)</span></li>
+</ul>
+<p>確率どおりでも、結果は偏って見えます。3 回に 1 回は「25 回回しても 20 が来ない」のが、確率どおりの姿です。人は連続や偏りに理由を探しますが、ここでは理由はありません。</p>
 <h2 class="ra-section">分からないこと</h2>
-<ul><li><strong>2024 年 5 月より前。</strong> 2024-05-02 のアップデートで、公式が「Bandit Camp のルーレットの乱数の扱いを作り直した」と書いています。それより前の作りにパターンがあったかどうかは、公開されている資料からは分かりません。確かめるには、当時の版のサーバーを読む必要があります。</li><li><strong>種を外から当てられるか。</strong> 種はサーバーの中の乱数から作られ、プレイヤーには送られていません。外から当てることはできないと見ていますが、これは推定です。</li><li><strong>この記事の対象。</strong> 2026-11-07 の版の PC 版のサーバーです。今後のアップデートで変わることがあります。</li></ul>
+<ul><li><strong>2024 年 5 月より前。</strong> 2024-05-02 のアップデートで、公式が「Bandit Camp のルーレットの乱数の扱いを作り直した」と書いています。それより前の作りにパターンがあったかどうかは、公開されている資料からは分かりません。今後、当時の版のソースを読んで調べる予定です。</li><li><strong>種を外から当てられるか。</strong> 種はサーバーの中の乱数から作られ、プレイヤーには送られていません。外から当てることはできないと見ていますが、これは推定です。</li><li><strong>この記事の対象。</strong> 2026-11-07 の版の PC 版のサーバーです。今後のアップデートで変わることがあります。</li></ul>
 <h2 class="ra-section">調べ方</h2>
-<p>サーバー本体の処理 (賭けの輪のクラスの中間コード) を読み、輪と端末の設定の値をデータのファイルから読みました。サーバーは起動していません。倍率 (黄 1・緑 3・青 5・紫 10・赤 20)、区画の数、受け付けの 45 秒、回る時間の 13〜18 秒は、どれも読んだ値です。確率と平均の戻りは、そこから計算したものです。</p>
+<p>サーバー本体の処理 (ルーレットのクラスの中間コード) を読み、ルーレットと端末の設定の値をデータのファイルから読みました。サーバーは起動していません。倍率 (1・3・5・10・20)、マスの数、受け付けの 45 秒、回る時間の 13〜18 秒は、どれも読んだ値です。確率と平均の戻りは、そこから計算したものです。</p>
 <p>実際に回して数えた結果ではありません。処理がそう書かれている、という確認です。</p><h2 class="ra-section">出典</h2><ul><li><a class="ra-link" href="https://rust.facepunch.com/changes/6" rel="noopener">公式の変更点 2024-05-02 (ルーレットの乱数の作り直し)</a></li><li><a class="ra-link" href="https://commits.facepunch.com/r/rust_reboot" rel="noopener">開発のコミットの記録</a></li></ul></article></main>
 <footer class="ra-foot"><p>Facepunch Studios とは関係のない、個人が解析して作った非公式のサイトです。変更点は公式の変更点の一覧を自分の言葉で日本語にしたもので、各回に出典のリンクがあります。アイテムの値はサーバー本体のデータから読んだもので、正しさは保証しません。</p>
 <p>アイコンの一部は <a class="ra-link" href="https://lucide.dev/" rel="noopener">Lucide</a> (ISC License) です。</p></footer>
