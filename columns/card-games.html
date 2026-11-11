@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ブラックジャックとポーカーは、数えれば勝てるのか | Rust Analysis</title>
+<meta name="description" content="ブラックジャックの台とカードテーブルを、サーバーの処理を読んだ結果から確かめます。山札は毎回作り直され、カードを数えても有利になりません。店の取り分は約 0.8% です。">
+<meta name="theme-color" content="#f2f4f5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15181a" media="(prefers-color-scheme: dark)">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rust Analysis">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:title" content="ブラックジャックとポーカーは、数えれば勝てるのか | Rust Analysis">
+<meta property="og:description" content="ブラックジャックの台とカードテーブルを、サーバーの処理を読んだ結果から確かめます。山札は毎回作り直され、カードを数えても有利になりません。店の取り分は約 0.8% です。">
+<meta property="og:url" content="https://maco165.github.io/rust-patch-notes/columns/card-games.html">
+<meta property="og:image" content="https://maco165.github.io/rust-patch-notes/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://maco165.github.io/rust-patch-notes/columns/card-games.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+JP:wght@400;600&display=swap">
+<link rel="stylesheet" href="../assets/style.css">
+</head><body>
+<header class="ra-site">
+  <a class="ra-site-name" href="../index.html"><b>Rust</b> Analysis</a>
+  <nav class="ra-nav" aria-label="ページ"><a href="../index.html"><i class="ra-ico ra-ico-month" aria-hidden="true"></i>今月</a><a href="../history.html"><i class="ra-ico ra-ico-history" aria-hidden="true"></i>これまで</a><a href="../genres.html"><i class="ra-ico ra-ico-genres" aria-hidden="true"></i>ジャンル</a><a href="../numbers.html"><i class="ra-ico ra-ico-numbers" aria-hidden="true"></i>数値</a><a href="../items.html"><i class="ra-ico ra-ico-items" aria-hidden="true"></i>アイテム</a><a href="../spec.html"><i class="ra-ico ra-ico-spec" aria-hidden="true"></i>仕様書</a><a href="../columns.html" aria-current="page"><i class="ra-ico ra-ico-columns" aria-hidden="true"></i>コラム</a></nav>
+  <span class="ra-site-meta">データ 2026-11-05 まで</span>
+  <a class="ra-site-link" href="https://github.com/maco165/rust-patch-notes" rel="noopener"><i class="ra-ico ra-ico-github" aria-hidden="true"></i>GitHub</a>
+</header>
+<main class="ra-page"><article class="ra-prose"><p class="ra-patch-meta"><a class="ra-link" href="../columns.html">コラム</a><time datetime="2026-11-12">2026-11-12</time><span><i class="ra-ico ra-ico-economy" aria-hidden="true"></i> 経済・店</span><span class="ra-src ra-src-export"><i class="ra-ico ra-ico-export" aria-hidden="true"></i>本体の書き出し 2026-11-07</span></p><h1 class="ra-prose-title">ブラックジャックとポーカーは、数えれば勝てるのか</h1><p class="ra-prose-lead">ブラックジャックの台とカードテーブルを、サーバーの処理を読んだ結果から確かめます。山札は毎回作り直され、カードを数えても有利になりません。店の取り分は約 0.8% です。</p><div class="ra-callout">
+<p class="ra-callout-label">結論</p>
+<p class="ra-callout-main">カードを数えても、有利になりません</p>
+<p>山札は、回が始まるたびに新しく作って切り直されます。ブラックジャックは 10 組 520 枚、ポーカーは 1 組 52 枚。前の回に出た札は、次の回に何も残しません。</p>
+</div>
+<ul class="ra-facts">
+<li><span class="ra-facts-n">520 枚</span><span class="ra-facts-l">ブラックジャックの山札。毎回作り直す</span></li>
+<li><span class="ra-facts-n">約 −0.8%</span><span class="ra-facts-l">ブラックジャックを基本戦略で打ったときの平均 (概算)</span></li>
+<li><span class="ra-facts-n">0</span><span class="ra-facts-l">ポーカーで店が取る分。全額がプレイヤーに戻る</span></li>
+</ul>
+<p>ブラックジャックは、決まりどおりに打てば、ルーレット (いちばん良い賭け方で −4%) よりずっと減りにくい遊びです。それでも平均では減ります。ポーカーは店の取り分が無く、損得は相手との勝ち負けだけで決まります。</p>
+<p>この記事では、Bandit Camp などにあるブラックジャックの台 (クラス名は <code>BlackjackMachine</code>) と、カードテーブル (<code>CardTable</code>。遊べるのはテキサスホールデム) を扱います。</p>
+<h2 class="ra-section">ブラックジャックはこう動いている</h2>
+<h3>1 回の流れ</h3>
+<ol class="ra-timeline" aria-label="ブラックジャックの 1 回の流れ">
+<li class="ra-timeline-hot" style="--w:14"><strong>山札を作る</strong><span>一瞬</span><small>10 組 520 枚を新しく並べて切る。賭けより前</small></li>
+<li style="--w:30"><strong>賭けの受け付け</strong><span>最長 30 秒</span><small>5〜500 スクラップ</small></li>
+<li style="--w:14"><strong>配る</strong><span>1 秒</span><small>席の番号の順に 2 枚ずつ。ディーラーは 1 枚伏せる</small></li>
+<li style="--w:30"><strong>自分の番</strong><span>操作ごとに 30 秒</span><small>全員が同時に進める</small></li>
+<li style="--w:20"><strong>ディーラーの番</strong><span>1 秒に 1 枚</span><small>合計だけで機械的に引く</small></li>
+<li style="--w:14"><strong>配当</strong><span>1 秒後</span><small>4 秒後に次の回</small></li>
+</ol>
+<p>山札が作られるのは、賭けを受け付ける<strong>前</strong>です。賭けた額を見てから札を並べる処理はありません。</p>
+<h3>決まり</h3>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">こと</th><th scope="col">この台の決まり</th><th scope="col">プレイヤーにとって</th></tr></thead><tbody><tr><td>山札</td><td>10 組 520 枚。回ごとに作り直す</td><td>数えても意味がない</td></tr><tr><td>ディーラー</td><td>17 以上で止まる。ただしソフト 17 (A を 11 と数えて 17) は引く</td><td>少し不利</td></tr><tr><td>ブラックジャック (2 枚で 21)</td><td>3:2。賭けた額の 2.5 倍が戻る (端数は切り捨て)</td><td>標準</td></tr><tr><td>ディーラーの伏せ札</td><td>最後まで確かめない。ディーラーが 2 枚の 21 なら、ダブルやスプリットで足した分も負ける</td><td>少し不利</td></tr><tr><td>ダブル</td><td>A を含まない最初の 2 枚なら、合計を問わない。A を含む手はできない</td><td>少し不利</td></tr><tr><td>スプリット</td><td>1 回だけ。10 と絵札のように、数え方が同じなら組にできる。A のスプリットは 1 枚ずつ配って終わり</td><td>標準</td></tr><tr><td>スプリットした手のダブル</td><td>できる (A を含まなければ)</td><td>有利</td></tr><tr><td>スプリットした手の 2 枚の 21</td><td>これも 3:2</td><td>有利</td></tr><tr><td>インシュランス</td><td>見せ札が A のとき。賭け金の半分を出し、当たれば 2:1</td><td>取ると損</td></tr><tr><td>サレンダー、サイドベット</td><td>無い</td><td>—</td></tr><tr><td>賭け金</td><td>5〜500 スクラップ。上限はサーバーの設定 <code>blackjackmachine.maxbet</code> (25〜1,000,000) で変えられる</td><td>—</td></tr><tr><td>席</td><td>1 台に 3 席</td><td>—</td></tr></tbody></table></div>
+<p>勝ち負けは次のとおりです。プレイヤーが先に 21 を超えたら、その時点で負けです。あとでディーラーが 21 を超えても戻りません。店の取り分は、ここから生まれます。</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">結果</th><th scope="col">戻り</th></tr></thead><tbody><tr><td>2 枚の 21 で勝ち (ディーラーが 3 枚以上の 21 でも勝ち)</td><td>賭けた額の 2.5 倍</td></tr><tr><td>ふつうの勝ち</td><td>2 倍</td></tr><tr><td>引き分け</td><td>賭けた額がそのまま</td></tr><tr><td>負け、21 超え</td><td>0</td></tr><tr><td>インシュランスが当たる (ディーラーが 2 枚の 21)</td><td>インシュランスの額の 3 倍</td></tr></tbody></table></div>
+<p>2.5 倍は端数を切り捨てます。5 を賭けると 12.5 ではなく 12 が戻るので、<strong>賭け金は偶数に</strong>しておくと損がありません。</p>
+<h3>札を決めるときに使うもの、使わないもの</h3>
+<div class="ra-uses">
+<div><p class="ra-uses-head ra-uses-yes">使うもの</p><ul><li>その回のために新しく並べた山札</li><li>暗号用の乱数 (札を切るときだけ)</li><li>札の合計 (ディーラーが引くかどうか)</li></ul></div>
+<div><p class="ra-uses-head ra-uses-no">使わないもの</p><ul><li>前の回の札と結果</li><li>時刻、回の数</li><li>サーバーの人数</li><li>賭けた額</li><li>賭けた人、勝ち負けの履歴</li><li>台がそれまでに払った額</li></ul></div>
+</div>
+<p>賭けたスクラップは回の終わりに消え、戻りは新しく作られます。台は「貯まった分」を持っていないので、「そろそろ吐き出す」という状態がそもそもありません。</p>
+<h2 class="ra-section">山札の切り方</h2>
+<p>札を切る処理が呼んでいる乱数は、.NET に元からある <code>System.Security.Cryptography.RandomNumberGenerator.GetInt32</code> だけです。OS の暗号用の乱数で、種も、ゲームの中の状態も持ちません。ルーレットが使う Unity の乱数とは別のものです。</p>
+<p>切り方を言葉で書くと、こうなります。</p>
+<pre class="ra-code">新しい山札を作るとき:
+  スペードの 2 から クラブの A まで、組の数だけ順に並べる
+  山のいちばん上の位置から順に、下へ向かって:
+    その位置より「下」のどこか 1 か所を等しい確率で選び、札を入れ替える
+札を配るとき:
+  いちばん上から 1 枚ずつ取る</pre>
+<h3>1 枚ぶんだけ、均等からずれている</h3>
+<p>教科書の切り方 (Fisher–Yates) は、入れ替える相手に「その位置自身」も含めます。札がたまたま動かないことも、起きてよいからです。この台の切り方は、相手を「その位置より下」からしか選びません。Sattolo の方式と呼ばれる形で、<strong>どの札も、切る前に自分がいた位置には絶対に残りません。</strong></p>
+<p>新品の山の上から 13 枚は、切る前はこの並びです (すべてクラブ)。</p>
+<div class="ra-strip" role="img" aria-label="切る前の山の上から 13 枚。クラブの A、K、Q、J、10、9、8、7、6、5、4、3、2"><span class="ra-strip-hot">A</span><span>K</span><span>Q</span><span>J</span><span>10</span><span>9</span><span>8</span><span>7</span><span>6</span><span>5</span><span>4</span><span>3</span><span>2</span></div>
+<p>切ったあと、いちばん上に来る札は「もといちばん上にあったクラブの A」以外の全部から等しく選ばれます。2 番めは「もと 2 番めにあったクラブの K」以外から、と続きます。つまり、<strong>最初に配られる 1 枚は、あのクラブの A にだけはなりません。</strong></p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">山札</th><th scope="col">最初の 1 枚が A である確率</th><th scope="col">均等に切った場合</th></tr></thead><tbody><tr><td>ブラックジャック (520 枚)</td><td>39/519 = 7.51%</td><td>40/520 = 7.69%</td></tr><tr><td>ポーカー (52 枚)</td><td>3/51 = 5.88%</td><td>4/52 = 7.69%</td></tr></tbody></table></div>
+<p>ずれは 1 枚ぶんです。ブラックジャックの店の取り分を 0.1 ポイントほど増やす、と計算しました (あとの節)。回をまたいで偏りが積み重なることはありません。山札は毎回作り直されるからです。</p>
+<h2 class="ra-section">店の取り分</h2>
+<h3>100 スクラップを賭けたときに、平均で減る量</h3>
+<ol class="ra-gbars ra-loss" style="--max:16" aria-label="100 スクラップを賭けたときに平均で減る量"><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">基本戦略</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:0.8"></span></span><span class="ra-gbar-n">−0.8</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">ルーレット (1・3・5)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:4"></span></span><span class="ra-gbar-n">−4</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">ディーラーと同じ引き方</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:5.9"></span></span><span class="ra-gbar-n">−5.9</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">12 以上で必ず止まる</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:6"></span></span><span class="ra-gbar-n">−6.0</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">インシュランス</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:7.9"></span></span><span class="ra-gbar-n">−7.9</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">ルーレット (20)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:16"></span></span><span class="ra-gbar-n">−16</span></span></li></ol>
+<p>ブラックジャックの数字は、あとで説明する自作のプログラムでの<strong>概算</strong>です。ルーレットの数字は、コラム「ルーレットに必勝パターンはあるのか」のものです。</p>
+<p>同じ台でも、打ち方で 7 倍以上の差が出ます。「なんとなく」で打つと、ルーレットより悪くなります。</p>
+<h3>インシュランスは取らない</h3>
+<p>見せ札が A のとき、伏せ札が 10 か絵札である確率は 159/518 = 30.7% です (伏せ札の位置には、切る前にそこにあった絵札 1 枚が来ないので、均等な切り方の 160/519 より少し下がります)。当たれば 3 倍が戻るので、平均は 3 × 0.307 − 1 = <strong>−7.9%</strong>。本体の賭けの 10 倍ほど割が悪い賭けです。自分の手が良くても悪くても、取らないほうが得です。</p>
+<h3>基本戦略</h3>
+<p>この台の決まりに合わせて、手ごとにいちばん平均の良い操作を計算した表です。H はヒット、S はスタンド、D はダブル、P はスプリット。列はディーラーの見せ札です。</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">自分の手 (A を含まない)</th><th scope="col">2</th><th scope="col">3</th><th scope="col">4</th><th scope="col">5</th><th scope="col">6</th><th scope="col">7</th><th scope="col">8</th><th scope="col">9</th><th scope="col">10</th><th scope="col">A</th></tr></thead><tbody><tr><td>8 以下</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td></tr><tr><td>9</td><td>H</td><td>D</td><td>D</td><td>D</td><td>D</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td></tr><tr><td>10、11</td><td>D</td><td>D</td><td>D</td><td>D</td><td>D</td><td>D</td><td>D</td><td>D</td><td>H</td><td>H</td></tr><tr><td>12</td><td>H</td><td>H</td><td>S</td><td>S</td><td>S</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td></tr><tr><td>13〜16</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td></tr><tr><td>17 以上</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td></tr></tbody></table></div>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">自分の手 (A を 11 と数える)</th><th scope="col">2</th><th scope="col">3</th><th scope="col">4</th><th scope="col">5</th><th scope="col">6</th><th scope="col">7</th><th scope="col">8</th><th scope="col">9</th><th scope="col">10</th><th scope="col">A</th></tr></thead><tbody><tr><td>13〜17</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td></tr><tr><td>18</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>H</td><td>H</td><td>H</td></tr><tr><td>19 以上</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td></tr></tbody></table></div>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">同じ数字の組</th><th scope="col">2</th><th scope="col">3</th><th scope="col">4</th><th scope="col">5</th><th scope="col">6</th><th scope="col">7</th><th scope="col">8</th><th scope="col">9</th><th scope="col">10</th><th scope="col">A</th></tr></thead><tbody><tr><td>2、3、7</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>H</td><td>H</td><td>H</td><td>H</td></tr><tr><td>4</td><td>H</td><td>H</td><td>H</td><td>P</td><td>P</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td></tr><tr><td>5</td><td>D</td><td>D</td><td>D</td><td>D</td><td>D</td><td>D</td><td>D</td><td>D</td><td>H</td><td>H</td></tr><tr><td>6</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td></tr><tr><td>8</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>H</td><td>H</td></tr><tr><td>9</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>S</td><td>P</td><td>P</td><td>S</td><td>S</td></tr><tr><td>10、絵札</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td></tr><tr><td>A</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td></tr></tbody></table></div>
+<p>よく知られた表と違う点は 2 つあります。1 つは <strong>A を含む手はダブルできない</strong>ことで、A を 11 と数える手の行は H か S だけになります。もう 1 つは<strong>見せ札が 10 か A のとき</strong>です。この台はディーラーの 2 枚の 21 を最後まで確かめないので、足した賭け金ごと負けることがあります。そのため 11 でもダブルせず、8 の組もスプリットしません。</p>
+<h2 class="ra-section">同じ動きをするプログラム</h2>
+<p>読んで分かった決まりを、自分で一から書いたプログラムです。ゲームのコードは写していません。山札、ディーラーの引き方、配当の部分はこれだけです。</p>
+<pre class="ra-code ra-code-src">DECKS = 10
+VALUES = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11]  # 1 つのマーク。2〜K、最後が A (11)
+SHOE = VALUES * 4 * DECKS                                # 順に並べた 520 枚。末尾が山のいちばん上
+
+class Shoe:
+    def __init__(self, rng, fair=False, cards=SHOE):
+        self.cards, self.n, self.rng, self.fair = cards[:], len(cards), rng, fair
+
+    def take(self):
+        """上から 1 枚。位置 n を、n より下のどこかと入れ替えてから取る (n 自身は選ばない)"""
+        self.n -= 1
+        n = self.n
+        if n:
+            k = self.rng.randrange(n + 1 if self.fair else n)
+            self.cards[k], self.cards[n] = self.cards[n], self.cards[k]
+        return self.cards[n]
+
+def dealer_draws(hard, ace):
+    """hard は A を 1 と数えた合計。17 以上と、ソフト 18〜21 で止まる。ソフト 17 は引く"""
+    return not (hard &gt;= 17 or (ace and 18 &lt;= hard + 10 &lt;= 21))
+
+def settle(cards, bet, dealer):
+    """1 つの手の戻り。2 枚の 21 は 2.5 倍 (切り捨て)、勝ちは 2 倍、引き分けは等倍"""
+    mine, natural = best(*state(cards)), len(cards) == 2 and best(*state(cards)) == 21
+    if mine &gt; 21:
+        return 0
+    house = best(*state(dealer))
+    if len(dealer) == 2 and house == 21:
+        return bet if natural else 0
+    if house &gt; 21:
+        house = 0
+    if mine &gt; house or (mine == house and natural):
+        return bet * 5 // 2 if natural else bet * 2
+    return bet if mine == house else 0</pre>
+<p><code>state</code> は手を「A を 1 と数えた合計」と「A があるか」に直し、<code>best</code> は A の 1 枚を 11 と数えられるときに数えた合計を返します (全体はファイルにあります)。</p>
+<p>札を切るのは、位置ごとの入れ替えを「その札を取るとき」に行う形にしています。位置 n は自分の番の入れ替えのあと二度と動かないので、先に全部切ってから取るのと結果は同じです。乱数の方式は Python のものなので、出る札の並びはゲームと同じにはなりませんが、切り方と決まりは同じです。</p>
+<p><code>take</code> にも <code>settle</code> にも、前の回の結果・時刻・賭けた人を受け取る場所がありません。入ってくるのは乱数のもとと、その回の札だけです。</p>
+<p>基本戦略は、同じプログラムの中で計算しています。山札を「どの数字も常に 13 分の 1 で出る」とみなして、手ごとにスタンド・ヒット・ダブル・スプリットの平均を比べ、いちばん良いものを選びます。上の表はその出力です。</p>
+<h3>100 万回の結果</h3>
+<p>1 人で座り、毎回 10 スクラップを賭けて 100 万回 (乱数の種は 1)。結果は、最初の賭け金に対する割合です。</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">打ち方</th><th scope="col">平均 (1 回あたり)</th><th scope="col">誤差</th><th scope="col">勝ち</th><th scope="col">引き分け</th><th scope="col">負け</th></tr></thead><tbody><tr><td>基本戦略</td><td>−0.66%</td><td>±0.11</td><td>43.43%</td><td>8.63%</td><td>47.94%</td></tr><tr><td>ディーラーと同じ引き方 (ダブルもスプリットもしない)</td><td>−5.86%</td><td>±0.10</td><td>41.11%</td><td>9.70%</td><td>49.19%</td></tr><tr><td>12 以上で必ず止まる</td><td>−6.02%</td><td>±0.10</td><td>42.61%</td><td>6.51%</td><td>50.87%</td></tr></tbody></table></div>
+<p>同じ基本戦略を、試行ではなく計算で出すと次のとおりです。</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">出し方</th><th scope="col">平均</th></tr></thead><tbody><tr><td>計算 (山札を無限とみなす)</td><td>−0.79%</td></tr><tr><td>計算 (上に加えて、最初の 4 枚をこの台の切り方での確率にする)</td><td>−0.87%</td></tr><tr><td>試行 100 万回</td><td>−0.66% (±0.11)</td></tr><tr><td>試行 550 万回 (種 1 で 100 万回、種 2・3・4 で各 150 万回を足したもの)</td><td>−0.77% (±0.05)</td></tr></tbody></table></div>
+<p>ブラックジャックは 1 回ごとの振れが大きく、100 万回でも ±0.1 ポイントの幅が残ります。計算と試行を合わせて、<strong>店の取り分は約 0.8% (0.7〜0.9%)</strong> と見ています。</p>
+<p>2 枚の 21 が出た割合は 4.69% でした。均等に切った場合の 4.74% より少し低く、これが「最初の 1 枚が、あの A にだけはならない」分です。</p>
+<p>プログラムの全体は <a class="ra-link" href="card-games.py">card-games.py</a> に置いてあります。<code>python3 card-games.py</code> で同じ数字が出ます (1 分ほどかかります)。</p>
+<h2 class="ra-section">ポーカー (テキサスホールデム)</h2>
+<ul class="ra-facts">
+<li><span class="ra-facts-n">52 枚</span><span class="ra-facts-l">山札は 1 組。手ごとに作り直す</span></li>
+<li><span class="ra-facts-n">5 / 10</span><span class="ra-facts-l">ブラインド。アンティは無い</span></li>
+<li><span class="ra-facts-n">100〜1,000</span><span class="ra-facts-l">持ち込めるスクラップ</span></li>
+</ul>
+<ol class="ra-timeline" aria-label="テキサスホールデムの 1 手の流れ">
+<li class="ra-timeline-hot" style="--w:14"><strong>山札を作る</strong><span>一瞬</span><small>52 枚を新しく並べて切る</small></li>
+<li style="--w:20"><strong>ブラインドと手札</strong><span>自動</span><small>5 と 10 が出て、2 枚ずつ配られる</small></li>
+<li style="--w:36"><strong>賭けを 4 巡</strong><span>1 人 30 秒</span><small>間にフロップ 3 枚、ターン、リバー</small></li>
+<li style="--w:16"><strong>勝負</strong><span>一瞬</span><small>手札 2 枚 + 場の 5 枚で役を比べる</small></li>
+<li style="--w:14"><strong>配当</strong><span>一瞬</span><small>ポットの全額が勝者へ。8 秒後に次の手</small></li>
+</ol>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">こと</th><th scope="col">カードテーブルの決まり</th></tr></thead><tbody><tr><td>人数</td><td>2 人から。テーブルは 2・3・4・6 席の 4 種</td></tr><tr><td>ブラインド</td><td>ボタンの次の人が 5、その次が 10 (2 人のときはボタンの人が 5)。ボタンは 1 手ごとに隣へ</td></tr><tr><td>持ち込み</td><td>席の置き場に 100〜1,000 スクラップ。10 を切ると次の手から外れる</td></tr><tr><td>最小のレイズ</td><td>10 以上 (前の上げ幅より小さくはできない)</td></tr><tr><td>時間切れ</td><td>30 秒でフォールド。4 分何もしないと席から降ろされる</td></tr><tr><td>役の判定</td><td>手札 2 枚と場の 5 枚の 7 枚で比べる。同点はポットを等分</td></tr><tr><td>店の取り分 (レーキ)</td><td><strong>無い</strong></td></tr></tbody></table></div>
+<p>配当の処理は、ポットを賭け金の少ない層から順に勝者へ渡していき、最後に「ポットが空になっているはず」と確かめる形です。台が何かを引く処理はありません。<strong>賭けられたスクラップは、全額がプレイヤーのだれかに戻ります。</strong></p>
+<p>だから、ポーカーには「店に対する平均の戻り」がありません。卓の全員の損得を足すと、いつも 0 です。勝てるかどうかは、相手より上手いかどうかだけで決まります。</p>
+<h2 class="ra-section">よく聞く話を確かめる</h2>
+<div class="ra-myth"><p class="ra-myth-q">「出た札を数えておけば、有利なときに大きく賭けられる」</p><p class="ra-myth-a"><span class="ra-verdict">成り立たない</span>カードカウンティングは、使った札が山に戻らないまま次の回に進む場合にだけ効きます。この台は回ごとに 520 枚を作り直すので、数えた情報は次の回に持ち越せません。山札が作られるのは賭けの前なので、その回の札を見てから賭けることもできません。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">「負けが続いた。台が貯め込んでいるから、そろそろ勝てる」</p><p class="ra-myth-a"><span class="ra-verdict">成り立たない</span>台は、払った額も受け取った額も覚えていません。賭けたスクラップは回の終わりに消え、戻りは新しく作られます。回と回の間に持ち越されるのは、席と手持ちのスクラップだけです。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">「大きく賭けると、悪い札が来る」</p><p class="ra-myth-a"><span class="ra-verdict">関係ない</span>山札は賭けを受け付ける前に切り終わっています。札を切る処理にも、配る処理にも、賭けた額や人を見る場所がありません。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">「ディーラーは、こちらの手を見て引き方を変える」</p><p class="ra-myth-a"><span class="ra-verdict">変えない</span>ディーラーが引くかどうかは、自分の札の合計だけで決まります。17 以上で止まり、ソフト 17 は引く。プレイヤーの手も賭け金も使われません。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">「時間帯や、サーバーの人数で勝ちやすさが変わる」</p><p class="ra-myth-a"><span class="ra-verdict">変わらない</span>乱数が使われるのは札を切る 1 か所だけで、OS の暗号用の乱数です。時刻も人数も入っていません。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">「ディーラーの伏せ札は、ツールで覗ける」</p><p class="ra-myth-a"><span class="ra-verdict">送られていない</span>回の途中、サーバーは伏せ札の中身をクライアントに送りません。ポーカーの他人の手札も同じです。手元の側をどう調べても、無いものは見えません。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">「インシュランスは保険だから、良い手のときは取るべき」</p><p class="ra-myth-a"><span class="ra-verdict">取ると損</span>インシュランスは本体とは別の賭けで、平均は −7.9% です。自分の手の良し悪しでは変わりません。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">「負けたら倍にして賭け直せば、最後は勝てる」</p><p class="ra-myth-a"><span class="ra-verdict">平均は変わらない</span>毎回の結果は前の回と関係しないので、賭ける額の順序で平均は動きません。上限が 500 なので、5 から始めても 7 回続けて負けると、次の倍 (640) はもう賭けられません。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">「座る席で、来る札が変わる」</p><p class="ra-myth-a"><span class="ra-verdict">1 枚ぶんだけ変わる</span>札は席の番号の順に配られ、切り方には上で書いた 1 枚ぶんのずれがあります。次の節で確かめます。勝ち負けを左右するほどの差ではありません。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">「ポーカーは、台が強い手どうしをぶつけて盛り上げている」</p><p class="ra-myth-a"><span class="ra-verdict">していない</span>52 枚を切って上から配るだけです。だれに何を配るかを選ぶ処理はありません。台には取り分が無いので、盛り上げる理由もありません。</p></div>
+<h2 class="ra-section">席と、切り方のずれ</h2>
+<p>札は、ボタンの位置に関係なく、いつも番号のいちばん若い席から配られます。切り方のずれ (最初の 1 枚はクラブの A にならない) は、その席にそのまま出ます。</p>
+<p>ポーカーを 2 人で遊ぶ場合に、それぞれの席がクラブの A を持つ割合を 100 万回数えました。</p>
+<ol class="ra-gbars ra-plain" style="--max:4" aria-label="2 人のポーカーで、それぞれの席がクラブの A を持つ割合"><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">先に配られる席 (この台の切り方)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:1.97"></span></span><span class="ra-gbar-n">1.97%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">あとに配られる席 (この台の切り方)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:3.91"></span></span><span class="ra-gbar-n">3.91%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">どちらの席も (均等に切った場合)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:3.85"></span></span><span class="ra-gbar-n">3.85%</span></span></li></ol>
+<p>先に配られる席は、クラブの A を持つことが半分しかありません。1 枚めには絶対に来ず、2 枚めでしか持てないからです。同じように、あとに配られる席はクラブの K が、場の札はクラブの 10・9・8 が、それぞれ 1 か所ずつ来ない位置を持っています。</p>
+<p>では勝ち負けに効くかというと、ほとんど効きません。</p>
+<ul><li><strong>ポーカー:</strong> 全員が最後まで降りないと仮定して 100 万回試すと、2 人ではポットの取り分に差は見えませんでした (49.97% と 50.03%、誤差 ±0.05)。6 人では、先頭の席が 16.57% で、等分の 16.67% より 0.1 ポイント低い程度でした (誤差 ±0.04)。</li><li><strong>ブラックジャック:</strong> 520 枚のうちの 1 枚なので、さらに小さくなります。1 人で座ったとき、店の取り分が 0.09 ポイント増えると計算しました。3 人で座ると、番号のいちばん若い席が 0.15 ポイント、ほかの席が 0.03〜0.04 ポイントです。どれも計算だけの数字で、3 人で座る試行はしていません。3 人の数字は、記事のプログラムとは別の使い捨てのプログラムで出しました。</li></ul>
+<p>「この席は勝てない」と言えるほどの差ではありません。処理を読むと 1 枚ぶんのずれがある、という事実として書いておきます。</p>
+<h2 class="ra-section">分からないこと</h2>
+<ul><li><strong>番号のいちばん若い席が、どの位置か。</strong> 台のどの席が 0 番かは、確かめていません。</li><li><strong>役の判定の中身。</strong> 役を比べる部分は、よく知られた公開の評価器と同じ形の部品に任されています。その中身までは読んでいません。</li><li><strong>3 人以上のオールイン。</strong> 持ち金の少ない人がオールインして勝ったとき、サイドポットがふつうの決まりどおりに分かれるかどうか。処理を読むと、ふつうと違う配り方になりそうな箇所があります。実際に遊んで確かめてはいません。</li><li><strong>店の取り分の細かい桁。</strong> 約 0.8% は、自作のプログラムでの概算です。計算は山札を無限とみなした近似で、試行には ±0.05〜0.1 ポイントの誤差があります。</li><li><strong>この記事の対象。</strong> 2026-11-07 の版の PC 版のサーバーで、賭け金の上限が既定の 500 の場合です。上限はサーバーごとに変えられ、決まりは今後のアップデートで変わることがあります。</li></ul>
+<h2 class="ra-section">調べ方</h2>
+<p>サーバー本体の処理 (ブラックジャックとポーカーのクラスの中間コード) を読み、台とテーブルの設定の値をデータのファイルから読みました。サーバーは起動していません。山札の枚数、ディーラーの引き方、配当の倍率、賭け金の範囲、ブラインド、時間は、どれも読んだ値です。</p>
+<p>店の取り分、基本戦略の表、席ごとの割合は、読んだ決まりを自分で書き直したプログラムで計算・試行したものです。クラブの A を持つ割合までは <a class="ra-link" href="card-games.py">card-games.py</a> が出します。ポーカーのポットの取り分と、ブラックジャックの 3 人の席ごとの差は、別の使い捨てのプログラムで出しました。</p>
+<p>ゲームの中で実際に遊んで数えた結果ではありません。処理がそう書かれている、という確認です。</p><h2 class="ra-section">出典</h2><ul><li><a class="ra-link" href="https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.randomnumbergenerator.getint32" rel="noopener">.NET の文書 RandomNumberGenerator.GetInt32</a></li><li><a class="ra-link" href="https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle" rel="noopener">Wikipedia Fisher–Yates shuffle (Sattolo の方式の節)</a></li></ul></article></main>
+<footer class="ra-foot"><p>Facepunch Studios とは関係のない、個人が解析して作った非公式のサイトです。変更点は公式の変更点の一覧を自分の言葉で日本語にしたもので、各回に出典のリンクがあります。アイテムの値はサーバー本体のデータから読んだもので、正しさは保証しません。</p>
+<p>アイコンの一部は <a class="ra-link" href="https://lucide.dev/" rel="noopener">Lucide</a> (ISC License) です。</p></footer>
+</body></html>
