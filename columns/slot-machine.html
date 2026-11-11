@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>スロットマシンは回すほど減る。戻りは平均 91.8% | Rust Analysis</title>
+<meta name="description" content="スロットマシンの絵柄の決まり方と配当を、サーバーの処理とデータから読みました。賭け 2 スクラップに戻るのは平均 1.84。出る台も、出る時間もありません。">
+<meta name="theme-color" content="#f2f4f5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15181a" media="(prefers-color-scheme: dark)">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rust Analysis">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:title" content="スロットマシンは回すほど減る。戻りは平均 91.8% | Rust Analysis">
+<meta property="og:description" content="スロットマシンの絵柄の決まり方と配当を、サーバーの処理とデータから読みました。賭け 2 スクラップに戻るのは平均 1.84。出る台も、出る時間もありません。">
+<meta property="og:url" content="https://maco165.github.io/rust-patch-notes/columns/slot-machine.html">
+<meta property="og:image" content="https://maco165.github.io/rust-patch-notes/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://maco165.github.io/rust-patch-notes/columns/slot-machine.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+JP:wght@400;600&display=swap">
+<link rel="stylesheet" href="../assets/style.css">
+</head><body>
+<header class="ra-site">
+  <a class="ra-site-name" href="../index.html"><b>Rust</b> Analysis</a>
+  <nav class="ra-nav" aria-label="ページ"><a href="../index.html"><i class="ra-ico ra-ico-month" aria-hidden="true"></i>今月</a><a href="../history.html"><i class="ra-ico ra-ico-history" aria-hidden="true"></i>これまで</a><a href="../genres.html"><i class="ra-ico ra-ico-genres" aria-hidden="true"></i>ジャンル</a><a href="../numbers.html"><i class="ra-ico ra-ico-numbers" aria-hidden="true"></i>数値</a><a href="../items.html"><i class="ra-ico ra-ico-items" aria-hidden="true"></i>アイテム</a><a href="../spec.html"><i class="ra-ico ra-ico-spec" aria-hidden="true"></i>仕様書</a><a href="../columns.html" aria-current="page"><i class="ra-ico ra-ico-columns" aria-hidden="true"></i>コラム</a></nav>
+  <span class="ra-site-meta">データ 2026-11-05 まで</span>
+  <a class="ra-site-link" href="https://github.com/maco165/rust-patch-notes" rel="noopener"><i class="ra-ico ra-ico-github" aria-hidden="true"></i>GitHub</a>
+</header>
+<main class="ra-page"><article class="ra-prose"><p class="ra-patch-meta"><a class="ra-link" href="../columns.html">コラム</a><time datetime="2026-11-12">2026-11-12</time><span><i class="ra-ico ra-ico-economy" aria-hidden="true"></i> 経済・店</span><span class="ra-src ra-src-export"><i class="ra-ico ra-ico-export" aria-hidden="true"></i>本体の書き出し 2026-11-07</span></p><h1 class="ra-prose-title">スロットマシンは回すほど減る。戻りは平均 91.8%</h1><p class="ra-prose-lead">スロットマシンの絵柄の決まり方と配当を、サーバーの処理とデータから読みました。賭け 2 スクラップに戻るのは平均 1.84。出る台も、出る時間もありません。</p><div class="ra-callout">
+<p class="ra-callout-label">結論</p>
+<p class="ra-callout-main">2 スクラップ賭けて、戻るのは平均 1.84</p>
+<p>戻りは平均で賭けの 91.8% です。絵柄はレバーを引いた瞬間に 3 つとも決まり、前の結果も、時刻も、台も、賭けの倍率も使われません。回すほど、平均では減ります。</p>
+</div>
+<ul class="ra-facts">
+<li><span class="ra-facts-n">−8.2%</span><span class="ra-facts-l">平均の増減 (賭けに対して)</span></li>
+<li><span class="ra-facts-n">12.4%</span><span class="ra-facts-l">何かしら戻る回 (8 回に 1 回)</span></li>
+<li><span class="ra-facts-n">1/4,406</span><span class="ra-facts-l">7 が 3 つ揃う確率</span></li>
+</ul>
+<p>出る台、出る時間、出る回し方はありません。違いが出るのは「何回回すか」と「いくら賭けるか」だけで、どちらも増やすほど平均の減りが大きくなります。</p>
+<h2 class="ra-section">スロットマシンはこう動いている</h2>
+<h3>1 回の流れ</h3>
+<ol class="ra-timeline" aria-label="スロットマシンの 1 回の流れ">
+<li style="--w:30"><strong>スクラップを入れる</strong><span>好きなだけ</span><small>席に座った人だけが入れられる。倍率 1〜5 を選ぶ</small></li>
+<li class="ra-timeline-hot" style="--w:18"><strong>レバーを引く</strong><span>一瞬</span><small>賭け金が引かれ、同時に 3 つの絵柄が決まる</small></li>
+<li style="--w:30"><strong>リールが回る</strong><span>2.5 秒</span><small>決まった絵柄を見せるだけ</small></li>
+<li style="--w:18"><strong>配当</strong><span>一瞬</span><small>当たりなら受け取りの枠にスクラップが入る</small></li>
+</ol>
+<p>1 回の賭けは 2 スクラップです。倍率を 2〜5 に上げると、賭けは 4・6・8・10 になり、配当も同じ倍になります。</p>
+<p>絵柄が決まるのは、リールが回り始める<strong>前</strong>です。回っている間は、もう結果は変わりません。リールを止める操作もありません。スロットマシン独自の操作は「回す」「スクラップの出し入れ」「倍率を変える」の 3 つだけです (ほかは、座る・立つなどの共通の操作です)。</p>
+<h3>絵柄を決めるときに使うもの、使わないもの</h3>
+<div class="ra-uses">
+<div><p class="ra-uses-head ra-uses-yes">使うもの</p><ul><li>絵柄ごとの重み (全台で共通の設定)</li><li>その場で作り直した乱数</li></ul></div>
+<div><p class="ra-uses-head ra-uses-no">使わないもの</p><ul><li>前の回の絵柄</li><li>回した回数、外れた回数</li><li>時刻、サーバーの人数</li><li>座っている人</li><li>どの台か</li><li>賭けの倍率</li></ul></div>
+</div>
+<p>絵柄を決める処理を、言葉で書くとこうなります。3 つのリールで、同じことを 1 回ずつ行います。</p>
+<pre class="ra-code">リール 1 つぶん:
+  0 から 999 のうち 1 つを種として取る
+  その種で乱数を新しく作り、最初の 1 つだけを使って 0 から 329 の位置を決める
+  位置を、絵柄ごとの重みで区切った表に当てはめて、絵柄を 1 つ返す</pre>
+<h3>実際に呼ばれている乱数</h3>
+<p>1 つのリールにつき、次の順に呼ばれます。どれも Unity と .NET に元からあるメソッドで、Rust が独自に作った乱数ではありません。</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">順</th><th scope="col">呼んでいるメソッド</th><th scope="col">何を決めるか</th></tr></thead><tbody><tr><td>1</td><td><code>UnityEngine.Random.Range(0, 1000)</code></td><td>種。0〜999 の整数を 1 つ</td></tr><tr><td>2</td><td><code>new System.Random(種)</code></td><td>その種で、.NET の乱数を新しく作る</td></tr><tr><td>3</td><td><code>Next(0, 330)</code></td><td>止まる位置。0〜329 の整数</td></tr></tbody></table></div>
+<ul><li><strong><code>UnityEngine.Random.Range(最小, 最大)</code></strong> の整数の版は、最小を含み、最大を含みません。返るのは 0〜999 です。</li><li><strong><code>System.Random(種)</code></strong> は、同じ種からは必ず同じ数の並びを作ります。スロットマシンは作った乱数の最初の 1 つだけを使い、次のリールではまた新しく作ります。前の回の並びの続きにはなりません。</li><li><strong><code>Next(0, 330)</code></strong> は 0〜329 を返します。330 は、絵柄の重みの合計です。</li></ul>
+<h2 class="ra-section">1 つのリールは 1,000 通りしかない</h2>
+<p>種は 0〜999 の 1,000 個で、同じ種からは必ず同じ絵柄が出ます。つまり 1 つのリールは「1,000 枚のくじ」と同じで、絵柄ごとの枚数は決まっています。Microsoft が公開している <code>System.Random</code> の方式を自分で書き直し、1,000 個の種を 1 つずつ計算して数えました。</p>
+<h3>絵柄ごとの枚数 (1,000 枚のうち)</h3>
+<ol class="ra-gbars ra-plain" style="--max:304" aria-label="1 つのリールで各絵柄が出る種の数 (1,000 のうち)"><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">木材</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:304"></span></span><span class="ra-gbar-n">304</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">木炭</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:303"></span></span><span class="ra-gbar-n">303</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">包帯</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:122"></span></span><span class="ra-gbar-n">122</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">ロープ</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:121"></span></span><span class="ra-gbar-n">121</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">7</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:61"></span></span><span class="ra-gbar-n">61</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">スクラップ</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:24"></span></span><span class="ra-gbar-n">24</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">硫黄</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:23"></span></span><span class="ra-gbar-n">23</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">低品質燃料</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:22"></span></span><span class="ra-gbar-n">22</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">配当の無い絵柄 (6 種)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:20"></span></span><span class="ra-gbar-n">20</span></span></li></ol>
+<p>木材と木炭で 6 割を占めます。配当の無い絵柄は、りんご・火薬・ハンマーなどの 6 種で、合わせて 20 枚です。絵柄の呼び名は、ゲームのデータの中の名前を日本語のアイテム名に直したものです。</p>
+<h3>設定の重みと、実際の出方は少し違う</h3>
+<p>設定では、絵柄ごとに「330 のうちいくつ」という重みが決められています。ところが種が 1,000 個しか無く、1,000 は 330 で割り切れないので、実際の出方は重みから少しずれます。</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">絵柄</th><th scope="col">設定の重み (330 のうち)</th><th scope="col">重みどおりなら</th><th scope="col">実際 (1,000 枚のうち)</th></tr></thead><tbody><tr><td>木材</td><td>100</td><td>30.3%</td><td>304 枚 (30.4%)</td></tr><tr><td>木炭</td><td>100</td><td>30.3%</td><td>303 枚 (30.3%)</td></tr><tr><td>包帯</td><td>40</td><td>12.1%</td><td>122 枚 (12.2%)</td></tr><tr><td>ロープ</td><td>40</td><td>12.1%</td><td>121 枚 (12.1%)</td></tr><tr><td>7</td><td>20</td><td>6.1%</td><td>61 枚 (6.1%)</td></tr><tr><td>スクラップ</td><td>8</td><td>2.4%</td><td>24 枚 (2.4%)</td></tr><tr><td>硫黄</td><td>8</td><td>2.4%</td><td>23 枚 (2.3%)</td></tr><tr><td>低品質燃料</td><td>8</td><td>2.4%</td><td>22 枚 (2.2%)</td></tr></tbody></table></div>
+<p>いちばん効くのは低品質燃料です。重みどおりなら 24 枚ほどのところが 22 枚で、あとで見るとおり、この絵柄は戻りの大きな部分を担っています。その結果、重みどおりなら 92.9% になるはずの平均の戻りが、実際は 91.8% になります。</p>
+<p>種を 1,000 個に絞っているのが意図したものかどうかは、処理を読んでも分かりません。</p>
+<h2 class="ra-section">配当の表</h2>
+<p>当たりは 2 種類です。同じ絵柄が 3 つ揃う当たりと、低品質燃料が 1 つ出るごとの上乗せです。2 つ揃いには配当がありません。数字は、賭け 2 スクラップ (倍率 1) のときのスクラップの数です。</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">当たり</th><th scope="col">配当</th><th scope="col">確率</th><th scope="col">何回に 1 回</th></tr></thead><tbody><tr><td>7 が 3 つ</td><td>1,000</td><td>0.023%</td><td>4,406 回</td></tr><tr><td>スクラップが 3 つ</td><td>400</td><td>0.0014%</td><td>72,338 回</td></tr><tr><td>硫黄が 3 つ</td><td>100</td><td>0.0012%</td><td>82,190 回</td></tr><tr><td>低品質燃料が 3 つ</td><td>80 + 上乗せ 15 = 95</td><td>0.0011%</td><td>93,914 回</td></tr><tr><td>包帯が 3 つ</td><td>45</td><td>0.18%</td><td>551 回</td></tr><tr><td>ロープが 3 つ</td><td>40</td><td>0.18%</td><td>564 回</td></tr><tr><td>木材が 3 つ</td><td>25</td><td>2.81%</td><td>36 回</td></tr><tr><td>木炭が 3 つ</td><td>15</td><td>2.78%</td><td>36 回</td></tr><tr><td>低品質燃料が 1 つ出るごとに (どのリールでも)</td><td>5</td><td>6.46% (1 つ以上出る)</td><td>15〜16 回</td></tr></tbody></table></div>
+<p>配当はすべてスクラップで、受け取りの枠に貯まります。当たっても、賭けた 2 スクラップそのものは戻りません。戻るのは配当だけです。</p>
+<p>配当の表にある最大は 7 が 3 つの 1,000 です。回を重ねると貯まっていくジャックポットや、特別なボーナスの回はありません。</p>
+<h3>平均の戻り 91.8% は、どの当たりから来るか</h3>
+<ol class="ra-gbars ra-plain" style="--max:351" aria-label="平均の戻り 91.8% の内訳 (賭けに対する割合)"><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">木材が 3 つ (25)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:351"></span></span><span class="ra-gbar-n">35.1%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">木炭が 3 つ (15)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:209"></span></span><span class="ra-gbar-n">20.9%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">低品質燃料の上乗せ (5)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:165"></span></span><span class="ra-gbar-n">16.5%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">7 が 3 つ (1,000)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:113"></span></span><span class="ra-gbar-n">11.3%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">包帯が 3 つ (45)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:41"></span></span><span class="ra-gbar-n">4.1%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">ロープが 3 つ (40)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:35"></span></span><span class="ra-gbar-n">3.5%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">スクラップ・硫黄・低品質燃料が 3 つ</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:4"></span></span><span class="ra-gbar-n">0.4%</span></span></li></ol>
+<p>戻りの 8 割近くは、木材・木炭の 3 つ揃いと、低品質燃料の 5 という小さな当たりです。7 が 3 つの 1,000 は目立ちますが、平均の戻りに占めるのは 11.3% ぶんで、4,406 回に 1 回しか来ません。7 が 3 つを除くと、戻りは平均で賭けの 80.5% です。</p>
+<h2 class="ra-section">同じ動きをするプログラム</h2>
+<p>読んで分かった動きを、自分で一から書いたプログラムです。ゲームのコードは写していません。回す部分と、配当の部分はこれだけです。</p>
+<pre class="ra-code ra-code-src"># REEL は 1,000 個の種それぞれが出す絵柄の表 (1 つのリールのすべて)
+def spin(source):
+    """1 回分。リールごとに種を 1 つ取り、その種の絵柄を出す"""
+    return tuple(REEL[source.randrange(1000)] for _ in range(3))
+
+TRIPLES = {"charcoal": 15, "wood": 25, "rope": 40, "bandage": 45,
+           "lowgrade": 80, "sulfur": 100, "scrap": 400, "seven": 1000}
+
+def payout(faces, multiplier=1):
+    """戻るスクラップ。低品質燃料 1 つごとに 5、3 つ揃いならその配当を足し、倍率を掛ける"""
+    total = 5 * faces.count("lowgrade")
+    if faces[0] == faces[1] == faces[2]:
+        total += TRIPLES.get(faces[0], 0)
+    return total * multiplier</pre>
+<p><code>REEL</code> の表は、Microsoft が公開している <code>System.Random</code> の方式 (種から最初の 1 つの数を作る計算) を書き直して、種 0〜999 のそれぞれから作っています。種を取る部分 (<code>source.randrange</code>) は Python の乱数なので、出る順番はゲームと同じにはなりませんが、種から絵柄への対応は同じです。</p>
+<p><code>spin</code> の中に、前の回の結果・時刻・台・倍率を受け取る場所がありません。入ってくるのは乱数のもとだけです。</p>
+<h3>計算と、回した結果</h3>
+<p>平均の戻りは 2 通りに出しました。1 つは、3 つのリールの絵柄の組み合わせをすべて足し上げる計算 (分数で厳密)。もう 1 つは、このプログラムを実際に回した結果です。</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">出し方</th><th scope="col">平均の戻り (賭け 2 に対して)</th><th scope="col">割合</th><th scope="col">何かしら戻る回</th><th scope="col">7 が 3 つ</th></tr></thead><tbody><tr><td>計算 (実際の 1,000 通り)</td><td>1.8368</td><td>91.84%</td><td>12.43%</td><td>4,406 回に 1 回</td></tr><tr><td>計算 (設定の重みどおりの場合)</td><td>1.8589</td><td>92.95%</td><td>13.04%</td><td>4,492 回に 1 回</td></tr><tr><td>100 万回回した結果 (乱数の種は 1)</td><td>1.8438</td><td>92.19%</td><td>12.45%</td><td>231 回</td></tr><tr><td>1,000 万回回した結果 (乱数の種は 7)</td><td>1.8369</td><td>91.85%</td><td>12.45%</td><td>2,257 回</td></tr></tbody></table></div>
+<p>100 万回でも、計算から 0.35 ポイントずれました。7 が 3 つの 1,000 が数回多いか少ないかで、平均が動くためです。振れの目安 (標準誤差) は、100 万回で ±0.8 ポイント、1,000 万回でも ±0.25 ポイントあります。種 7 の 1,000 万回が計算とほぼ重なったのは、たまたまです (種 1 で 1,000 万回なら 91.61%)。数百回や数千回の体感で「この台は出る」「今日は出ない」と感じるのは、この振れです。</p>
+<p>100 万回の中で、何も戻らない回の連続は最長で 115 回ありました。</p>
+<p>プログラムの全体は <a class="ra-link" href="slot-machine.py">slot-machine.py</a> に置いてあります。<code>python3 slot-machine.py</code> で 100 万回、<code>python3 slot-machine.py 10000000 7</code> で 1,000 万回の数字が出ます。</p>
+<h2 class="ra-section">よく聞く話を確かめる</h2>
+<div class="ra-myth"><p class="ra-myth-q">「出る台と、出ない台がある」</p><p class="ra-myth-a"><span class="ra-verdict">無い</span>データの中のスロットマシンは 32 個あり、すべてが同じ 1 つの配当の設定を使っています。回る時間などの値も同じです。絵柄を決める処理は、どの台かを見ていません。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">「連続で回していると、そろそろ当たる」</p><p class="ra-myth-a"><span class="ra-verdict">成り立たない</span>回した回数や外れた回数を数える場所が、どこにもありません。種から作る乱数も、リールごと・回ごとに作り直されます。種を出す Unity の乱数は、サーバー全体で 1 つを共有していて、スロットマシンの外れの数とは関係なく進みます。50 回外れた後でも、次に何かしら戻る確率は 12.4% のままです。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">「倍率を上げると当たりやすい (または、当たりにくい)」</p><p class="ra-myth-a"><span class="ra-verdict">変わらない</span>倍率は、賭け金と配当に同じだけ掛かるだけです。絵柄を決める処理には入っていません。倍率 5 は、倍率 1 を 5 回ぶんまとめて賭けるのと平均では同じで、振れだけが大きくなります。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">「レバーを引くタイミングで結果が変わる」</p><p class="ra-myth-a"><span class="ra-verdict">狙えない</span>種はサーバーの中の乱数から取られます。その状態はプレイヤーには送られていないと見ています (推定)。引いた瞬間に 3 つとも決まり、リールを止める操作はありません。目押しはできません。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">「7 が 2 つ止まった。惜しかったから次は来る」</p><p class="ra-myth-a"><span class="ra-verdict">関係ない</span>3 つのリールは別々に決まり、2 つ揃いに配当はありません。前の回の絵柄は表示のために控えられるだけで、次の絵柄を決める処理には渡りません。次に 7 が 3 つ揃う確率は、いつでも 4,406 回に 1 回です。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">「時間帯や、サーバーの人数で出方が変わる」</p><p class="ra-myth-a"><span class="ra-verdict">変わらない</span>絵柄を決める処理が使うのは、絵柄の重みと乱数だけです。時刻も、プレイヤーの数も入っていません。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">「サーバーの管理者は、結果を操作できる」</p><p class="ra-myth-a"><span class="ra-verdict">標準の設定では、当たりの固定だけできる</span>サーバーの管理者用の設定 <code>slotmachine.forcepayoutindex</code> があります。初期値は −1 (無効) で、0〜7 にすると、そのサーバーの全部の台が毎回、配当の表のその番号の当たりを出します。選べるのは当たりの並びだけで、外れやすくする設定ではありません。プラグインで処理を書き換えているサーバーは、この記事の対象外です。各サーバーがこの値をどうしているかは、外からは確かめられません。</p></div>
+<h2 class="ra-section">どれくらい減るか</h2>
+<p>平均では、賭けた額の 8.2% が減ります。</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">回し方</th><th scope="col">賭けの合計</th><th scope="col">平均で減る量</th></tr></thead><tbody><tr><td>倍率 1 で 100 回</td><td>200</td><td>16</td></tr><tr><td>倍率 1 で 1,000 回</td><td>2,000</td><td>163</td></tr><tr><td>倍率 5 で 100 回</td><td>1,000</td><td>82</td></tr><tr><td>倍率 5 で 1,000 回</td><td>10,000</td><td>816</td></tr></tbody></table></div>
+<p>これは平均で、実際の結果は 7 が 3 つ来るかどうかで大きく振れます。1,000 回回しても、7 が 3 つが 1 度も来ない確率は 80% です。</p>
+<h3>外れが続く確率</h3>
+<ul class="ra-facts">
+<li><span class="ra-facts-n">27%</span><span class="ra-facts-l">10 回続けて何も戻らない確率</span></li>
+<li><span class="ra-facts-n">7%</span><span class="ra-facts-l">20 回続けて何も戻らない確率</span></li>
+<li><span class="ra-facts-n">80%</span><span class="ra-facts-l">1,000 回回して 7 が 3 つが来ない確率</span></li>
+</ul>
+<p>10 回続けて外れるのは、4 回に 1 回は起きる普通のことです。</p>
+<h3>ルーレットと比べる</h3>
+<p>同じ版のルーレットの平均の戻りと並べます (100 スクラップを賭けたときに、平均で減る量)。</p>
+<ol class="ra-gbars ra-plain" style="--max:160" aria-label="100 スクラップを賭けたときに平均で減る量。ルーレットとスロットマシン"><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">ルーレットの 1・3・5</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:40"></span></span><span class="ra-gbar-n">−4</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">スロットマシン</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:82"></span></span><span class="ra-gbar-n">−8.2</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">ルーレットの 10</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:120"></span></span><span class="ra-gbar-n">−12</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">ルーレットの 20</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:160"></span></span><span class="ra-gbar-n">−16</span></span></li></ol>
+<p>同じ額を賭けるなら、スロットマシンはルーレットの 1・3・5 の 2 倍の速さで減ります。そのうえ 1 回が最短 2.5 秒と短いので、時間あたりに賭ける回数が増えやすい遊びです。</p>
+<h2 class="ra-section">分からないこと</h2>
+<ul><li><strong>Unity の乱数の中身。</strong> 種を取る <code>UnityEngine.Random.Range</code> は Unity 本体の中にあり、今回は読んでいません。0〜999 がほぼ等しく出ることは、Unity の文書の説明に拠っています。続けて取った 3 つの種どうしに関係が無いことは、文書には書かれておらず、擬似乱数の性質としての前提です。この記事の確率と平均の戻りは、その前提で計算したものです。</li><li><strong>画面の表示。</strong> 絵柄の絵と、ゲームの画面に出る配当の表は見ていません。絵柄の呼び名は、データの中の名前から付けました。</li><li><strong>賭け金の枠に残したスクラップ。</strong> 配当は、席を立つと持ち物に移ります。賭け金の枠に入れたまま残したスクラップが、席を立ったときにどうなるかは確かめていません。</li><li><strong>いつからこの配当か。</strong> スロットマシンが追加されてからの変更の経緯は調べていません。</li><li><strong>この記事の対象。</strong> 2026-11-07 の版の PC 版のサーバーです。今後のアップデートで変わることがあります。</li></ul>
+<h2 class="ra-section">調べ方</h2>
+<p>サーバー本体の処理 (スロットマシンのクラスの中間コード) を読み、配当の設定とスロットマシンの値をデータのファイルから読みました。サーバーは起動していません。賭け金の 2、倍率の 1〜5、回る時間の 2.5 秒、絵柄の重み、配当の表は、どれも読んだ値です。</p>
+<p>絵柄ごとの枚数 (1,000 枚のうち) は、公開されている .NET の乱数の方式を書き直して、種を 1 つずつ計算したものです。書き直した方式が正しいことは、よく知られた値 (種 0 の最初の数が 1559595546、種 42 が 1434747710) と一致することで確かめました。確率と平均の戻りは、その枚数から計算したものです。</p>
+<p>ゲームの中で実際に回して数えた結果ではありません。処理がそう書かれている、という確認です。記事の中の 100 万回・1,000 万回の結果は、同じ動きをする自作のプログラムを回したものです。</p><h2 class="ra-section">出典</h2><ul><li><a class="ra-link" href="https://docs.unity3d.com/ScriptReference/Random.Range.html" rel="noopener">Unity の文書 UnityEngine.Random.Range</a></li><li><a class="ra-link" href="https://docs.unity3d.com/ScriptReference/Random.html" rel="noopener">Unity の文書 UnityEngine.Random</a></li><li><a class="ra-link" href="https://learn.microsoft.com/en-us/dotnet/api/system.random" rel="noopener">.NET の文書 System.Random</a></li><li><a class="ra-link" href="https://learn.microsoft.com/en-us/dotnet/api/system.random.-ctor" rel="noopener">.NET の文書 System.Random のコンストラクター</a></li><li><a class="ra-link" href="https://learn.microsoft.com/en-us/dotnet/api/system.random.next" rel="noopener">.NET の文書 System.Random.Next</a></li><li><a class="ra-link" href="https://github.com/microsoft/referencesource/blob/master/mscorlib/system/random.cs" rel="noopener">Microsoft が公開している System.Random のソース</a></li></ul></article></main>
+<footer class="ra-foot"><p>Facepunch Studios とは関係のない、個人が解析して作った非公式のサイトです。変更点は公式の変更点の一覧を自分の言葉で日本語にしたもので、各回に出典のリンクがあります。アイテムの値はサーバー本体のデータから読んだもので、正しさは保証しません。</p>
+<p>アイコンの一部は <a class="ra-link" href="https://lucide.dev/" rel="noopener">Lucide</a> (ISC License) です。</p></footer>
+</body></html>

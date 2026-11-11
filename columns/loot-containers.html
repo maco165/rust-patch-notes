@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>箱の中身はいつ決まるのか | Rust Analysis</title>
+<meta name="description" content="樽や軍用箱、ロックされた箱の中身が、いつ、どう決まるかをサーバーの処理から確かめました。中身は箱が湧いた時に決まり、開ける人や時刻では変わりません。">
+<meta name="theme-color" content="#f2f4f5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15181a" media="(prefers-color-scheme: dark)">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rust Analysis">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:title" content="箱の中身はいつ決まるのか | Rust Analysis">
+<meta property="og:description" content="樽や軍用箱、ロックされた箱の中身が、いつ、どう決まるかをサーバーの処理から確かめました。中身は箱が湧いた時に決まり、開ける人や時刻では変わりません。">
+<meta property="og:url" content="https://maco165.github.io/rust-patch-notes/columns/loot-containers.html">
+<meta property="og:image" content="https://maco165.github.io/rust-patch-notes/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://maco165.github.io/rust-patch-notes/columns/loot-containers.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+JP:wght@400;600&display=swap">
+<link rel="stylesheet" href="../assets/style.css">
+</head><body>
+<header class="ra-site">
+  <a class="ra-site-name" href="../index.html"><b>Rust</b> Analysis</a>
+  <nav class="ra-nav" aria-label="ページ"><a href="../index.html"><i class="ra-ico ra-ico-month" aria-hidden="true"></i>今月</a><a href="../history.html"><i class="ra-ico ra-ico-history" aria-hidden="true"></i>これまで</a><a href="../genres.html"><i class="ra-ico ra-ico-genres" aria-hidden="true"></i>ジャンル</a><a href="../numbers.html"><i class="ra-ico ra-ico-numbers" aria-hidden="true"></i>数値</a><a href="../items.html"><i class="ra-ico ra-ico-items" aria-hidden="true"></i>アイテム</a><a href="../spec.html"><i class="ra-ico ra-ico-spec" aria-hidden="true"></i>仕様書</a><a href="../columns.html" aria-current="page"><i class="ra-ico ra-ico-columns" aria-hidden="true"></i>コラム</a></nav>
+  <span class="ra-site-meta">データ 2026-11-05 まで</span>
+  <a class="ra-site-link" href="https://github.com/maco165/rust-patch-notes" rel="noopener"><i class="ra-ico ra-ico-github" aria-hidden="true"></i>GitHub</a>
+</header>
+<main class="ra-page"><article class="ra-prose"><p class="ra-patch-meta"><a class="ra-link" href="../columns.html">コラム</a><time datetime="2026-11-12">2026-11-12</time><span><i class="ra-ico ra-ico-monuments" aria-hidden="true"></i> モニュメント・イベント</span><span class="ra-src ra-src-export"><i class="ra-ico ra-ico-export" aria-hidden="true"></i>本体の書き出し 2026-11-07</span></p><h1 class="ra-prose-title">箱の中身はいつ決まるのか</h1><p class="ra-prose-lead">樽や軍用箱、ロックされた箱の中身が、いつ、どう決まるかをサーバーの処理から確かめました。中身は箱が湧いた時に決まり、開ける人や時刻では変わりません。</p><div class="ra-callout">
+<p class="ra-callout-label">結論</p>
+<p class="ra-callout-main">中身は、箱が湧いた時に決まります</p>
+<p>開けた時ではありません。箱がサーバーに現れた瞬間に抽選が終わり、実物のアイテムが箱の中に入ります。開ける人、時刻、場所、近くにいるプレイヤーは、抽選に使われません。</p>
+</div>
+<ul class="ra-facts">
+<li><span class="ra-facts-n">0 回</span><span class="ra-facts-l">開けた時に行われる抽選</span></li>
+<li><span class="ra-facts-n">60〜120 分</span><span class="ra-facts-l">モニュメントの樽・木箱・軍用箱の中身が入れ替わる間隔</span></li>
+<li><span class="ra-facts-n">52%</span><span class="ra-facts-l">エリート箱から銃が 1 丁以上出る確率</span></li>
+</ul>
+<p>もう 1 つ、知っておくと得なことがあります。モニュメントに置かれた樽、木箱、軍用箱などは、誰も触っていなくても、時間が来ると中身が丸ごと入れ替わります。道ばたのジャンクの山の箱は別で、入れ替わる前に山ごと消えます (あとの「中身が入れ替わる時間」を見てください)。</p>
+<p>この記事は、2026-11-07 の版の PC 版のサーバーの処理とデータを読んだ結果です。箱の名前は日本語で書き、最初に出る所にデータの中の名前 (プレハブ名) を添えます。</p>
+<h2 class="ra-section">箱の一生</h2>
+<ol class="ra-timeline" aria-label="箱が湧いてから消えるまで">
+<li class="ra-timeline-hot" style="--w:16"><strong>湧く</strong><span>一瞬</span><small>ここで抽選が終わり、中身が入る</small></li>
+<li style="--w:40"><strong>置かれている</strong><span>60〜120 分</span><small>中身は変わらない</small></li>
+<li style="--w:22"><strong>入れ替え</strong><span>一瞬</span><small>中身を全部消して、抽選し直す</small></li>
+<li style="--w:22"><strong>空にされる</strong><span>—</span><small>箱が消え、後で新しい箱が湧く</small></li>
+</ol>
+<ul><li><strong>湧く:</strong> 箱 (<code>LootContainer</code>) がサーバーに現れた時に、抽選をして中身を入れます。サーバーの再起動で箱がセーブから戻る時は、抽選せずにセーブされた中身を戻します。</li><li><strong>開ける:</strong> 開ける処理がするのは、最初に開けた人の記録と、アイテムに「拾った物」の印を付けることだけです。抽選はしません。</li><li><strong>入れ替え:</strong> 多くの箱は、湧いた時に「次の入れ替えまでの時間」を乱数で決めます。時間が来ると、中身を全部消して抽選し直し、また次の時間を決めます。開けたかどうかは見ていません。</li><li><strong>空にする:</strong> 中身を全部取ると、箱は消えます。新しい箱を湧かせるのは別の仕組み (<code>SpawnGroup</code>) で、湧いた箱はまた最初から抽選します。道ばたのジャンクの山の箱は、その場では湧き直しません。</li></ul>
+<h3>抽選に使うもの、使わないもの</h3>
+<div class="ra-uses">
+<div><p class="ra-uses-head ra-uses-yes">使うもの</p><ul><li>箱の種類ごとの設定 (枠の一覧、スクラップの数)</li><li>抽選の表 (重みと個数)</li><li>乱数</li><li>サーバーの時代の設定</li></ul></div>
+<div><p class="ra-uses-head ra-uses-no">使わないもの</p><ul><li>開ける人</li><li>時刻、ワイプからの日数</li><li>箱の場所</li><li>近くのプレイヤー、サーバーの人数</li><li>前に出た中身</li><li>開け方、壊し方</li></ul></div>
+</div>
+<p>サーバーの人数が使われるのは、空にされた箱が湧き直すまでの速さだけです。中身には関わりません。</p>
+<h2 class="ra-section">中身の決め方</h2>
+<p>抽選は 2 段になっています。箱ごとの「枠」と、枠が引く「表」です。</p>
+<pre class="ra-code">箱が湧いた時:
+  箱の枠を上から順に見る
+    枠ごとに、決まった回数だけ:
+      0 以上 1 以下の乱数が、枠の確率以下なら、その枠の表を 1 回引く
+  スクラップを、箱ごとに決まった数だけ入れる
+
+表を 1 回引く:
+  下位の表が並んでいれば、重みに比例して 1 つ選び、その表を引く (葉に着くまで繰り返す)
+  アイテムが並んでいれば (葉)、並んでいるアイテムを全部入れる</pre>
+<h3>枠: 軍用箱の例</h3>
+<p>軍用箱 (<code>crate_normal</code>) には枠が 8 つあります。枠は互いに関係なく引かれます。</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">枠</th><th scope="col">引く回数</th><th scope="col">1 回ごとの確率</th><th scope="col">中身</th></tr></thead><tbody><tr><td>部品の表</td><td>1</td><td>100%</td><td>SMG ボディ、ライフルボディ、テックトラッシュ、金属パイプ、高品質金属、タレットの部品のどれか</td></tr><tr><td>作業台 Lv2 の品</td><td>1</td><td>40%</td><td>96 種から 1 つ (トンプソン、セミオートライフル、ロケットランチャーなど)</td></tr><tr><td>設計図のページ</td><td>1</td><td>10%</td><td>設計図のページ 1</td></tr><tr><td>ヘビーヒューズ</td><td>1</td><td>6%</td><td>ヘビーヒューズ 1</td></tr><tr><td>大型バックパック</td><td>1</td><td>5%</td><td>大型バックパック 1</td></tr><tr><td>金属のアーマーインサート</td><td>1</td><td>5%</td><td>金属のアーマーインサート 1</td></tr><tr><td>作業台アップグレード</td><td>1</td><td>5%</td><td>3 種から 1 つ</td></tr><tr><td>補給シグナル</td><td>1</td><td>1%</td><td>補給シグナル 1</td></tr></tbody></table></div>
+<p>これにスクラップ 8 が必ず入ります。1 箱に入る物は、スクラップを含めて平均 2.7 種類です。</p>
+<h3>表: 重みで 1 つ選ぶ</h3>
+<p>表 (<code>LootSpawn</code>) は木になっています。軍用箱の「部品の表」は、6 つの下位の表を重みで選びます。重みの合計は 600 です。</p>
+<ol class="ra-gbars ra-plain" style="--max:20" aria-label="軍用箱の部品の表で選ばれる確率"><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">SMG ボディ</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:20"></span></span><span class="ra-gbar-n">20%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">テックトラッシュ</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:16.7"></span></span><span class="ra-gbar-n">17%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">金属パイプ</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:16.7"></span></span><span class="ra-gbar-n">17%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">高品質金属</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:16.7"></span></span><span class="ra-gbar-n">17%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">タレットの部品</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:16.7"></span></span><span class="ra-gbar-n">17%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">ライフルボディ</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:13.3"></span></span><span class="ra-gbar-n">13%</span></span></li></ol>
+<p>「タレットの部品」はさらに下位の表で、照準コンピューター (重み 55)、CCTV カメラ (45)、オートタレット (5) から 1 つを選びます。部品の表からオートタレットが出る確率は、100/600 × 5/105 = 0.79% です。</p>
+<p>表は全部で 1,327 個あり、そのうち 1,098 個がアイテムの並んだ葉です。葉に着くと、並んでいるアイテムは全部入ります。たとえば「Uzi と弾」の葉は、Uzi 1 丁とピストル弾 15 発を一緒に入れます。</p>
+<h3>呼んでいる乱数</h3>
+<p>抽選が使う乱数は、Unity に元からある <code>UnityEngine.Random.Range</code> だけです。</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">決めること</th><th scope="col">呼んでいるメソッド</th><th scope="col">性質</th></tr></thead><tbody><tr><td>枠が当たるか</td><td><code>UnityEngine.Random.Range(0f, 1f)</code></td><td>0 以上 1 以下の実数。枠の確率以下なら当たり</td></tr><tr><td>下位の表のどれか</td><td><code>UnityEngine.Random.Range(0, 重みの合計)</code></td><td>整数の版。最小を含み、最大を含まない</td></tr><tr><td>個数</td><td><code>UnityEngine.Random.Range(最小, 最大)</code></td><td>実数の版。結果の小数を切り捨てて使う</td></tr><tr><td>武器の耐久</td><td><code>UnityEngine.Random.Range(下限, 上限)</code></td><td>実数の版。最大の耐久に掛ける</td></tr><tr><td>次の入れ替えまでの秒数</td><td><code>UnityEngine.Random.Range(最小, 最大)</code></td><td>実数の版</td></tr></tbody></table></div>
+<p><code>UnityEngine.Random</code> の状態は、サーバー全体で 1 つを共有します。ほかの処理も同じ乱数を使うので、箱が引く時点の状態は外から読めません。</p>
+<h2 class="ra-section">意外だった 4 つのこと</h2>
+<h3>個数の「最大」は出ない</h3>
+<p>個数は「最小から最大までの実数を取り、小数を切り捨てる」で決まります。切り捨てるので、最大の値になるのは乱数がちょうど最大だった時だけで、起きないと見てかまいません。</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">アイテム</th><th scope="col">表に書かれた個数</th><th scope="col">実際に出る個数</th></tr></thead><tbody><tr><td>テックトラッシュ (軍用箱の部品の表)</td><td>2〜4</td><td>2 か 3 (半々)</td></tr><tr><td>金属パイプ (同)</td><td>5〜6</td><td>必ず 5</td></tr><tr><td>高品質金属 (同)</td><td>15〜25</td><td>15〜24</td></tr><tr><td>MLRS ロケット弾 (エリート箱の枠)</td><td>1〜2</td><td>必ず 1</td></tr></tbody></table></div>
+<p>範囲が書かれているのは一部で、表の中のアイテム 1,239 行のうち 89 行です。残りは決まった数です。</p>
+<h3>設計図になる「確率」は無い</h3>
+<p>設計図として出るかどうかは、アイテムごとに決まっています。確率で切り替える処理はありません。設計図として出る設定のアイテムは 12 種 (バーベキュー、ピアノ、ミニコプターなど) だけで、武器や爆発物は実物で出ます。</p>
+<h3>同じ物の引き直しは無い</h3>
+<p>同じ物が 2 回当たっても、引き直しません。重ねられる物は 1 つの束になり、武器のように重ねられない物は 2 枠を使います。箱の枠が足りなくなると、入りきらない物は消えます。実際に足りなくなるのはブラッドレーの箱 (<code>bradley_crate</code>) くらいで、試行では 6% の箱で何かが消えました。</p>
+<h3>回数が 0 の枠がある</h3>
+<p>木箱 (<code>crate_normal_2</code>) には「タレットの部品、確率 4%」の枠がありますが、引く回数が 0 です。この枠は当たりません。木箱から照準コンピューターと CCTV カメラは出ません。</p>
+<h2 class="ra-section">箱ごとの確率</h2>
+<p>確率は「1 箱に 1 つ以上入っている確率」です。枠と表の重みから計算し、同じ動きをする自作のプログラムで 10 万箱を試して、差が 0.5 ポイント以内であることを確かめました。ブラッドレーの箱だけは枠があふれるので、試行の値を載せています。箱の見た目とプレハブ名の対応は、名前からの推定です。</p>
+<h3>銃が 1 丁以上入っている確率</h3>
+<ol class="ra-gbars ra-plain" style="--max:100" aria-label="箱ごとの、銃が 1 丁以上入っている確率"><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">ロックされた箱</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:100"></span></span><span class="ra-gbar-n">100%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">補給物資</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:100"></span></span><span class="ra-gbar-n">100%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">エリート箱</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:51.9"></span></span><span class="ra-gbar-n">52%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">ヘリの箱</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:28.2"></span></span><span class="ra-gbar-n">28%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">ブラッドレー</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:25"></span></span><span class="ra-gbar-n">25%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">水中 (上級)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:4.4"></span></span><span class="ra-gbar-n">4.4%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">軍用箱</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:4.2"></span></span><span class="ra-gbar-n">4.2%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">木箱</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:1.8"></span></span><span class="ra-gbar-n">1.8%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">樽・道具箱</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:0"></span></span><span class="ra-gbar-n">0%</span></span></li></ol>
+<p>10 万箱の試行の値です (種 1)。ヘリの箱とブラッドレーの箱は 1 箱あたりで、ヘリは最大 4 箱、ブラッドレーは最大 3 箱を落とします。銃には、ライフル、SMG、ピストル、ショットガン、機関銃、ロケットランチャー、火炎放射器を数えています。</p>
+<h3>時限爆弾 (C4) が入っている確率</h3>
+<ol class="ra-gbars ra-plain" style="--max:36" aria-label="箱ごとの、時限爆弾 (C4) が 1 つ以上入っている確率"><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">ブラッドレー</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:35.7"></span></span><span class="ra-gbar-n">36%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">補給物資</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:26.5"></span></span><span class="ra-gbar-n">27%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">ヘリの箱</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:25.7"></span></span><span class="ra-gbar-n">26%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">ロックされた箱</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:9.6"></span></span><span class="ra-gbar-n">9.6%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">エリート箱</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:1.9"></span></span><span class="ra-gbar-n">1.9%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">軍用箱・木箱</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:0"></span></span><span class="ra-gbar-n">0%</span></span></li></ol>
+<p>軍用箱と木箱の表には、時限爆弾 (C4) とロケット弾がありません。何箱開けても出ません。</p>
+<h3>道ばたと町の箱</h3>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">箱</th><th scope="col">プレハブ名</th><th scope="col">スクラップ</th><th scope="col">主な中身 (1 箱に 1 つ以上の確率)</th></tr></thead><tbody><tr><td>樽</td><td><code>loot_barrel_1</code>、<code>loot_barrel_2</code></td><td>2</td><td>設計図の断片 16.7%、ロープ 15.4%、金属の刃 15.4%、空のプロパンタンク・防水シート・裁縫キット 各 8.0%、歯車や金属ばねなどの部品 各 1.4%</td></tr><tr><td>石油の樽</td><td><code>oil_barrel</code></td><td>0</td><td>原油 15〜19 と低品質燃料 5〜9 (必ず両方)</td></tr><tr><td>基本の木箱</td><td><code>crate_basic</code></td><td>3</td><td>設計図の断片 20%、作業台なしで作れる品 31 種 各 4.8%</td></tr><tr><td>木箱</td><td><code>crate_normal_2</code></td><td>5</td><td>設計図の断片 20% (2 個)、歯車・金属パイプ・金属ばね・道路標識・板金・セミオートボディ・電気ヒューズ 各 14.3%、ハズマットスーツ 4.0%、ヘビーヒューズ 3.0%</td></tr><tr><td>道具箱</td><td><code>crate_tools</code></td><td>5</td><td>手斧 7.8%、つるはし 7.8%、照準コンピューター 3.1%、CCTV カメラ 2.5%、チェーンソー 1.0%、削岩機 1.0%</td></tr><tr><td>医療の木箱</td><td><code>crate_normal_2_medical</code></td><td>0</td><td>大型医療キット 50%、包帯 40%、医療用注射器 10% のどれか 1 つ</td></tr><tr><td>車両部品の箱</td><td><code>vehicle_parts</code></td><td>8</td><td>低品質のピストン・スパークプラグ・バルブ 各 40.8%、キャブレター・クランクシャフト 各 28.4%</td></tr></tbody></table></div>
+<p>木箱の「作業台 Lv1 の品」の枠 (40%) からは、リボルバー、水道管ショットガン、ダブルバレルショットガン、手製の SMG、サッチェルチャージ、ビーンカングレネードなどが、それぞれ 0.44% で出ます。</p>
+<h3>軍用箱とエリート箱</h3>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">アイテム</th><th scope="col">軍用箱 (<code>crate_normal</code>)</th><th scope="col">エリート箱 (<code>crate_elite</code>)</th></tr></thead><tbody><tr><td>スクラップ</td><td>8 (必ず)</td><td>25 (必ず)</td></tr><tr><td>SMG ボディ</td><td>20.0%</td><td>32.6%</td></tr><tr><td>ライフルボディ</td><td>13.3%</td><td>22.7%</td></tr><tr><td>テックトラッシュ</td><td>16.7% (2〜3 個)</td><td>27.7%</td></tr><tr><td>高品質金属</td><td>16.7% (15〜24 個)</td><td>27.7%</td></tr><tr><td>照準コンピューター</td><td>8.7%</td><td>15.3%</td></tr><tr><td>CCTV カメラ</td><td>7.1%</td><td>12.6%</td></tr><tr><td>オートタレット</td><td>1.2%</td><td>2.2%</td></tr><tr><td>補給シグナル</td><td>1.0%</td><td>3.7%</td></tr><tr><td>MLRS ロケット弾</td><td>出ない</td><td>20.0% (1 発)</td></tr><tr><td>設計図の本</td><td>出ない</td><td>10.0%</td></tr><tr><td>Uzi</td><td>出ない</td><td>5.0%</td></tr><tr><td>アサルトライフル</td><td>出ない</td><td>3.9%</td></tr><tr><td>ボルトアクションライフル</td><td>出ない</td><td>3.9%</td></tr><tr><td>MP5A4</td><td>出ない</td><td>3.9%</td></tr><tr><td>トンプソン</td><td>0.42%</td><td>2.8%</td></tr><tr><td>カスタム SMG</td><td>0.42%</td><td>2.8%</td></tr><tr><td>セミオートライフル</td><td>0.42%</td><td>0.78%</td></tr><tr><td>ロケットランチャー</td><td>0.42%</td><td>0.78%</td></tr><tr><td>時限爆弾 (C4)</td><td>出ない</td><td>1.9%</td></tr><tr><td>爆薬</td><td>出ない</td><td>1.9%</td></tr></tbody></table></div>
+<p>エリート箱は、「部品・作業台レベル 2 の品・補給シグナルのどれか 1 つ」を選ぶ表を 1 回、それより良い表を 2 回、さらに武器の表を 65% で引きます。枠が多い分、物の数も多く、スクラップを含めて平均 5.5 種類が入ります。</p>
+<h3>イベントの箱</h3>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">アイテム</th><th scope="col">ロックされた箱 (<code>codelockedhackablecrate</code>)</th><th scope="col">補給物資 (<code>supply_drop</code>)</th><th scope="col">ヘリの箱 (<code>heli_crate</code>)</th><th scope="col">ブラッドレーの箱 (<code>bradley_crate</code>)</th></tr></thead><tbody><tr><td>アサルトライフル</td><td>27.8%</td><td>出ない</td><td>2.2%</td><td>0.9%</td></tr><tr><td>LR-300 アサルトライフル</td><td>17.6%</td><td>3.8%</td><td>0.9%</td><td>0.5%</td></tr><tr><td>ボルトアクションライフル</td><td>16.7%</td><td>出ない</td><td>2.2%</td><td>0.8%</td></tr><tr><td>L96 ライフル</td><td>5.9%</td><td>出ない</td><td>0.6%</td><td>8.8%</td></tr><tr><td>M249</td><td>出ない</td><td>出ない</td><td>10.0%</td><td>8.3%</td></tr><tr><td>ミニガン</td><td>10.0%</td><td>出ない</td><td>出ない</td><td>出ない</td></tr><tr><td>ロケットランチャー</td><td>7.1%</td><td>出ない</td><td>出ない</td><td>出ない</td></tr><tr><td>時限爆弾 (C4)</td><td>9.6%</td><td>26.5%</td><td>25.7%</td><td>35.7%</td></tr><tr><td>ロケット弾</td><td>5.6%</td><td>出ない</td><td>25.0% (3 発)</td><td>出ない</td></tr><tr><td>MLRS ロケット弾</td><td>出ない</td><td>出ない</td><td>15.0% (2 発)</td><td>97.6%</td></tr><tr><td>炸裂 5.56 ライフル弾</td><td>33.9%</td><td>12.6%</td><td>15.0%</td><td>18.7%</td></tr><tr><td>サッチェルチャージ</td><td>8.6%</td><td>49.0%</td><td>出ない</td><td>出ない</td></tr><tr><td>オートタレット</td><td>15.9%</td><td>出ない</td><td>出ない</td><td>4.6%</td></tr><tr><td>設計図の本</td><td>100% (2 個)</td><td>出ない</td><td>出ない</td><td>出ない</td></tr><tr><td>設計図のページ</td><td>出ない</td><td>100% (2 個)</td><td>出ない</td><td>出ない</td></tr></tbody></table></div>
+<ul><li><strong>ロックされた箱</strong>は、良いライフルの枠 (アサルトライフル、LR-300、Uzi、M16A2 など 8 種から 1 つ) が必ず当たるので、銃が必ず入ります。中身が決まるのは箱が置かれた時です。入れ替えの時間には無限大が入っているので、ハッキングの 15 分の間に入れ替わることは無いと見ています (「分からないこと」を見てください)。オイルリグの箱 (<code>codelockedhackablecrate_oilrig</code>) も同じ枠です。</li><li><strong>補給物資</strong>は、ポンプショットガン・セミオートライフル・カスタム SMG・トンプソンがそれぞれ 39.0% で、どれかの銃が必ず入ります。</li><li><strong>ヘリの箱</strong>は 1 つの表を 1 回引くだけなので、箱ごとの当たり外れが大きくなります。4 箱のうち少なくとも 1 箱に時限爆弾 (C4) が入っている確率は、1 − (1 − 0.257)⁴ = 69.5% です。</li><li><strong>ブラッドレーの箱</strong>は、MLRS ロケット弾の枠とタレットの部品の枠が必ず当たります。インベントリの枠が 12 しかなく、最後に引く MLRS ロケット弾が入りきらずに消えることがあるため、97.6% になっています (試行の値)。</li></ul>
+<h2 class="ra-section">放っておくと入れ替わる</h2>
+<ul class="ra-facts">
+<li><span class="ra-facts-n">15〜30 分</span><span class="ra-facts-l">食料箱、ゴミの山</span></li>
+<li><span class="ra-facts-n">30〜60 分</span><span class="ra-facts-l">石油の樽</span></li>
+<li><span class="ra-facts-n">60〜120 分</span><span class="ra-facts-l">樽、木箱、軍用箱、道具箱、水中の箱など</span></li>
+</ul>
+<p>入れ替えの時間は、箱の種類ごとに決まった範囲から乱数で選ばれます。時間が来ると、箱は中身を全部消して、最初と同じ抽選をします。</p>
+<ul><li><strong>誰も開けていない箱も入れ替わります。</strong> 入れ替えは、開けたかどうかを見ていません。</li><li><strong>少しだけ残した箱は、消えずに残ります。</strong> そして次の入れ替えで、残りが消えて新しい中身になります。</li><li><strong>道ばたのジャンクの山の箱は、入れ替わる前に消えます。</strong> ジャンクの山 (<code>junkpile_a</code>〜<code>j</code>) は、湧いてから約 30 分たつと、15 m 以内にプレイヤーがいなければ、樽や木箱ごと沈んで消えます。箱から 1 つでも取った後は、15 m 以内に誰もいない状態が 90 秒続いた時点で消えます。山の箱 (樽、木箱、道具箱、車両部品の箱、石油の樽) は、その場では湧き直しません。入れ替えに届くのは、15〜30 分の食料箱だけです。</li><li><strong>エリート箱、ロックされた箱、補給物資、ヘリとブラッドレーの箱</strong>は、入れ替えの時間に無限大が入っていて、入れ替えない設定と読めます。</li></ul>
+<h2 class="ra-section">拾った武器の耐久</h2>
+<p>町と道ばたの箱 (樽、木箱、軍用箱、エリート箱など) から出た武器は、入れた直後に耐久が振り直されます。範囲はアイテムごとに決まっています。</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">武器</th><th scope="col">耐久 (最大に対する割合)</th></tr></thead><tbody><tr><td>アサルトライフル、MP5A4、トンプソン、カスタム SMG、Uzi、セミオートライフル、リボルバーなど 30 種</td><td>10〜20%</td></tr><tr><td>M92 ピストル</td><td>20〜30%</td></tr><tr><td>LR-300 アサルトライフル</td><td>50〜100%</td></tr><tr><td>パイソンリボルバー、ダブルバレルショットガン</td><td>10%</td></tr><tr><td>ボルトアクションライフル、L96 ライフル</td><td>1〜5%</td></tr><tr><td>ポンプショットガン、SPAS-12 ショットガン、M4 ショットガン</td><td>1〜3%</td></tr></tbody></table></div>
+<p>ロックされた箱、補給物資、ヘリとブラッドレーの箱では、この振り直しをしません。同じアサルトライフルでも、エリート箱から出た物は壊れかけで、ロックされた箱から出た物はそうではありません。</p>
+<h2 class="ra-section">同じ動きをするプログラム</h2>
+<p>読んで分かった動きを、自分で一から書いたプログラムです。ゲームのコードは写していません。見本として、軍用箱の「部品の表」と小さな枠だけを入れてあります (作業台 Lv2 の品の枠と、作業台アップグレードの枠は省いています)。</p>
+<pre class="ra-code ra-code-src">def roll_amount(amount, maximum, rng):
+    """最小から最大までの実数を取り、小数を切り捨てる。最大そのものは出ない"""
+    if maximum &gt; 0 and maximum &gt; amount:
+        return max(1, int(rng.uniform(amount, maximum)))
+    return max(1, int(amount))
+
+def spawn(table, rng, box):
+    """表を 1 回引く。下位の表があれば重みで 1 つ選び、葉に着いたら全部入れる"""
+    subs = TABLES.get(table)
+    if subs:
+        left = sum(weight for weight, _ in subs)
+        pick = rng.randrange(left)
+        for weight, name in subs:
+            left -= weight
+            if pick &gt;= left:
+                spawn(name, rng, box)
+                return
+    for item, amount, maximum in ITEMS.get(table, []):
+        box[item] += roll_amount(amount, maximum, rng)
+
+def fill(rng):
+    """1 箱。開ける人も時刻も場所も入ってこない。表と乱数だけ"""
+    box = collections.Counter()
+    for table, tries, chance in SLOTS:
+        for _ in range(tries):
+            if rng.random() &lt;= chance:
+                spawn(table, rng, box)
+    box["scrap"] += SCRAP
+    return box</pre>
+<p><code>fill</code> が受け取るのは乱数のもとだけです。開ける人や時刻を渡す場所がありません。</p>
+<h3>10 万箱を作った結果</h3>
+<p>このプログラムで 10 万箱を作りました (乱数の種は 1)。</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">アイテム</th><th scope="col">1 つ以上出る確率 (計算)</th><th scope="col">出た割合 (10 万箱)</th><th scope="col">個数</th></tr></thead><tbody><tr><td>スクラップ</td><td>100%</td><td>100%</td><td>8</td></tr><tr><td>SMG ボディ</td><td>20.00%</td><td>19.96%</td><td>1</td></tr><tr><td>テックトラッシュ</td><td>16.67%</td><td>16.54%</td><td>2〜3</td></tr><tr><td>金属パイプ</td><td>16.67%</td><td>16.67%</td><td>5</td></tr><tr><td>高品質金属</td><td>16.67%</td><td>16.79%</td><td>15〜24</td></tr><tr><td>ライフルボディ</td><td>13.33%</td><td>13.39%</td><td>1</td></tr><tr><td>設計図のページ</td><td>10.00%</td><td>10.12%</td><td>1</td></tr><tr><td>照準コンピューター</td><td>8.73%</td><td>8.72%</td><td>1</td></tr><tr><td>CCTV カメラ</td><td>7.14%</td><td>7.14%</td><td>1</td></tr><tr><td>ヘビーヒューズ</td><td>6.00%</td><td>6.00%</td><td>1</td></tr><tr><td>大型バックパック</td><td>5.00%</td><td>4.98%</td><td>1</td></tr><tr><td>金属のアーマーインサート</td><td>5.00%</td><td>4.98%</td><td>1</td></tr><tr><td>補給シグナル</td><td>1.00%</td><td>1.03%</td><td>1</td></tr><tr><td>オートタレット</td><td>0.79%</td><td>0.80%</td><td>1</td></tr></tbody></table></div>
+<p>計算は「1 − (1 − 枠の確率 × 表からその物が出る確率) を、引く回数だけ掛けたもの」です。テックトラッシュの個数は、表では 2〜4 ですが、出たのは 2 が 50.1%、3 が 49.9%、4 は 0 回でした。</p>
+<p>省いた 2 つの枠にも入っている物 (オートタレットなど) は、実物の軍用箱の数字 (上の表の 1.2%) より小さくなっています。</p>
+<p>プログラムの全体は <a class="ra-link" href="loot-containers.py">loot-containers.py</a> に置いてあります。<code>python3 loot-containers.py</code> で同じ数字が出ます。</p>
+<h2 class="ra-section">よく聞く話を確かめる</h2>
+<div class="ra-myth"><p class="ra-myth-q">「開ける人によって中身が変わる」</p><p class="ra-myth-a"><span class="ra-verdict">変わらない</span>中身は箱が湧いた時に入っていて、開ける処理は抽選をしません。誰が開けても、同じ箱からは同じ物が出ます。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">「人が少ない時間帯は良い物が出る」</p><p class="ra-myth-a"><span class="ra-verdict">変わらない</span>抽選は時刻もサーバーの人数も使いません。人数が関わるのは、空にされた箱が湧き直すまでの速さだけです。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">「ロックされた箱は、ハッキングが終わった時に中身が決まる」</p><p class="ra-myth-a"><span class="ra-verdict">置かれた時に決まっている</span>ロックされた箱も、現れた時に抽選を済ませます。15 分は、開けられるようになるまでの待ち時間です。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">「樽は、壊し方で落ちる物が変わる」</p><p class="ra-myth-a"><span class="ra-verdict">変わらない</span>樽の中身も湧いた時に決まっていて、壊すと入っていた物がそのまま落ちます。スクラップが増える効果の追加分だけは、壊した時に足されます。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">「少しだけ残しておくと、その箱はずっとそのまま」</p><p class="ra-myth-a"><span class="ra-verdict">時間が来れば入れ替わる</span>モニュメントの箱は、残しても消えませんが、60〜120 分の入れ替えで、残りが消えて新しい中身になります。道ばたのジャンクの山の箱は、1 つでも取ると、人が離れて 90 秒で山ごと消えます。空にした箱が何分で湧き直すかは、まだ調べていません。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">「良い物が出た箱の場所は、次も良い物が出る」</p><p class="ra-myth-a"><span class="ra-verdict">関係ない</span>抽選は箱の場所も、前に出た中身も使いません。毎回、同じ表から引き直すだけです。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">「軍用箱を回り続ければ、いつか時限爆弾 (C4) が出る」</p><p class="ra-myth-a"><span class="ra-verdict">出ない</span>軍用箱の表に、時限爆弾 (C4) はありません。箱から狙うなら、ブラッドレーの箱 (36%)、補給物資 (27%)、ヘリの箱 (26%)、ロックされた箱 (9.6%)、エリート箱 (1.9%) です。</p></div>
+<h2 class="ra-section">分からないこと</h2>
+<ul><li><strong>入れ替えの時間が無限大の箱。</strong> エリート箱やロックされた箱は、入れ替えの時間に無限大が入っています。タイマーは「予約の時刻が来たら動く」作りなので、無限大なら動かないと読めます。ただし、無限大を渡された Unity の乱数が何を返すかは、Unity 本体の中なので確かめていません。</li><li><strong>湧き直しの間隔と場所。</strong> 空にされた箱が何分で湧き直すか、どの場所にどの箱が湧くかは、モニュメントのデータを読んでいないので分かりません。</li><li><strong>ゲームモードの上乗せ。</strong> 抽選の重みには、ゲームモードごとの上乗せを足す仕組みがあります。通常のモードは上乗せが無く、この記事の数字はその場合です。サーバーの時代の設定は既定 (制限なし) としています。ハードコアやプリミティブなどのモードでは変わります。</li><li><strong>箱の見た目との対応。</strong> プレハブ名と、ゲームの中の箱の見た目・名前の対応は、プレハブ名から推定したものです。</li><li><strong>この記事の対象。</strong> 2026-11-07 の版です。表の重みはアップデートでよく変わります。</li></ul>
+<h2 class="ra-section">調べ方</h2>
+<p>サーバー本体の処理 (箱と抽選の表のクラスの中間コード) を読み、箱の設定 105 個と抽選の表 1,327 個をデータのファイルから読みました。サーバーは起動していません。枠の確率、重み、個数、スクラップの数、入れ替えの時間、耐久の範囲は、どれも読んだ値です。</p>
+<p>「1 箱に 1 つ以上出る確率」は、読んだ値から計算したものです。「銃が 1 丁以上」とブラッドレーの箱の数字、物の種類の平均は、同じ動きをする自作のプログラムで 10 万箱を試した値です (種 1)。計算と試行は、ブラッドレーの箱を除いて 0.5 ポイント以内で合いました。</p>
+<p>ゲームの中で実際に箱を開けて数えた結果ではありません。処理とデータがそうなっている、という確認です。</p><h2 class="ra-section">出典</h2><ul><li><a class="ra-link" href="https://docs.unity3d.com/ScriptReference/Random.Range.html" rel="noopener">Unity の文書 UnityEngine.Random.Range</a></li><li><a class="ra-link" href="https://docs.unity3d.com/ScriptReference/Random.html" rel="noopener">Unity の文書 UnityEngine.Random</a></li><li><a class="ra-link" href="https://docs.unity3d.com/ScriptReference/ScriptableObject.html" rel="noopener">Unity の文書 ScriptableObject</a></li></ul></article></main>
+<footer class="ra-foot"><p>Facepunch Studios とは関係のない、個人が解析して作った非公式のサイトです。変更点は公式の変更点の一覧を自分の言葉で日本語にしたもので、各回に出典のリンクがあります。アイテムの値はサーバー本体のデータから読んだもので、正しさは保証しません。</p>
+<p>アイコンの一部は <a class="ra-link" href="https://lucide.dev/" rel="noopener">Lucide</a> (ISC License) です。</p></footer>
+</body></html>
