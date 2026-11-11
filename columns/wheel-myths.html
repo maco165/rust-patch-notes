@@ -60,12 +60,42 @@
   当たりのマス = 0 番から 24 番のうち、等しい確率で 1 つ
   止まる角度と、回る時間の長さを決める
   賭けを締め切る</pre>
+<h3>実際のコードが呼んでいる乱数</h3>
+<p>回し始めの処理は、乱数を次の順に呼んでいます。どれも Unity と .NET に元からあるメソッドで、Rust が独自に作った乱数ではありません。</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">順</th><th scope="col">呼んでいるメソッド</th><th scope="col">何を決めるか</th></tr></thead><tbody><tr><td>1</td><td><code>UnityEngine.Random.Range(int.MinValue, int.MaxValue)</code></td><td>種。Unity の乱数から整数を 1 つ取る</td></tr><tr><td>2</td><td><code>new System.Random(種)</code></td><td>その種で、.NET の乱数を新しく作る</td></tr><tr><td>3</td><td><code>Next(0, マスの数)</code></td><td>当たりのマス。0 以上 25 未満の整数、つまり 0〜24</td></tr><tr><td>4</td><td><code>NextDouble()</code></td><td>止まる角度のずれ (±6 度)。0 以上 1 未満の小数から作る</td></tr><tr><td>5</td><td><code>NextDouble()</code></td><td>回る時間の長さ (13〜18 秒)</td></tr></tbody></table></div>
+<p>それぞれの性質は、公式の文書に書かれています。</p>
+<ul><li><strong><code>UnityEngine.Random</code></strong> は Xorshift 128 という方式で、状態はゲーム全体で 1 つを共有します。サーバーの中のほかの処理も同じ乱数を使うので、ルーレットが種を取る時点の状態は、ほかの処理がそれまでに何回呼んだかで変わります。</li><li><strong><code>System.Random(種)</code></strong> は、同じ種からは同じ数の並びを作ります。ルーレットは回すたびに新しい種で作り直すので、前の回の並びの続きにはなりません。</li><li><strong><code>Next(最小, 最大)</code></strong> は、最小を含み、最大を含みません。<code>Next(0, 25)</code> が返すのは 0〜24 で、25 マスのどれかがそのまま選ばれます。</li><li><strong><code>NextDouble()</code></strong> は 0 以上 1 未満の小数を返します。角度のずれと回る時間に使われるだけで、当たりのマスには関わりません。</li></ul>
+<p>当たりのマスを決めているのは 3 番の 1 行だけです。その前後に、前の結果や賭けの中身を混ぜる処理はありません。</p>
 <h3>25 マスの並び</h3>
 <div class="ra-strip" role="img" aria-label="25 マスの並び。1 が 12 マス、3 が 6 マス、5 が 4 マス、10 が 2 マス、20 が 1 マス"><span>3</span><span>1</span><span>10</span><span>1</span><span>3</span><span>1</span><span>5</span><span>1</span><span>5</span><span>3</span><span>1</span><span>10</span><span>1</span><span>3</span><span>1</span><span>5</span><span>1</span><span>3</span><span>1</span><span class="ra-strip-hot">20</span><span>1</span><span>3</span><span>1</span><span>5</span><span>1</span></div>
 <p>1 は 1 つおきに入り、20 は 1 マスだけです。調べた 7 台は、すべて同じ並びでした。</p>
 <h3>数字ごとの当たる確率</h3>
 <ol class="ra-gbars ra-plain" style="--max:48" aria-label="数字ごとの当たる確率"><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">1 (12 マス)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:48"></span></span><span class="ra-gbar-n">48%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">3 (6 マス)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:24"></span></span><span class="ra-gbar-n">24%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">5 (4 マス)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:16"></span></span><span class="ra-gbar-n">16%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">10 (2 マス)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:8"></span></span><span class="ra-gbar-n">8%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">20 (1 マス)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:4"></span></span><span class="ra-gbar-n">4%</span></span></li></ol>
 <p>当たりやすさを決めるのは、その数字のマスの数だけです。</p>
+<h2 class="ra-section">同じ動きをするプログラム</h2>
+<p>読んで分かった動きを、自分で一から書いたプログラムです。ゲームのコードは写していません。当たりを決める部分と、配当の部分はこれだけです。</p>
+<pre class="ra-code ra-code-src">import random
+
+# 25 マスの並び。数字は当たったときの倍率
+SEGMENTS = [3, 1, 10, 1, 3, 1, 5, 1, 5, 3, 1, 10, 1, 3, 1, 5, 1, 3, 1, 20, 1, 3, 1, 5, 1]
+
+def spin(source):
+    """1 回分。新しい種で乱数を作り直し、25 マスから等しい確率で 1 つ選ぶ"""
+    fresh = random.Random(source.getrandbits(32))
+    return fresh.randrange(len(SEGMENTS))
+
+def payout(bets, segment):
+    """bets は {数字: 賭けた額}。当たった数字の賭けだけが (1 + 数字) 倍で戻る"""
+    number = SEGMENTS[segment]
+    return bets.get(number, 0) * (1 + number)</pre>
+<p>上の表との対応は、<code>source.getrandbits(32)</code> が 1 番 (種を取る)、<code>random.Random(...)</code> が 2 番 (乱数を作り直す)、<code>randrange(25)</code> が 3 番 (マスを選ぶ) です。乱数の方式は Python のものなので、出る数の並びはゲームと同じにはなりませんが、選び方は同じです。</p>
+<p><code>spin</code> の中に、前の回の結果・時刻・賭けの中身を受け取る場所がありません。入ってくるのは乱数のもとだけです。パターンが生まれる余地が無いことが、形からも分かります。</p>
+<h3>10 万回回した結果</h3>
+<p>このプログラムを 10 万回回し、数字ごとに 100 ずつ賭け続けた結果です (乱数の種は 1)。</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">数字</th><th scope="col">当たる確率 (計算)</th><th scope="col">当たった割合 (10 万回)</th><th scope="col">平均の戻り (計算)</th><th scope="col">平均の戻り (10 万回)</th></tr></thead><tbody><tr><td>1</td><td>48%</td><td>48.17%</td><td>−4</td><td>−3.67</td></tr><tr><td>3</td><td>24%</td><td>23.83%</td><td>−4</td><td>−4.66</td></tr><tr><td>5</td><td>16%</td><td>16.10%</td><td>−4</td><td>−3.43</td></tr><tr><td>10</td><td>8%</td><td>7.88%</td><td>−12</td><td>−13.31</td></tr><tr><td>20</td><td>4%</td><td>4.02%</td><td>−16</td><td>−15.52</td></tr></tbody></table></div>
+<p>当たった割合は、計算した確率とほぼ同じになりました。平均の戻りは回ごとの振れが大きいので、10 万回でも計算から少しずれます。種を変えても、ずれ方が変わるだけで傾向は同じです。</p>
+<p>この 10 万回の中で、20 が出ない連続は最長で 230 回ありました。偏りではなく、確率どおりに回した結果です。</p>
+<p>プログラムの全体は <a class="ra-link" href="wheel-myths.py">wheel-myths.py</a> に置いてあります。<code>python3 wheel-myths.py</code> で同じ数字が出ます。</p>
 <h2 class="ra-section">よく聞く話を確かめる</h2>
 <div class="ra-myth"><p class="ra-myth-q">「しばらく 20 が出ていないから、そろそろ 20 が来る」</p><p class="ra-myth-a"><span class="ra-verdict">成り立たない</span>前の回の結果は、どこにも使われていません。乱数も回すたびに作り直されます。20 が 100 回出ていなくても、次に 20 が出る確率は 4% のままです。</p></div>
 <div class="ra-myth"><p class="ra-myth-q">「輪の回り方を見れば、止まる場所が読める」</p><p class="ra-myth-a"><span class="ra-verdict">読めても賭けられない</span>止まる場所は回し始めの時点で決まっていて、その時点で賭けは締め切られています。途中の速さや減速の入り方は、結果を変えません。</p></div>
@@ -90,7 +120,7 @@
 <ul><li><strong>2024 年 5 月より前。</strong> 2024-05-02 のアップデートで、公式が「Bandit Camp のルーレットの乱数の扱いを作り直した」と書いています。それより前の作りにパターンがあったかどうかは、公開されている資料からは分かりません。今後、当時の版のソースを読んで調べる予定です。</li><li><strong>種を外から当てられるか。</strong> 種はサーバーの中の乱数から作られ、プレイヤーには送られていません。外から当てることはできないと見ていますが、これは推定です。</li><li><strong>この記事の対象。</strong> 2026-11-07 の版の PC 版のサーバーです。今後のアップデートで変わることがあります。</li></ul>
 <h2 class="ra-section">調べ方</h2>
 <p>サーバー本体の処理 (ルーレットのクラスの中間コード) を読み、ルーレットと端末の設定の値をデータのファイルから読みました。サーバーは起動していません。倍率 (1・3・5・10・20)、マスの数、受け付けの 45 秒、回る時間の 13〜18 秒は、どれも読んだ値です。確率と平均の戻りは、そこから計算したものです。</p>
-<p>実際に回して数えた結果ではありません。処理がそう書かれている、という確認です。</p><h2 class="ra-section">出典</h2><ul><li><a class="ra-link" href="https://rust.facepunch.com/changes/6" rel="noopener">公式の変更点 2024-05-02 (ルーレットの乱数の作り直し)</a></li><li><a class="ra-link" href="https://commits.facepunch.com/r/rust_reboot" rel="noopener">開発のコミットの記録</a></li></ul></article></main>
+<p>ゲームの中で実際に回して数えた結果ではありません。処理がそう書かれている、という確認です。記事の中の 10 万回の結果は、同じ動きをする自作のプログラムを回したものです。</p><h2 class="ra-section">出典</h2><ul><li><a class="ra-link" href="https://rust.facepunch.com/changes/6" rel="noopener">公式の変更点 2024-05-02 (ルーレットの乱数の作り直し)</a></li><li><a class="ra-link" href="https://commits.facepunch.com/r/rust_reboot" rel="noopener">開発のコミットの記録</a></li><li><a class="ra-link" href="https://docs.unity3d.com/ScriptReference/Random.html" rel="noopener">Unity の文書 UnityEngine.Random</a></li><li><a class="ra-link" href="https://learn.microsoft.com/en-us/dotnet/api/system.random.next" rel="noopener">.NET の文書 System.Random.Next</a></li><li><a class="ra-link" href="https://learn.microsoft.com/en-us/dotnet/api/system.random.-ctor" rel="noopener">.NET の文書 System.Random のコンストラクター</a></li></ul></article></main>
 <footer class="ra-foot"><p>Facepunch Studios とは関係のない、個人が解析して作った非公式のサイトです。変更点は公式の変更点の一覧を自分の言葉で日本語にしたもので、各回に出典のリンクがあります。アイテムの値はサーバー本体のデータから読んだもので、正しさは保証しません。</p>
 <p>アイコンの一部は <a class="ra-link" href="https://lucide.dev/" rel="noopener">Lucide</a> (ISC License) です。</p></footer>
 </body></html>
