@@ -4,31 +4,31 @@
 <meta name="description" content="Bandit Camp のルーレットにまつわる 7 つの話を、サーバーの処理を読んだ結果から 1 つずつ確かめます。結論は、パターンはありません。">
 <meta name="theme-color" content="#f2f4f5" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15181a" media="(prefers-color-scheme: dark)">
-<link rel="icon" type="image/svg+xml" href="favicon.svg">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Rust Analysis">
 <meta property="og:locale" content="ja_JP">
 <meta property="og:title" content="ルーレットに必勝パターンはあるのか | Rust Analysis">
 <meta property="og:description" content="Bandit Camp のルーレットにまつわる 7 つの話を、サーバーの処理を読んだ結果から 1 つずつ確かめます。結論は、パターンはありません。">
-<meta property="og:url" content="https://maco165.github.io/rust-patch-notes/column-wheel-myths.html">
-<meta property="og:image" content="https://maco165.github.io/rust-patch-notes/og.png">
+<meta property="og:url" content="https://maco165.github.io/rust-patch-notes/columns/wheel-myths.html">
+<meta property="og:image" content="https://maco165.github.io/rust-patch-notes/assets/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="canonical" href="https://maco165.github.io/rust-patch-notes/column-wheel-myths.html">
+<link rel="canonical" href="https://maco165.github.io/rust-patch-notes/columns/wheel-myths.html">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+JP:wght@400;600&display=swap">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="../assets/style.css">
 </head><body>
 <header class="ra-site">
-  <a class="ra-site-name" href="index.html"><b>Rust</b> Analysis</a>
-  <nav class="ra-nav" aria-label="ページ"><a href="index.html"><i class="ra-ico ra-ico-month" aria-hidden="true"></i>今月</a><a href="history.html"><i class="ra-ico ra-ico-history" aria-hidden="true"></i>これまで</a><a href="genres.html"><i class="ra-ico ra-ico-genres" aria-hidden="true"></i>ジャンル</a><a href="numbers.html"><i class="ra-ico ra-ico-numbers" aria-hidden="true"></i>数値</a><a href="items.html"><i class="ra-ico ra-ico-items" aria-hidden="true"></i>アイテム</a><a href="spec.html"><i class="ra-ico ra-ico-spec" aria-hidden="true"></i>仕様書</a><a href="columns.html" aria-current="page"><i class="ra-ico ra-ico-columns" aria-hidden="true"></i>コラム</a></nav>
+  <a class="ra-site-name" href="../index.html"><b>Rust</b> Analysis</a>
+  <nav class="ra-nav" aria-label="ページ"><a href="../index.html"><i class="ra-ico ra-ico-month" aria-hidden="true"></i>今月</a><a href="../history.html"><i class="ra-ico ra-ico-history" aria-hidden="true"></i>これまで</a><a href="../genres.html"><i class="ra-ico ra-ico-genres" aria-hidden="true"></i>ジャンル</a><a href="../numbers.html"><i class="ra-ico ra-ico-numbers" aria-hidden="true"></i>数値</a><a href="../items.html"><i class="ra-ico ra-ico-items" aria-hidden="true"></i>アイテム</a><a href="../spec.html"><i class="ra-ico ra-ico-spec" aria-hidden="true"></i>仕様書</a><a href="../columns.html" aria-current="page"><i class="ra-ico ra-ico-columns" aria-hidden="true"></i>コラム</a></nav>
   <span class="ra-site-meta">データ 2026-11-05 まで</span>
   <a class="ra-site-link" href="https://github.com/maco165/rust-patch-notes" rel="noopener"><i class="ra-ico ra-ico-github" aria-hidden="true"></i>GitHub</a>
 </header>
-<main class="ra-page"><article class="ra-prose"><p class="ra-patch-meta"><a class="ra-link" href="columns.html">コラム</a><time datetime="2026-11-12">2026-11-12</time><span><i class="ra-ico ra-ico-economy" aria-hidden="true"></i> 経済・店</span><span class="ra-src ra-src-export"><i class="ra-ico ra-ico-export" aria-hidden="true"></i>本体の書き出し 2026-11-07</span></p><h1 class="ra-prose-title">ルーレットに必勝パターンはあるのか</h1><p class="ra-prose-lead">Bandit Camp のルーレットにまつわる 7 つの話を、サーバーの処理を読んだ結果から 1 つずつ確かめます。結論は、パターンはありません。</p><div class="ra-callout">
+<main class="ra-page"><article class="ra-prose"><p class="ra-patch-meta"><a class="ra-link" href="../columns.html">コラム</a><time datetime="2026-11-12">2026-11-12</time><span><i class="ra-ico ra-ico-economy" aria-hidden="true"></i> 経済・店</span><span class="ra-src ra-src-export"><i class="ra-ico ra-ico-export" aria-hidden="true"></i>本体の書き出し 2026-11-07</span></p><h1 class="ra-prose-title">ルーレットに必勝パターンはあるのか</h1><p class="ra-prose-lead">Bandit Camp のルーレットにまつわる 7 つの話を、サーバーの処理を読んだ結果から 1 つずつ確かめます。結論は、パターンはありません。</p><div class="ra-callout">
 <p class="ra-callout-label">結論</p>
 <p class="ra-callout-main">パターンはありません</p>
 <p>当たりのマスは、回し始めの瞬間に 25 マスから等しい確率で 1 つ選ばれます。前の結果も、時刻も、賭けた人や額も使われません。</p>
