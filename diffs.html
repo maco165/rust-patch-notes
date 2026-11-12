@@ -56,9 +56,7 @@
     <span class="ra-search"><i class="ra-ico ra-ico-search" aria-hidden="true"></i><input class="ra-input" id="q" type="search" placeholder="名前で絞る (アサルトライフル、tea など)" aria-label="名前で絞る"></span>
   </form>
   <div class="ra-chips" id="groups" role="group" aria-label="項目の種類"></div>
-  <div class="ra-delta-wrap"><table class="ra-delta ra-delta-wide"><thead><tr><th scope="col">アイテム</th><th scope="col">項目</th>
-  <th scope="col" class="ra-n">前</th><th scope="col" class="ra-n">後</th><th scope="col" class="ra-n">増減</th></tr></thead>
-  <tbody id="rows"></tbody></table></div>
+  <div class="ra-delta-wrap"><table class="ra-vdiff" id="rows"></table></div>
   <p class="ra-more" id="empty" hidden>この範囲では、選んだ種類の設定は変わっていません。</p>
 </section>
 </main>
@@ -106,21 +104,66 @@ function compose(){
   const nm=n=>I[n][0];added.sort((x,y)=>nm(x).localeCompare(nm(y),"ja"));removed.sort((x,y)=>nm(x).localeCompare(nm(y),"ja"));
   changed.sort((x,y)=>nm(x[0]).localeCompare(nm(y[0]),"ja"));
   return{added,removed,changed}}
-const num=t=>/^-?\d+(\.\d+)?$/.test(t)?parseFloat(t):null;
-function delta(bf,af){const x=num(bf),y=num(af);if(x===null||y===null||x===y)return"";
-  const d=y-x,pct=x?` (${d>0?"+":"−"}${Math.abs(d/x*100).toFixed(1)}%)`:"";
-  return d>0?`<span class="ra-delta-up">▲ +${+d.toFixed(4)}${pct}</span>`:`<span class="ra-delta-down">▼ −${+Math.abs(d).toFixed(4)}${pct}</span>`}
+// A value is a list joined by 、 outside brackets (作成コスト, 続く効果); "—" is none.
+const parts=t=>{const out=[];let depth=0,cur="";for(const c of String(t)){if(c==="("||c==="（")depth++;else if(c===")"||c==="）")depth--;
+  if(c==="、"&&depth===0){out.push(cur);cur=""}else cur+=c}out.push(cur);return out.map(x=>x.trim()).filter(x=>x&&x!=="—")};
+const NUM=/-?\d+(?:\.\d+)?/g,shape=t=>t.replace(NUM,"#"),nums=t=>t.match(NUM)||[];
+// t with the numbers that differ from the same place in o marked
+const marked=(t,o,cls)=>{const ns=nums(o);let i=0;return esc(t).replace(NUM,m=>{const x=ns[i++];return x!==undefined&&x!==m?`<mark class="${cls}">${m}</mark>`:m})};
+// ▲/▼ with the amount, the unit written after the number (秒, 度) and the percentage, when one number changed
+function deltaOf(p,q){const np=nums(p),nq=nums(q),diff=np.map((x,i)=>x!==nq[i]?i:-1).filter(i=>i>=0);
+  if(np.length!==nq.length||diff.length!==1)return"";
+  const i=diff[0],x=parseFloat(np[i]),y=parseFloat(nq[i]),d=y-x;
+  const re=new RegExp(NUM.source,"g");let m;for(let k=0;k<=i;k++)m=re.exec(q);
+  const unit=(q.slice(m.index+m[0].length).match(/^\s?(秒|度|個|%)/)||["",""])[1],u=unit?(unit==="%"?"%":" "+unit):"";
+  const pct=x?`<small>${d>0?"+":"−"}${Math.abs(d/x*100).toFixed(1)}%</small>`:"";
+  return d>0?`<span class="ra-delta-up">▲ +${+d.toFixed(4)}${u}${pct}</span>`:`<span class="ra-delta-down">▼ −${+Math.abs(d).toFixed(4)}${u}${pct}</span>`}
+const ln=(h,cls)=>`<span class="ra-vd-line${cls?" "+cls:""}">${h}</span>`;
+// the before cell, the after cell and the change, from the two values of one setting
+function cells(bf,af){
+  const P=parts(bf),Q=parts(af);
+  if(P.length<=1&&Q.length<=1){const p=P[0],q=Q[0];
+    if(!p)return["—",ln("+ "+esc(q),"ra-vd-add"),""];
+    if(!q)return[ln("− "+esc(p),"ra-vd-del"),"—",""];
+    if(shape(p)===shape(q))return[marked(p,q,"ra-vd-was"),marked(q,p,"ra-vd-now"),deltaOf(p,q)];
+    return[esc(p),ln(esc(q),"ra-vd-strong"),""]}
+  const pairOf=new Array(Q.length).fill(null),B=[],changed=[];
+  for(const p of P){let j=Q.findIndex((q,k)=>pairOf[k]===null&&q===p);
+    if(j<0)j=Q.findIndex((q,k)=>pairOf[k]===null&&shape(q)===shape(p));
+    if(j<0){B.push(ln("− "+esc(p),"ra-vd-del"));continue}
+    pairOf[j]=p;const q=Q[j];
+    if(q===p)B.push(ln(esc(p),"ra-vd-same"));else{B.push(ln(marked(p,q,"ra-vd-was")));changed.push([p,q])}}
+  const A=Q.map((q,j)=>{const p=pairOf[j];return p===null?ln("+ "+esc(q),"ra-vd-add"):p===q?ln(esc(q),"ra-vd-same"):ln(marked(q,p,"ra-vd-now"))});
+  const onlyChange=changed.length===1&&P.length===Q.length&&pairOf.every(x=>x!==null);
+  return[B.join("")||"—",A.join("")||"—",onlyChange?deltaOf(...changed[0]):""]}
 const link=n=>`<a class="ra-link" href="items.html?q=${encodeURIComponent(I[n][2])}">${esc(I[n][0])}</a>`;
+// the item cell of a row standing for one or more items with the same change
+function who(ns){
+  if(ns.length===1)return`${link(ns[0])}<span class="ra-vd-cat">${esc(I[ns[0]][1])}</span>`;
+  const cats=[...new Set(ns.map(n=>I[n][1]))],cat=cats.length===1?esc(cats[0])+" · ":"";
+  if(ns.length===2)return`${ns.map(link).join("、")}<span class="ra-vd-cat">${cat}2 アイテム</span>`;
+  const head=ns.slice(0,3).map(n=>esc(I[n][0])).join("、");
+  return`<details class="ra-vd-many"><summary>${ns.length} アイテム</summary><ul>${ns.map(n=>`<li>${link(n)}</li>`).join("")}</ul></details>`+
+    `<span class="ra-vd-cat">${cat}${head}${ns.length>3?` ほか ${ns.length-3}`:""}</span>`}
+const HEAD=`<colgroup><col class="ra-vd-c-item"><col class="ra-vd-c-label"><col><col><col class="ra-vd-c-delta"></colgroup>`+
+  `<thead><tr><th scope="col">アイテム</th><th scope="col">項目</th><th scope="col">前</th><th scope="col">後</th><th scope="col" class="ra-vd-d">増減</th></tr></thead>`;
 function table(){
   const q=$("q").value.trim().toLowerCase(),counts={all:0};
   const hit=cur.changed.filter(r=>!q||I[r[0]][0].toLowerCase().includes(q)||I[r[0]][2].includes(q));
   for(const r of hit){counts.all++;counts[r[4]]=(counts[r[4]]||0)+1}
   for(const el of document.querySelectorAll("[data-g]"))el.textContent=counts[el.dataset.g]||0;
-  const shown=hit.filter(r=>group==="all"||r[4]===group);
-  let last="";
-  $("rows").innerHTML=shown.map(([n,l,bf,af])=>{const first=n!==last;last=n;
-    return`<tr${first?' class="ra-row-first"':""}><td>${first?link(n)+` <small class="ra-more">${esc(I[n][1])}</small>`:""}</td><td>${esc(l)}</td><td class="ra-n"><span class="ra-before">${esc(bf)}</span></td><td class="ra-n"><span class="ra-after">${esc(af)}</span></td><td class="ra-n">${delta(bf,af)}</td></tr>`}).join("");
-  $("row-n").textContent=`${shown.length} 行`;$("empty").hidden=shown.length>0}
+  const shown=hit.filter(r=>group==="all"||r[4]===group),same=new Map();
+  for(const[n,l,bf,af,g]of shown){const k=[g,l,bf,af].join("\u0000");if(!same.has(k))same.set(k,{g,l,bf,af,ns:[]});same.get(k).ns.push(n)}
+  const merged=[...same.values()];
+  let body="";
+  for(const[g,label]of D.groups){if(g==="all")continue;
+    const rs=merged.filter(r=>r.g===g).sort((x,y)=>y.ns.length-x.ns.length);if(!rs.length)continue;
+    body+=`<tbody><tr class="ra-vd-group"><th colspan="5" scope="colgroup">${esc(label)}<span class="ra-vd-n">${rs.reduce((t,r)=>t+r.ns.length,0)}</span></th></tr>`+
+      rs.map(r=>{const[b,a,d]=cells(r.bf,r.af);
+        return`<tr><td class="ra-vd-who">${who(r.ns)}</td><td class="ra-vd-label">${esc(r.l)}</td><td class="ra-vd-was-c" data-l="前"><div>${b}</div></td><td class="ra-vd-now-c" data-l="後"><div>${a}</div></td><td class="ra-vd-d">${d}</td></tr>`}).join("")+"</tbody>"}
+  $("rows").innerHTML=shown.length?HEAD+body:"";
+  $("row-n").textContent=merged.length<shown.length?`${shown.length} 件を ${merged.length} 行にまとめて表示`:`${shown.length} 件`;
+  $("empty").hidden=shown.length>0}
 function render(){
   timeline();$("from").value=a;$("to").value=b;
   cur=compose();
