@@ -339,6 +339,11 @@ a.ra-chip { text-decoration: none; }
 @media (max-width: 560px) { .ra-plain .ra-gbar, .ra-loss .ra-gbar { grid-template-columns: 0 minmax(0, 1fr) 4ch; } }
 .ra-code-src { font-family: var(--font-mono); font-size: 14px; line-height: 24px; letter-spacing: 0; white-space: pre; max-width: none !important; }
 .ra-card h3 ~ p { font-size: 15px; line-height: 24px; color: var(--ink); word-break: auto-phrase; text-wrap: pretty; }
+.ra-card-list { display: grid; gap: var(--space-1); margin: 0; padding-left: 1.25em; list-style: disc; font-size: 15px; line-height: 24px; color: var(--ink); }
+.ra-card-list li { word-break: auto-phrase; text-wrap: pretty; }
+.ra-cards-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 860px) { .ra-cards-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .ra-cards-3 { grid-template-columns: minmax(0, 1fr); } }
 .ra-plain .ra-gbar, .ra-loss .ra-gbar { grid-template-columns: 0 11em minmax(0, 1fr) 6ch; }
 @media (max-width: 560px) { .ra-plain .ra-gbar, .ra-loss .ra-gbar { grid-template-columns: 0 minmax(0, 1fr) 6ch; } }
 .ra-prose-table td { white-space: normal; word-break: auto-phrase; }
