@@ -31,7 +31,7 @@
 <main class="ra-page">
 <div class="ra-block">
   <h1 class="ra-patch-sub">版の差分</h1>
-  <p class="ra-lead">ゲームの本体のデータから、版の間でアイテムの設定がいくつからいくつに変わったかを並べます。バーで 2 つの版を選ぶと、その間の差分が出ます。月の版は、その月の更新が出た日の版です (今月は今の版)。斜線の月は版が見つかっていない月で、前後の版の差分にまとめて入っています。</p>
+  <p class="ra-lead">2 つの版を選ぶと、その間に変わったアイテムの設定が出ます。</p>
   <div class="ra-row"><span class="ra-src ra-src-export"><i class="ra-ico ra-ico-export" aria-hidden="true"></i>本体の書き出し (2020-03 〜 2026-11、81 版)</span><span class="ra-src"><i class="ra-ico ra-ico-official" aria-hidden="true"></i>文章の数字は <a class="ra-link" href="numbers.html">数値</a></span></div>
 </div>
 <section class="ra-block" aria-labelledby="tl-h">
@@ -46,7 +46,6 @@
 </section>
 <section class="ra-block" aria-live="polite">
   <h2 class="ra-section" id="range-h"></h2>
-  <p class="ra-more" id="range-note"></p>
   <ul class="ra-tiles" id="tiles"></ul>
   <dl class="ra-specs" id="addrem"></dl>
 </section>
@@ -151,7 +150,7 @@ function table(){
   const q=$("q").value.trim().toLowerCase(),counts={all:0};
   const hit=cur.changed.filter(r=>!q||I[r[0]][0].toLowerCase().includes(q)||I[r[0]][2].includes(q));
   for(const r of hit){counts.all++;counts[r[4]]=(counts[r[4]]||0)+1}
-  for(const el of document.querySelectorAll("[data-g]"))el.textContent=counts[el.dataset.g]||0;
+  for(const el of document.querySelectorAll("[data-g]")){const k=counts[el.dataset.g]||0,c=el.closest("label");el.textContent=k;c.hidden=!k&&!c.querySelector("input").checked}
   const shown=hit.filter(r=>group==="all"||r[4]===group),same=new Map();
   for(const[n,l,bf,af,g]of shown){const k=[g,l,bf,af].join("\u0000");if(!same.has(k))same.set(k,{g,l,bf,af,ns:[]});same.get(k).ns.push(n)}
   const merged=[...same.values()];
@@ -169,7 +168,7 @@ function render(){
   cur=compose();
   const months=S.slice(a,b).flatMap(s=>s.months),gaps=D.months.filter(m=>m>V[a].id&&m<=V[b].id&&!(m in idx));
   $("range-h").innerHTML=`<span><span class="ra-num-sm">${V[a].id}</span> → <span class="ra-num-sm">${V[b].id}</span></span> <small>${months.length} か月分の更新${b-a===1&&V[b].title?" ("+esc(V[b].title)+")":""}</small>`;
-  $("range-note").textContent=`${V[a].date} の版から ${V[b].date} の版まで。`+(gaps.length?`版が見つかっていない月 (${gaps.join("、")}) の変更は、まとめて入っています。`:"");
+  $("range-h").title=`${V[a].date} → ${V[b].date}`+(gaps.length?` (版の無い月 ${gaps.join("、")} を含む)`:"");
   const items=new Set(cur.changed.map(r=>r[0]));
   $("tiles").innerHTML=`<li class="ra-tile"><span class="ra-tile-n">${cur.added.length}</span><span class="ra-cat ra-cat-added"><i class="ra-ico ra-ico-added" aria-hidden="true"></i>追加</span></li><li class="ra-tile"><span class="ra-tile-n">${cur.removed.length}</span><span class="ra-cat ra-cat-removed"><i class="ra-ico ra-ico-removed" aria-hidden="true"></i>削除</span></li><li class="ra-tile"><span class="ra-tile-n">${items.size}</span><span class="ra-cat ra-cat-improved"><i class="ra-ico ra-ico-improved" aria-hidden="true"></i>設定が変わったアイテム</span></li>`;
   $("addrem").innerHTML=`<dt>追加</dt><dd>${cur.added.map(link).join("、")||"なし"}</dd><dt>削除</dt><dd>${cur.removed.map(link).join("、")||"なし"}</dd>`;

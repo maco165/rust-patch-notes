@@ -351,7 +351,8 @@ a.ra-chip { text-decoration: none; }
 @media (max-width: 560px) { .ra-plain.ra-boxes .ra-gbar { grid-template-columns: var(--icon) minmax(0, 1fr) 6ch; } }
 .ra-prose-table td { white-space: normal; word-break: auto-phrase; }
 .ra-prose-table td:first-child { white-space: nowrap; }
-.ra-prose-table:has(th:nth-child(4)) { min-width: 640px; }
+.ra-prose-table:has(th:nth-child(4)):not(.ra-prose-short) { min-width: 640px; }
+.ra-prose-short td:first-child { white-space: normal; }
 
 /* Version-diff page: a month scale of the builds; the chosen range is a band, months without a build are hatched. */
 .ra-tl { display: flex; gap: 0; overflow-x: auto; padding: var(--space-6) 0 var(--space-2); }
