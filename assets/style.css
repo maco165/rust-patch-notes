@@ -236,6 +236,9 @@ a.ra-gbar:hover .ra-gbar-name { text-decoration: underline; text-underline-offse
   .ra-site-name { order: 1; margin-right: auto; }
   .ra-site .ra-site-meta { order: 2; margin-left: 0; font-size: 12px; }
   .ra-site-meta-w { display: none; }
+  /* the four counts of the month (added, improved, fixed, removed) stay on one row */
+  .ra-counts .ra-tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-3) var(--space-2); }
+  .ra-counts .ra-tile > :last-child { max-width: 100%; padding-left: var(--space-1); padding-right: var(--space-1); white-space: nowrap; }
   .ra-site .ra-site-lang { order: 3; }
   .ra-site .ra-site-lang a { min-height: 36px; padding: 0 var(--space-2); font-size: 13px; }
   .ra-site .ra-site-link { order: 4; min-height: 36px; padding: 0 var(--space-2); font-size: 0; gap: 0; }
