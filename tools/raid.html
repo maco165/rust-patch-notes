@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>レイドの費用 | Rust Analysis</title>
+<title>Raid Planner | Rust Analysis</title>
 <meta name="description" content="ゲーム Rust で、壁・扉・設置物をまとめて壊すのに要る爆発物の数と、それを作る硫黄・材料を計算するツール。">
 <meta name="theme-color" content="#f2f4f5" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15181a" media="(prefers-color-scheme: dark)">
@@ -9,7 +9,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Rust Analysis">
 <meta property="og:locale" content="ja_JP">
-<meta property="og:title" content="レイドの費用 | Rust Analysis">
+<meta property="og:title" content="Raid Planner | Rust Analysis">
 <meta property="og:description" content="ゲーム Rust で、壁・扉・設置物をまとめて壊すのに要る爆発物の数と、それを作る硫黄・材料を計算するツール。">
 <meta property="og:url" content="https://maco165.github.io/rust-patch-notes/tools/raid.html">
 <meta property="og:image" content="https://maco165.github.io/rust-patch-notes/assets/og.png">
@@ -31,7 +31,7 @@
 <main class="ra-page">
 <div class="ra-block">
   <p class="ra-patch-meta"><a class="ra-link" href="../tools.html">ツール</a><span class="ra-src ra-src-export"><i class="ra-ico ra-ico-export" aria-hidden="true"></i>本体の書き出し 2026-11-07</span></p>
-  <h1 class="ra-patch-sub">レイドの費用</h1>
+  <h1 class="ra-patch-sub" lang="en">Raid Planner</h1>
   <p class="ra-lead">壊す物ごとに数を入れると、全部を壊すのに要る爆発物と硫黄を、硫黄の少ない順に出します。</p>
 </div>
 <section class="ra-block" aria-labelledby="h-target">
@@ -90,7 +90,7 @@
     <div><div class="ra-rd-list-h">材料の合計</div><div id="cost-all"></div></div>
   </div>
   <div class="ra-rd-go"><span>手持ちの物資と炉の数を入れて、足りない材料と時間を出せます。選んだ方法の爆発物の数を、そのまま引き継ぎます。</span>
-    <a class="ra-rd-share-go" id="to-craft" href="craft.html">この内容で作る計画を立てる<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></a></div>
+    <a class="ra-rd-share-go" id="to-craft" href="craft.html">この内容を Craft Planner で開く<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></a></div>
 </section>
 </div>
 <section class="ra-block" aria-labelledby="h-notes">
@@ -249,7 +249,7 @@ async function card(){
   const rule=(col,a,b,w,h,lw)=>{x.strokeStyle=col;x.lineWidth=lw;x.strokeRect(a+lw/2,b+lw/2,w-lw,h-lw)};
   const paint=()=>{const{picked,best,pick,min,o,c,m,Su}=V;
     box(C.bg,0,0,W,H);
-    let e=T('Rust Analysis',L,60,f(700,26,'disp'),C.ink);T('レイドの費用',e+16,60,f(600,17,'sans'),C.mute);
+    let e=T('Rust Analysis',L,60,f(700,26,'disp'),C.ink);T('Raid Planner',e+16,60,f(600,17,'sans'),C.mute);
     T(`本体の書き出し ${R.version}`,W-L,60,f(400,14,'mono'),C.mute,1);box(C.ink,L,78,W-L*2,2);
     // the title, then the picked targets, wrapping onto more lines
     let px=T(`${num(V.total)} か所を壊す`,L,124,f(600,34,'sans'),C.ink)+28,py=124;const cf=f(400,17,'sans');
