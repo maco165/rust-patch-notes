@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Raid Planner | Rust Analysis</title>
+<meta name="description" content="A calculator for the game Rust: the explosives, sulfur and materials it takes to break walls, doors and deployables together.">
+<meta name="theme-color" content="#f2f4f5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15181a" media="(prefers-color-scheme: dark)">
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+<link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rust Analysis">
+<meta property="og:locale" content="en_US">
+<meta property="og:title" content="Raid Planner | Rust Analysis">
+<meta property="og:description" content="A calculator for the game Rust: the explosives, sulfur and materials it takes to break walls, doors and deployables together.">
+<meta property="og:url" content="https://maco165.github.io/rust-patch-notes/en/tools/raid.html">
+<meta property="og:image" content="https://maco165.github.io/rust-patch-notes/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://maco165.github.io/rust-patch-notes/en/tools/raid.html">
+<link rel="alternate" hreflang="ja" href="https://maco165.github.io/rust-patch-notes/tools/raid.html">
+<link rel="alternate" hreflang="en" href="https://maco165.github.io/rust-patch-notes/en/tools/raid.html">
+<link rel="alternate" hreflang="x-default" href="https://maco165.github.io/rust-patch-notes/tools/raid.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+JP:wght@400;600&display=swap">
+<link rel="stylesheet" href="../../assets/style.css">
+</head><body>
+<header class="ra-site">
+  <a class="ra-site-name" href="../tools.html"><b>Rust</b> Analysis</a>
+  <nav class="ra-nav" aria-label="Pages"><a href="../tools.html" aria-current="page"><i class="ra-ico ra-ico-tools" aria-hidden="true"></i>Tools</a></nav>
+  <span class="ra-site-meta">2026-11-05</span>
+  <span class="ra-site-lang"><a href="../../tools/raid.html" lang="ja" hreflang="ja">Japanese</a></span><a class="ra-site-link" href="https://github.com/maco165/rust-patch-notes" rel="noopener"><i class="ra-ico ra-ico-github" aria-hidden="true"></i>GitHub</a>
+</header>
+<main class="ra-page">
+<div class="ra-block">
+  <p class="ra-patch-meta"><a class="ra-link" href="../tools.html">Tools</a><span class="ra-src ra-src-export"><i class="ra-ico ra-ico-export" aria-hidden="true"></i>Game build 2026-11-07</span></p>
+  <h1 class="ra-patch-sub" lang="en">Raid Planner</h1>
+  <p class="ra-lead">Enter how many of each target to break, and it lists the explosives and sulfur for all of them, least sulfur first.</p>
+  <a class="ra-rd-top-go" id="to-craft-top" href="craft.html">Open the Craft Planner<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg><small>what you are short of, and the time</small></a>
+</div>
+<section class="ra-block" aria-labelledby="h-target"><details class="ra-sec" open data-fold="h-target"><summary><h2 class="ra-section" id="h-target">Targets <small id="target-sub"></small></h2><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i></summary><div class="ra-block">
+  <div class="ra-rd-groups" id="targets"></div>
+  <p class="ra-rd-hint">Targets with a count of 1 or more are counted.</p>
+  <div class="ra-rd-controls">
+    <span class="ra-rd-sum" id="sum"></span>
+    <button type="button" class="ra-button" id="reset">Reset all to 0</button>
+    <label class="ra-toggle" id="soft-wrap"><input id="soft" type="checkbox">Shoot explosive 5.56 from the soft side of walls</label>
+  </div>
+</div></details></section>
+<section class="ra-block" id="none">
+  <h2 class="ra-section">Result</h2>
+  <p class="ra-lead">Set a target to 1 or more and the explosives and sulfur appear here.</p>
+</section>
+<div id="result" class="ra-rd-result">
+<section class="ra-block" aria-live="polite" aria-labelledby="raid-h"><details class="ra-sec" open data-fold="raid-h"><summary><h2 class="ra-section" id="raid-h"></h2><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i></summary><div class="ra-block">
+  <div class="ra-rd-best">
+    <div class="ra-rd-stat"><span class="ra-rd-label">Picked way</span><span class="ra-rd-best-name" id="pick-name"></span>
+      <span class="ra-rd-needs" id="pick-needs"></span><span class="ra-rd-note" id="pick-note"></span></div>
+    <div class="ra-rd-stat"><span class="ra-rd-label">Sulfur</span><span class="ra-rd-big ra-rd-sulfur" id="pick-s"></span></div>
+    <div class="ra-rd-share"><span class="ra-rd-label">Share this result</span>
+      <div class="ra-rd-share-row"><button type="button" class="ra-rd-share-go" id="sh-link"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>Copy link</button>
+        <div class="ra-rd-img" role="group" aria-label="Image of the result"><span><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>Image</span><button type="button" id="sh-send" aria-label="Share the image" hidden><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><path d="m8.59 13.51 6.83 3.98"></path><path d="m15.41 6.51-6.82 3.98"></path></svg>Share</button><button type="button" id="sh-copy" aria-label="Copy the image" hidden><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>Copy</button><button type="button" id="sh-save" aria-label="Save the image"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="m7 10 5 5 5-5"></path><path d="M12 15V3"></path></svg>Save</button></div></div>
+      <span class="ra-rd-share-msg" id="sh-msg" role="status"></span></div>
+  </div>
+  <div class="ra-rd-row ra-rd-head" aria-hidden="true"><span>Way</span><span class="ra-rd-n">Count</span><span>Sulfur, to scale</span><span class="ra-rd-s">Sulfur</span></div>
+  <div role="radiogroup" aria-label="Way shown in the breakdown and the making" id="raid-rows"></div>
+  <p class="ra-more">“Cheapest per target” uses, for each target, the explosive with the least sulfur. “All …” breaks everything with one kind. Pick a row and the picked way above, the breakdown, the making and the cost below switch to it; the shared image shows it too. Bars share one scale up to 3 times the least sulfur.</p>
+</div></details></section>
+<section class="ra-block" aria-live="polite" aria-labelledby="h-break"><details class="ra-sec" open data-fold="h-break"><summary><h2 class="ra-section" id="h-break">Breakdown per target <small id="break-sub"></small></h2><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i></summary><div class="ra-block">
+  <div>
+    <div class="ra-rd-bk ra-rd-bkhead" aria-hidden="true"><span>Targets</span><span>Explosive</span><span class="ra-rd-n">Count</span><span class="ra-rd-s">Sulfur</span></div>
+    <div id="break-rows"></div>
+  </div>
+</div></details></section>
+<section class="ra-block" aria-live="polite" aria-labelledby="smelt-h"><details class="ra-sec" open data-fold="smelt-h"><summary><h2 class="ra-section" id="smelt-h">Making them <small id="smelt-sub"></small></h2><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i></summary><div class="ra-block">
+  <div class="ra-rd-controls">
+    <div class="ra-rd-field"><span id="l-oven">Furnace</span><div class="ra-tabs" role="radiogroup" aria-labelledby="l-oven" id="ovens-pick"></div></div>
+    <div class="ra-rd-field"><label for="ovens">Number</label>
+      <div class="ra-step"><button type="button" data-step="ovens" data-d="-1" aria-label="One furnace fewer">−</button><input id="ovens" type="number" min="1" max="50" value="1" inputmode="numeric"><button type="button" data-step="ovens" data-d="1" aria-label="One furnace more">+</button></div></div>
+  </div>
+  <div class="ra-rd-smelt">
+    <div class="ra-rd-stat"><span class="ra-rd-label">Smelting the sulfur ore</span><span class="ra-rd-time" id="s-time"></span><span class="ra-rd-sub" id="s-ore"></span></div>
+    <div class="ra-rd-stat"><span class="ra-rd-label">Burning wood into charcoal</span><span class="ra-rd-time" id="c-time"></span><span class="ra-rd-sub" id="c-wood"></span></div>
+    <div class="ra-rd-stat"><span class="ra-rd-label">Both in the same furnaces</span><span class="ra-rd-time" id="b-time"></span><span class="ra-rd-sub" id="b-wood"></span></div>
+  </div>
+  <p class="ra-more" id="smelt-note"></p>
+</div></details></section>
+<section class="ra-block" aria-live="polite" aria-labelledby="h-cost"><details class="ra-sec" open data-fold="h-cost"><summary><h2 class="ra-section" id="h-cost">Cost to make <small id="cost-sub"></small></h2><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i></summary><div class="ra-block">
+  <div class="ra-rd-cost">
+    <div><div class="ra-rd-list-h">Per explosive</div><div id="cost-each"></div></div>
+    <div><div class="ra-rd-list-h">Total materials</div><div id="cost-all"></div></div>
+  </div>
+  <div class="ra-rd-go"><span>Enter what you hold and your furnaces to see what is short and how long it takes. The explosives of the picked way are carried over.</span>
+    <a class="ra-rd-share-go" id="to-craft" href="craft.html">Open this in the Craft Planner<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></a></div>
+</div></details></section>
+</div>
+<section class="ra-block" aria-labelledby="h-notes"><details class="ra-sec" open data-fold="h-notes"><summary><h2 class="ra-section" id="h-notes">How it is counted</h2><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i></summary><div class="ra-block">
+  <p class="ra-rd-hint">The counts are worked out from the game server’s data and code, not counted by breaking things in the game.</p>
+  <details class="ra-rd-notes"><summary><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i>Explosives <span class="ra-num">8 notes</span></summary><ul>
+    <li>Each target is counted on its own. Splash from a rocket onto the wall next to it is not counted.</li>
+    <li>Mixing two explosives on one target (finishing a C4 with ammo, for example) is not counted.</li>
+    <li>Deployables (Auto Turret, SAM Site) are counted with HV (High Velocity) Rockets that hit, whatever way is picked. Whether you can get near a live turret is not counted. A SAM Site blocks most of that rocket’s damage, so its count is high.</li>
+    <li>C4 and satchels are counted stuck to the target: all the damage goes into it and none into the wall or door beside it.</li>
+    <li>Rockets and grenades are counted exploding right at the target. Further away the damage drops and the count rises.</li>
+    <li>A blast meets the building’s side protection from any side. The side only changes the count for explosive 5.56 shot at a wall.</li>
+    <li>Explosive 5.56 is counted from an Assault Rifle within 20 m. Other weapons differ.</li>
+    <li>A satchel is a dud 20% of the time, a beancan 15%. Duds can be picked up and lit again, so the count is the same but you light more often.</li>
+  </ul></details>
+  <details class="ra-rd-notes"><summary><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i>Materials and furnaces <span class="ra-num">5 notes</span></summary><ul>
+    <li>Sulfur and materials are counted back through Explosives, Gun Powder and Beancan Grenades. Server settings (damage multipliers) are taken as default.</li>
+    <li>One sulfur ore gives one sulfur. A furnace is as fast however the ore is split over its slots: a Furnace smelts 0.6 a second, a Large Furnace 3, an Electric Furnace 1.</li>
+    <li>A fuel furnace burns one wood every 2 seconds whether or not it is smelting, and a wood leaves 0.75 charcoal on average (75%), so the wood is an expected value. An Electric Furnace burns no wood: charcoal is counted as made in fuel furnaces.</li>
+    <li>“Both in the same furnaces” smelts the ore in fuel furnaces and takes the charcoal from the wood they burn: both are done after the longer of the two times.</li>
+    <li>The times are for a server that is not lagging. On a heavy server a wood burns longer, so wood and charcoal can take longer than shown. The ore time does not change.</li>
+  </ul></details>
+</div></details></section>
+</main>
+<footer class="ra-foot"><p>An unofficial site made by one person, not affiliated with Facepunch Studios. The values are read from the game server’s data and code; there is no guarantee that they are right.</p>
+<p>Some icons are from <a class="ra-link" href="https://lucide.dev/" rel="noopener">Lucide</a> (ISC License).</p></footer>
+<script>
+const R={"version":"2026-11-07","targets":[{"id":"wall.stone","name":"Stone Wall","icon":"brick-wall","health":500.0,"kind":"Walls","n":{"explosive.timed":2,"ammo.rocket.basic":4,"ammo.rocket.hv":32,"explosive.satchel":10,"ammo.rifle.explosive":182,"grenade.beancan":64,"grenade.f1":870},"soft":{"ammo.rifle.explosive":167}},{"id":"wall.metal","name":"Sheet Metal Wall","icon":"wall-metal","health":1000.0,"kind":"Walls","n":{"explosive.timed":4,"ammo.rocket.basic":8,"ammo.rocket.hv":67,"explosive.satchel":23,"ammo.rifle.explosive":399,"grenade.beancan":131,"grenade.f1":9638},"soft":{"ammo.rifle.explosive":399}},{"id":"wall.toptier","name":"Armored Wall","icon":"wall-hqm","health":2000.0,"kind":"Walls","n":{"explosive.timed":8,"ammo.rocket.basic":15,"ammo.rocket.hv":134,"explosive.satchel":46,"ammo.rifle.explosive":798,"grenade.beancan":262,"grenade.f1":19276},"soft":{"ammo.rifle.explosive":797}},{"id":"door.hinged.metal","name":"Sheet Metal Door","icon":"door-sheet","health":250.0,"kind":"Doors","n":{"explosive.timed":1,"ammo.rocket.basic":2,"ammo.rocket.hv":11,"explosive.satchel":4,"ammo.rifle.explosive":63,"grenade.beancan":21,"grenade.f1":500}},{"id":"wall.frame.garagedoor","name":"Garage Door","icon":"door-garage","health":600.0,"kind":"Doors","n":{"explosive.timed":2,"ammo.rocket.basic":3,"ammo.rocket.hv":25,"explosive.satchel":9,"ammo.rifle.explosive":150,"grenade.beancan":49,"grenade.f1":1200}},{"id":"door.hinged.toptier","name":"Armored Door","icon":"door-armored","health":1000.0,"kind":"Doors","n":{"explosive.timed":3,"ammo.rocket.basic":5,"ammo.rocket.hv":42,"explosive.satchel":15,"ammo.rifle.explosive":250,"grenade.beancan":82,"grenade.f1":2000}},{"id":"wall.external.high","name":"High External Wooden Wall","icon":"palisade","health":500.0,"kind":"External walls","n":{"explosive.timed":2,"ammo.rocket.basic":3,"ammo.rocket.hv":18,"explosive.satchel":6,"ammo.rifle.explosive":96,"grenade.beancan":36,"grenade.f1":378}},{"id":"wall.external.high.stone","name":"High External Stone Wall","icon":"wall-stone-high","health":500.0,"kind":"External walls","n":{"explosive.timed":2,"ammo.rocket.basic":4,"ammo.rocket.hv":32,"explosive.satchel":10,"ammo.rifle.explosive":182,"grenade.beancan":64,"grenade.f1":870}},{"id":"autoturret","name":"Auto Turret","icon":"turret","health":1000.0,"kind":"Deployables","n":{"explosive.timed":2,"ammo.rocket.basic":4,"ammo.rocket.hv":3,"explosive.satchel":4,"ammo.rifle.explosive":100,"grenade.beancan":16,"grenade.f1":10},"use":"ammo.rocket.hv"},{"id":"sam.site","name":"SAM Site","icon":"sam-site","health":1000.0,"kind":"Deployables","n":{"explosive.timed":2,"ammo.rocket.basic":4,"ammo.rocket.hv":34,"explosive.satchel":4,"ammo.rifle.explosive":200,"grenade.beancan":16,"grenade.f1":20},"use":"ammo.rocket.hv"}],"explosives":[{"id":"explosive.timed","name":"C4 (Timed Explosive)","icon":"c4","opt":true,"gp":1000.0,"dud":0.0,"cost":{"charcoal":3000.0,"sulfur":2200.0,"metal.fragments":200.0,"lowgradefuel":60.0,"cloth":5.0,"techparts":2.0},"bullet":false},{"id":"ammo.rocket.basic","name":"Rocket","icon":"rocket","opt":true,"gp":650.0,"dud":0.0,"cost":{"charcoal":1950.0,"sulfur":1400.0,"metal.fragments":100.0,"lowgradefuel":30.0,"metalpipe":2.0},"bullet":false},{"id":"ammo.rocket.hv","name":"HV Rocket","icon":"rocket","opt":false,"gp":100.0,"dud":0.0,"cost":{"charcoal":300.0,"sulfur":200.0,"metalpipe":1.0},"bullet":false},{"id":"explosive.satchel","name":"Satchel Charge","icon":"satchel","opt":true,"gp":240.0,"dud":0.2,"cost":{"charcoal":720.0,"sulfur":480.0,"metal.fragments":80.0,"stash.small":1.0,"rope":1.0},"bullet":false},{"id":"ammo.rifle.explosive","name":"Explosive 5.56 Ammo","icon":"bullet","opt":true,"gp":10.0,"dud":0.0,"cost":{"charcoal":30.0,"sulfur":25.0,"metal.fragments":5.0},"bullet":true},{"id":"grenade.beancan","name":"Beancan Grenade","icon":"beancan","opt":true,"gp":60.0,"dud":0.15,"cost":{"charcoal":180.0,"sulfur":120.0,"metal.fragments":20.0},"bullet":false},{"id":"grenade.f1","name":"F1 Grenade","icon":"grenade","opt":true,"gp":30.0,"dud":0.0,"cost":{"charcoal":90.0,"sulfur":60.0,"metal.fragments":25.0},"bullet":false}],"ovens":[{"id":"furnace","name":"Furnace","sulfur":1.6666666666666667,"ore":1.0,"ore_name":"Sulfur Ore","burn":2.0,"charcoal":0.75},{"id":"furnace.large","name":"Large Furnace","sulfur":0.3333333333333333,"ore":1.0,"ore_name":"Sulfur Ore","burn":2.0,"charcoal":0.75},{"id":"electric.furnace","name":"Electric Furnace","sulfur":1.0,"ore":1.0,"ore_name":"Sulfur Ore","burn":null,"charcoal":0}],"materials":{"charcoal":"Charcoal","cloth":"Cloth","lowgradefuel":"Low Grade Fuel","metal.fragments":"Metal Fragments","metalpipe":"Metal Pipe","rope":"Rope","stash.small":"Small Stash","sulfur":"Sulfur","techparts":"Tech Trash"},"icons":{"beancan":"<path d=\"M6 8h12v13H6z\"/><path d=\"M6 12h12\"/><path d=\"M6 17h12\"/><path d=\"M12 8V6.5c0-2 3-1.5 3-3.5\"/>","brick-wall":"<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\"/><path d=\"M12 9v6\"/><path d=\"M16 15v6\"/><path d=\"M16 3v6\"/><path d=\"M3 15h18\"/><path d=\"M3 9h18\"/><path d=\"M8 15v6\"/><path d=\"M8 3v6\"/>","bullet":"<path d=\"M9 21V10c0-4 1.5-6 3-7 1.5 1 3 3 3 7v11z\"/><path d=\"M9 17h6\"/><path d=\"M9 11h6\"/>","c4":"<path d=\"M3 10h18v10H3z\"/><path d=\"M9 10v10\"/><path d=\"M15 10v10\"/><path d=\"M8 4h8v6H8z\"/><path d=\"M10.5 7h3\"/><path d=\"M5 10V6\"/>","door-armored":"<path d=\"M6 21V3h12v18\"/><path d=\"M3 21h18\"/><path d=\"M9 6h6v4H9z\"/><path d=\"M9 14v.01\"/><path d=\"M15 14v.01\"/><path d=\"M9 18v.01\"/><path d=\"M15 18v.01\"/>","door-garage":"<path d=\"M3 21V5h18v16\"/><path d=\"M1 21h22\"/><path d=\"M3 9h18\"/><path d=\"M3 13h18\"/><path d=\"M3 17h18\"/>","door-sheet":"<path d=\"M6 21V3h12v18\"/><path d=\"M3 21h18\"/><path d=\"M6 8h12\"/><path d=\"M6 13h12\"/><path d=\"M15.5 10.5v.01\"/>","grenade":"<ellipse cx=\"12\" cy=\"15\" rx=\"5\" ry=\"6\"/><path d=\"M10 9V6h4v3\"/><path d=\"M14 6h3l1.5 5\"/><circle cx=\"7.5\" cy=\"5\" r=\"1.5\"/><path d=\"M9 5.5l1 .5\"/><path d=\"M7 15h10\"/>","palisade":"<path d=\"M3 21V7l3-4 3 4v14\"/><path d=\"m9 7 3-4 3 4v14\"/><path d=\"m15 7 3-4 3 4v14\"/><path d=\"M3 21h18\"/><path d=\"M3 13h18\"/>","rocket":"<path d=\"M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z\"/><path d=\"m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z\"/><path d=\"M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0\"/><path d=\"M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5\"/>","sam-site":"<path d=\"M4 21h16\"/><path d=\"M12 21v-5\"/><path d=\"m5 12.5 11-6.5 2.5 4.3-11 6.5z\"/><path d=\"m10.5 9.3 2.5 4.3\"/><path d=\"M19.5 4.5v.01\"/>","satchel":"<path d=\"M4 9h16v11H4z\"/><path d=\"M4 14h16\"/><path d=\"M10 9v11\"/><path d=\"M13 9V7c0-2 3-1.5 3-3.5\"/><path d=\"M18 2v.01\"/>","turret":"<path d=\"M6 21h12\"/><path d=\"M12 21v-5\"/><path d=\"M6 9h10v7H6z\"/><path d=\"M16 11h6\"/><path d=\"M16 14h6\"/><circle cx=\"9.5\" cy=\"12.5\" r=\"1\"/><path d=\"M9 9V6h4\"/>","wall-hqm":"<path d=\"M3 3h18v18H3z\"/><path d=\"M7 7h10v10H7z\"/><path d=\"m3 3 4 4\"/><path d=\"m21 3-4 4\"/><path d=\"m3 21 4-4\"/><path d=\"m21 21-4-4\"/>","wall-metal":"<path d=\"M3 3h18v18H3z\"/><path d=\"M3 12h18\"/><path d=\"M6.5 6.5v.01\"/><path d=\"M17.5 6.5v.01\"/><path d=\"M6.5 17.5v.01\"/><path d=\"M17.5 17.5v.01\"/>","wall-stone-high":"<path d=\"M3 21V4h4v3h3.5V4h3v3H17V4h4v17z\"/><path d=\"M3 12h18\"/><path d=\"M3 16.5h18\"/><path d=\"M12 7v5\"/><path d=\"M8 12v4.5\"/><path d=\"M16 12v4.5\"/><path d=\"M12 16.5V21\"/>"},"order":["sulfur","charcoal","metal.fragments","lowgradefuel","cloth","techparts","metalpipe","stash.small","rope"],"stock":[["sulfur","Sulfur"],["sulfur.ore","Sulfur Ore"],["gunpowder","Gun Powder"],["charcoal","Charcoal"],["metal.fragments","Metal Fragments"],["lowgradefuel","Low Grade Fuel"],["cloth","Cloth"],["techparts","Tech Trash"],["metalpipe","Metal Pipe"],["stash.small","Small Stash"],["rope","Rope"]],"gunpowder":{"charcoal":3.0,"sulfur":2.0}};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const num=n=>Number(n).toLocaleString('en-US',{maximumFractionDigits:1});
+const dur=s=>{s=Math.round(s);const h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return h?`${h} h ${m} min`:m?`${m} min${x?` ${x} s`:''}`:`${x} s`};
+const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,parseInt(v,10)||lo));
+const unit=e=>e.id.startsWith('ammo.')?'':'';
+const ii=k=>`<i class="ra-ico ra-ii-${esc(k)}" aria-hidden="true"></i>`;
+const EX=Object.fromEntries(R.explosives.map(e=>[e.id,e]));
+const fuelOven=R.ovens.find(o=>o.burn);
+// sulphur Su and charcoal C on c ovens of the kind o: seconds for the ore, wood for the charcoal and its seconds
+const smelt=(Su,C,o,c)=>{const burner=o.burn?o:fuelOven,ts=Su*o.sulfur/c,wood=C/burner.charcoal,tc=wood*burner.burn/c,both=Math.max(ts,tc);
+  return{ts,tc,wood,both,bothWood:o.burn?both*c/o.burn:null}};
+const showSmelt=(m,Su,o,c)=>{$('#s-time').textContent=dur(m.ts);$('#s-ore').textContent=`Sulfur Ore ${num(Math.ceil(Su*o.ore))} `;
+  $('#c-time').textContent=dur(m.tc);$('#c-wood').textContent=`Wood ${num(Math.ceil(m.wood))} `;
+  $('#b-time').textContent=o.burn?dur(m.both):'';
+  $('#b-wood').textContent=o.burn?`Wood ${num(Math.ceil(m.bothWood))} `:'An Electric Furnace burns no wood. The time on the left counts the charcoal as made in fuel furnaces.';
+  $('#b-wood').classList.toggle('ra-rd-plain',!o.burn)};
+const matOrder=mats=>Object.keys(mats).sort((a,b)=>(b==='sulfur')-(a==='sulfur')||mats[b]-mats[a]);
+// The sections fold at their headings; which ones are folded is remembered on this device, per page.
+const FOLD='ra-fold-'+location.pathname.split('/').pop(),folds=()=>[...document.querySelectorAll('details[data-fold]')];
+try{const st=JSON.parse(localStorage.getItem(FOLD)||'{}');for(const d of folds())if(d.dataset.fold in st)d.open=!!st[d.dataset.fold]}catch(_){}
+document.addEventListener('toggle',ev=>{if(ev.target.dataset&&ev.target.dataset.fold)try{localStorage.setItem(FOLD,JSON.stringify(Object.fromEntries(folds().map(d=>[d.dataset.fold,d.open]))))}catch(_){}},true);
+// The share image: a 1200x675 card (drawn at 2x) in the page's own colours and fonts, with the site's name and `title` on
+// top and the page's address below. paint(h) draws the rest with the helpers h; icons are the names it draws with h.pic.
+const css=k=>getComputedStyle(document.documentElement).getPropertyValue(k).trim();
+async function drawCard(title,icons,paint){
+  const W=1200,H=675,K=2,L=48,HALF=(W-L*2-24)/2,cv=document.createElement('canvas');cv.width=W*K;cv.height=H*K;
+  const x=cv.getContext('2d');x.scale(K,K);
+  const C={bg:css('--plate'),up:css('--plate-raised'),sunk:css('--plate-sunken'),line:css('--line'),strong:css('--line-strong'),ink:css('--ink'),mute:css('--ink-muted'),rust:css('--rust')};
+  const F={sans:css('--font-sans'),mono:css('--font-mono'),disp:css('--font-display')},f=(w,px,fam)=>`${w} ${px}px ${F[fam]}`;
+  const used=[],pics={};
+  const pic=(k,px,py,sz)=>{if(pics[k])x.drawImage(pics[k],px,py,sz,sz)};
+  const M=(s,font)=>{x.font=font;return x.measureText(s).width};
+  // T draws text and returns the x where it ended (where it began, when right-aligned)
+  const T=(s,px,py,font,col,right)=>{used.push([font,s]);x.font=font;x.fillStyle=col;x.textAlign=right?'right':'left';x.fillText(s,px,py);
+    const w=x.measureText(s).width;return right?px-w:px+w};
+  const fit=(s,font,max)=>{if(M(s,font)<=max)return s;while(s.length>1&&M(s+'…',font)>max)s=s.slice(0,-1);return s+'…'};
+  const box=(col,a,b,w,h)=>{x.fillStyle=col;x.fillRect(a,b,w,h)};
+  const rule=(col,a,b,w,h,lw)=>{x.strokeStyle=col;x.lineWidth=lw;x.strokeRect(a+lw/2,b+lw/2,w-lw,h-lw)};
+  const h={x,W,H,L,HALF,C,f,T,M,fit,box,rule,pic};
+  const all=()=>{box(C.bg,0,0,W,H);const e=T('Rust Analysis',L,60,f(700,26,'disp'),C.ink);T(title,e+16,60,f(600,17,'sans'),C.mute);
+    T(`Game build ${R.version}`,W-L,60,f(400,14,'mono'),C.mute,1);box(C.ink,L,78,W-L*2,2);paint(h);
+    box(C.line,L,642,W-L*2,1);T('maco165.github.io/rust-patch-notes/en/tools/raid.html',L,662,f(400,13,'mono'),C.mute);T('Worked out from game data / unofficial',W-L,662,f(400,13,'sans'),C.mute,1)};
+  // the first pass lists the text of each font, so the web fonts (split by unicode range) load before the pass that counts
+  all();try{await Promise.all(used.map(([font,s])=>document.fonts.load(font,s)))}catch(_){}
+  // the icons, as SVG images stroked in the ink colour; one that fails to load is left out
+  await Promise.all([...new Set(icons.filter(Boolean))].map(async k=>{try{const im=new Image();
+    im.src='data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 24 24" fill="none" stroke="${C.ink}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${R.icons[k]}</svg>`);
+    await im.decode();pics[k]=im}catch(_){}}));
+  used.length=0;all();return cv}
+// The three stats of the smelting, at the left edge sx and the top sy of a half-width column.
+const cardSmelt=(h,sx,sy,m,Su,o,c)=>{const{HALF,C,f,T}=h,stat=(px,label,time,sub)=>{T(label,px,sy,f(400,12,'sans'),C.mute);T(time,px,sy+30,f(600,26,'disp'),C.ink);T(sub,px,sy+50,f(400,12,'mono'),C.ink)};
+  stat(sx,'Smelting the sulfur ore',dur(m.ts),`Sulfur Ore ${num(Math.ceil(Su*o.ore))} `);
+  stat(sx+HALF/3,o.burn?'Burning wood into charcoal':`Charcoal (${fuelOven.name} ${c} x)`,dur(m.tc),`Wood ${num(Math.ceil(m.wood))} `);
+  if(o.burn)stat(sx+HALF*2/3,'Both in the same furnaces',dur(m.both),`Wood ${num(Math.ceil(m.bothWood))} `)};
+// The buttons under "Share this result": the link, and the image made by card() shared, copied or saved as name().
+let say=()=>{};
+function shareUI(card,name,summary,hint){
+  const png=async()=>{const cv=await card();return new Promise((ok,ng)=>cv.toBlob(b=>b?ok(b):ng(new Error('toBlob')),'image/png'))};
+  say=m=>{$('#sh-msg').textContent=m||hint};say();document.addEventListener('change',()=>say());
+  const clip=navigator.clipboard;
+  $('#sh-link').addEventListener('click',async()=>{try{await clip.writeText(location.href);say('Link copied.')}
+    catch(_){say('Could not copy. Use the URL in the address bar.')}});
+  $('#sh-save').addEventListener('click',async()=>{try{const a=document.createElement('a');a.href=URL.createObjectURL(await png());a.download=name();
+    document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),10000);say(`Image saved (${name()}).`)}
+    catch(_){say('Could not make the image.')}});
+  if(clip&&clip.write&&window.ClipboardItem){$('#sh-copy').hidden=false;
+    $('#sh-copy').addEventListener('click',async()=>{try{await clip.write([new ClipboardItem({'image/png':png()})]);say('Image copied. Paste it to send.')}
+      catch(_){say('Could not copy the image. Use “Save”.')}})}
+  const probe=()=>{try{return navigator.canShare&&navigator.canShare({files:[new File([''],'a.png',{type:'image/png'})]})}catch(_){return false}};
+  if(probe()){$('#sh-send').hidden=false;
+    $('#sh-send').addEventListener('click',async()=>{try{const file=new File([await png()],name(),{type:'image/png'});
+        await navigator.share({files:[file],text:`${summary()}\n${location.href}`});say('')}
+      catch(e){if(e.name!=='AbortError')say('Could not share. Use “Save”.')}})}}
+
+const P=new URLSearchParams(location.search);
+const byId=Object.fromEntries(R.targets.map(t=>[t.id,t]));
+const OPT=R.explosives.filter(e=>e.opt);
+const S={n:{},e:P.get('e'),o:R.ovens.some(o=>o.id===P.get('o'))?P.get('o'):R.ovens[0].id,c:clamp(P.get('c'),1,50),soft:P.get('s')==='1'};
+for(const part of(P.get('p')||'').split(',')){const[id,q]=part.split(':');if(byId[id])S.n[id]=clamp(q,1,100)}
+// a link from before several targets could be picked (t and n), or no choice yet: the first target once
+// (a target no longer offered opens with nothing picked)
+if(!P.has('p')){if(!P.has('t'))S.n[R.targets[0].id]=1;else if(byId[P.get('t')])S.n[P.get('t')]=clamp(P.get('n'),1,100)}
+const kinds=[...new Set(R.targets.map(t=>t.kind))];
+$('#targets').innerHTML=kinds.map(k=>{const ts=R.targets.filter(t=>t.kind===k),fixed=ts.filter(t=>t.use);
+  return`<div class="ra-rd-group"><span class="ra-rd-kind">${esc(k)}</span><div class="ra-rd-tiles" role="group" aria-label="${esc(k)}">`+
+  ts.map(t=>`<div class="ra-rd-tile" data-tile="${esc(t.id)}"><span class="ra-rd-tname">${ii(t.icon)}<span><b>${esc(t.name)}</b><small>HP ${num(t.health)}</small></span></span>`+
+    `<div class="ra-step"><button type="button" data-t="${esc(t.id)}" data-d="-1" aria-label="${esc(t.name)}: one fewer">−</button>`+
+    `<input type="number" min="0" max="100" inputmode="numeric" data-q="${esc(t.id)}" aria-label="${esc(t.name)}: how many to break">`+
+    `<button type="button" data-t="${esc(t.id)}" data-d="1" aria-label="${esc(t.name)}: one more">+</button></div></div>`).join('')+'</div>'+
+  (fixed.length?`<p class="ra-rd-gnote">${esc(k)} are always counted with ${esc(EX[fixed[0].use].name)}, whatever way is picked (${fixed.map(t=>`${esc(t.name)} : ${num(t.n[t.use])} ${unit(EX[t.use])}`).join(', ')}).</p>`:'')+'</div>'}).join('');
+$('#ovens-pick').innerHTML=R.ovens.map(o=>`<label class="ra-tab"><input type="radio" name="oven" value="${esc(o.id)}">${esc(o.name)}</label>`).join('');
+const needText=o=>o.needs.map(x=>`${x.e.name} ${num(x.n)} ${unit(x.e)}`).join(' + ');
+const matsText=mats=>matOrder(mats).map(m=>`${R.materials[m]} ${num(mats[m])}`);
+// Everything the page and the image show for the choice S, or null while nothing is picked.
+function plan(){
+  const picked=R.targets.filter(t=>S.n[t.id]>0);if(!picked.length)return null;
+  const hasSoft=picked.some(t=>t.soft),soft=!!(S.soft&&hasSoft);
+  const line=(t,e)=>{if(t.use)e=EX[t.use];const one=soft&&t.soft&&t.soft[e.id]!=null?t.soft[e.id]:t.n[e.id],q=S.n[t.id];
+    return{t,q,e,n:one==null?null:one*q,s:one==null?Infinity:(e.cost.sulfur||0)*one*q}};
+  const mk=(id,name,icon,lines)=>{const by={},mats={};let ok=true;
+    for(const l of lines){if(l.n==null){ok=false;continue}by[l.e.id]=(by[l.e.id]||0)+l.n;for(const[m,v]of Object.entries(l.e.cost))mats[m]=(mats[m]||0)+v*l.n}
+    return{id,name,icon,lines,mats,ok,needs:R.explosives.filter(e=>by[e.id]).map(e=>({e,n:by[e.id]})),total:ok?lines.reduce((a,l)=>a+l.s,0):Infinity}};
+  // per target the explosive with the least sulphur, the smaller count on a tie; a target with `use` has one line whatever e is
+  const mix=mk('mix','Cheapest per target',null,picked.map(t=>OPT.map(e=>line(t,e)).sort((a,b)=>a.s-b.s||a.n-b.n)[0]));
+  let opts;
+  if(picked.every(t=>t.use)){mix.name=mix.needs.map(x=>x.e.name).join(' and ');mix.icon=mix.needs.length===1?mix.needs[0].e.icon:null;opts=[mix]}
+  else{opts=OPT.map(e=>mk(e.id,`All ${e.name}`,e.icon,picked.map(t=>line(t,e))));if(!opts.some(o=>o.total===mix.total))opts.unshift(mix);opts.sort((a,b)=>a.total-b.total)}
+  const ok=opts.filter(o=>o.ok);if(!ok.length)return null;
+  const best=ok[0],pick=ok.find(o=>o.id===S.e)||best,min=best.total;
+  const o=R.ovens.find(x=>x.id===S.o),c=S.c,Su=pick.mats.sulfur||0,C=pick.mats.charcoal||0;
+  return{picked,total:picked.reduce((a,t)=>a+S.n[t.id],0),hasSoft,soft,opts,best,pick,min,scale:Math.max(...ok.filter(r=>r.total<=min*3).map(r=>r.total))||1,o,c,Su,C,m:smelt(Su,C,o,c)}}
+let V;  // what render() last showed, for the share image
+function render(){
+  for(const t of R.targets){const q=S.n[t.id]||0,i=document.querySelector(`[data-q="${t.id}"]`);
+    if(document.activeElement!==i||i.value!=='')i.value=q;document.querySelector(`[data-tile="${t.id}"]`).classList.toggle('is-on',q>0)}
+  for(const i of document.querySelectorAll('input[name=oven]'))i.checked=i.value===S.o;
+  if(document.activeElement!==$('#ovens')||$('#ovens').value!=='')$('#ovens').value=S.c;
+  V=plan();
+  $('#none').hidden=!!V;$('#result').hidden=!V;$('#soft-wrap').hidden=!(V&&V.hasSoft);$('#soft').checked=!!(V&&V.soft);$('#reset').hidden=!V;
+  $('#sum').textContent=V?`Picked: ${V.picked.map(t=>`${t.name} × ${S.n[t.id]}`).join(', ')} (total ${V.total})`:'Nothing picked yet';
+  $('#target-sub').textContent=V?`${V.picked.map(t=>`${t.name} × ${S.n[t.id]}`).join(', ')}`:'Enter counts. Pick as many as you like';
+  if(!V){history.replaceState(null,'','?p=');$('#to-craft-top').href='craft.html';return}
+  const{picked,opts,best,pick,min,scale,o,c}=V;
+  $('#raid-h').innerHTML=`${num(V.total)} targets to break <small>${esc(pick.name)} / sulfur ${num(pick.total)}</small>`;
+  $('#pick-name').innerHTML=(pick.icon?ii(pick.icon):'')+esc(pick.name);
+  const needs=p=>p.needs.map(x=>`<span class="ra-rd-need">${ii(x.e.icon)}${esc(x.e.name)}<b>${num(x.n)}</b><small>${unit(x.e)}</small></span>`).join('');
+  $('#pick-needs').innerHTML=needs(pick);
+  const fixed=picked.filter(t=>t.use);
+  $('#pick-note').textContent=pick===best?(fixed.length?`The least sulfur among the ways offered. ${fixed.map(t=>t.name).join(' and ')}: counted with ${EX[fixed[0].use].name}.`:'This is the way with the least sulfur.'):`The least sulfur is “${best.name}” at ${num(best.total)} . The picked way takes ${(pick.total/min).toFixed(2)} times that.`;
+  $('#pick-s').textContent=num(pick.total);
+  $('#raid-rows').innerHTML=opts.map((r,i)=>{
+    if(!r.ok)return`<div class="ra-rd-row ra-rd-none"><span class="ra-rd-name">${r.icon?ii(r.icon):''}${esc(r.name)}</span><span class="ra-rd-m">Cannot break one of the targets</span></div>`;
+    const k=r.total/min,on=r===pick,many=r.needs.length>1;
+    const duds=r.needs.filter(x=>x.e.dud).map(x=>`${x.e.name} duds ${Math.round(x.e.dud*100)}% (lit on average ${num(x.n/(1-x.e.dud))})`).join(', ');
+    const extra=(duds?` / ${esc(duds)}`:'')+(r.total>scale?' / the bar runs past the frame':'')+(on?' / <b>shown below</b>':'');
+    return`<label class="ra-rd-row"><input type="radio" name="plan" value="${esc(r.id)}"${on?' checked':''}>`+
+      `<span class="ra-rd-name">${r.icon?ii(r.icon):''}${esc(r.name)}</span><span class="ra-rd-n">${many?r.needs.length:num(r.needs[0].n)}<small>${many?'kinds':unit(r.needs[0].e)}</small></span>`+
+      `<span class="ra-rd-bar"><span style="width:${Math.min(100,r.total/scale*100).toFixed(1)}%"${i===0?' class="ra-rd-bar-best"':''}></span></span>`+
+      `<span class="ra-rd-s">${num(r.total)}<small>${i===0?'least':` ${k>=10?Math.round(k):k.toFixed(2)} × the least`}</small></span>`+
+      `<span class="ra-rd-m">${many?`<b>${esc(needText(r))}</b> / `:''}Other materials: ${esc(matsText(r.mats).slice(1).join(', '))}${extra}</span></label>`}).join('');
+  $('#break-sub').textContent=pick.name;
+  $('#break-rows').innerHTML=pick.lines.map(l=>`<div class="ra-rd-bk"><span class="ra-rd-name">${ii(l.t.icon)}${esc(l.t.name)} × ${l.q}</span><span class="ra-rd-bke">${ii(l.e.icon)}${esc(l.e.name)}</span>`+
+    `<span class="ra-rd-n">${num(l.n)}<small>${unit(l.e)}</small></span><span class="ra-rd-s">${num(l.s)}</span></div>`).join('')+
+    `<div class="ra-rd-bk ra-rd-bktotal"><span>Total</span><span class="ra-rd-bke">${esc(needText(pick))}</span><span></span><span class="ra-rd-s ra-rd-sulfur">${num(pick.total)}</span></div>`;
+  $('#smelt-sub').textContent=needText(pick);
+  showSmelt(V.m,V.Su,o,c);
+  $('#smelt-note').textContent=`${o.name} ${c} x. Sulfur ore per furnace per second: ${num(1/o.sulfur)} .`+
+    (o.burn?`One wood burns per furnace every ${num(o.burn)} s.`:`Charcoal is counted as made in${fuelOven.name}or other fuel furnaces, ${c} of them.`);
+  $('#cost-each').innerHTML=pick.needs.map(x=>`<div class="ra-rd-li ra-rd-li-col"><div><span class="ra-rd-name">${ii(x.e.icon)}${esc(x.e.name)}</span><span class="ra-rd-n">${num(x.n)}<small>${unit(x.e)}</small></span></div>`+
+    `<span class="ra-rd-m">${esc(matOrder(x.e.cost).map(m=>`${R.materials[m]} ${num(x.e.cost[m]*x.n)}`).join(', '))}</span></div>`).join('');
+  $('#cost-sub').textContent=matsText(pick.mats).slice(0,2).join(', ');
+  $('#cost-all').innerHTML=matOrder(pick.mats).map(m=>`<div class="ra-rd-li"><span class="ra-rd-name">${esc(R.materials[m])}</span><span class="ra-rd-n">${num(pick.mats[m])}<small></small></span></div>`).join('');
+  const u=new URLSearchParams({p:picked.map(t=>`${t.id}:${S.n[t.id]}`).join(',')});if(pick!==best)u.set('e',pick.id);u.set('o',S.o);if(c>1)u.set('c',c);if(V.soft)u.set('s','1');
+  history.replaceState(null,'',`?${u}`);
+  const cu=new URLSearchParams({m:pick.needs.map(x=>`${x.e.id}:${x.n}`).join(','),o:S.o});if(c>1)cu.set('c',c);cu.set('r',u.toString());
+  $('#to-craft').href=$('#to-craft-top').href=`craft.html?${cu}`}
+const setQ=(id,v)=>{const q=Math.max(0,Math.min(100,parseInt(v,10)||0));if(q)S.n[id]=q;else delete S.n[id]};
+const onPick=ev=>{const i=ev.target;
+  if(i.dataset.q)setQ(i.dataset.q,i.value);else if(i.name==='oven')S.o=i.value;else if(i.name==='plan')S.e=i.value;
+  else if(i.id==='soft')S.soft=i.checked;else if(i.id==='ovens')S.c=clamp(i.value,1,50);else return;
+  render();if(ev.type==='change'){if(i.dataset.q)i.value=S.n[i.dataset.q]||0;if(i.id==='ovens')i.value=S.c}
+  if(i.name==='plan'){const n=document.querySelector('input[name=plan]:checked');if(n)n.focus()}};
+document.addEventListener('change',onPick);
+document.addEventListener('input',ev=>{if(ev.target.dataset.q||ev.target.id==='ovens')onPick(ev)});
+document.addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b)return;
+  if(b.dataset.t)setQ(b.dataset.t,(S.n[b.dataset.t]||0)+Number(b.dataset.d));else if(b.dataset.step)S.c=clamp(S.c+Number(b.dataset.d),1,50);else if(b.id==='reset')S.n={};else return;
+  render();say();if(b.id==='reset')document.querySelector('[data-q]').focus()});
+render();
+// The share image: the least-sulphur way, the picked way, its lines per target, the smelting and the cost.
+const card=()=>drawCard('Raid Planner',[...V.picked.map(t=>t.icon),...V.pick.lines.map(l=>l.e.icon),V.best.icon,V.pick.icon],h=>{
+  const{W,L,HALF,C,f,T,M,fit,box,rule,pic}=h,{picked,best,pick,min,o,c,m,Su}=V;
+  // the title, then the picked targets, wrapping onto more lines
+  let px=T(`${num(V.total)} targets to break`,L,124,f(600,34,'sans'),C.ink)+28,py=124;const cf=f(400,17,'sans');
+  for(const t of picked){const s=`${t.name} × ${S.n[t.id]}`,w=26+M(s,cf);if(px+w>W-L){px=L;py+=30}pic(t.icon,px,py-16,20);T(s,px+26,py,cf,C.ink);px+=w+20}
+  // the least-sulphur way and the picked way, side by side
+  const top=py+18,way=(bx,label,p,note,col,on)=>{if(on){box(C.up,bx,top,HALF,92);rule(C.ink,bx,top,HALF,92,2)}else rule(C.strong,bx,top,HALF,92,1);
+    T(label,bx+16,top+23,f(400,13,'sans'),C.mute);const nf=f(600,20,'sans'),sw=M(num(p.total),f(600,40,'disp'))+32;
+    if(p.icon)pic(p.icon,bx+16,top+31,22);T(fit(p.name,nf,HALF-sw-(p.icon?46:16)),bx+(p.icon?46:16),top+50,nf,C.ink);
+    T(fit(needText(p),f(400,14,'sans'),HALF-32),bx+16,top+78,f(400,14,'sans'),C.ink);
+    T(note,bx+HALF-16,top+23,f(400,13,'sans'),C.mute,1);T(num(p.total),bx+HALF-16,top+60,f(600,40,'disp'),col,1)};
+  way(L,'Least sulfur',best,'Sulfur',pick===best?C.rust:C.mute,false);
+  way(L+HALF+24,'Picked way',pick,pick===best?'Sulfur (least)':`Sulfur ( ${(pick.total/min).toFixed(2)} × the least)`,C.rust,true);
+  // left: the lines per target of the picked way; right: the smelting and the cost
+  const lt=top+92+20,RX=L+HALF+24,hf=f(600,16,'sans'),sf=f(400,13,'sans');
+  T('Breakdown per target',L,lt+16,hf,C.ink);T('picked way',L+HALF,lt+16,sf,C.mute,1);box(C.ink,L,lt+26,HALF,2);
+  const rh=Math.min(34,Math.floor((632-lt-28)/(pick.lines.length+1))),fs=rh<26?12:15,is=rh<26?14:18;
+  pick.lines.forEach((l,i)=>{const y=lt+28+i*rh,b=y+rh/2+fs*.36;
+    pic(l.t.icon,L,y+(rh-is)/2,is);T(`${l.t.name} × ${l.q}`,L+is+8,b,f(600,fs,'sans'),C.ink);
+    pic(l.e.icon,L+190,y+(rh-is)/2,is);T(fit(l.e.name,f(400,fs-1,'sans'),170),L+190+is+6,b,f(400,fs-1,'sans'),C.ink);
+    T(`${num(l.n)} ${unit(l.e)}`,L+HALF-112,b,f(500,fs,'mono'),C.ink,1);T(num(l.s),L+HALF,b,f(500,fs,'mono'),C.ink,1);box(C.line,L,y+rh-1,HALF,1)});
+  const ty=lt+28+pick.lines.length*rh,tb=ty+rh/2+fs*.36;T('Total',L,tb,f(600,fs,'sans'),C.ink);T(num(pick.total),L+HALF,tb,f(500,fs,'mono'),C.rust,1);
+  T('Making them',RX,lt+16,hf,C.ink);T(`${o.name} ${c} x`,RX+HALF,lt+16,sf,C.mute,1);box(C.ink,RX,lt+26,HALF,2);
+  cardSmelt(h,RX,lt+50,m,Su,o,c);
+  box(C.line,RX,lt+116,HALF,1);T('Cost to make',RX,lt+138,f(400,12,'sans'),C.mute);
+  let cx=RX,cy=lt+160;const mf=f(400,14,'sans');
+  matsText(pick.mats).forEach((s,i,a)=>{s+=i<a.length-1?', ':'';const w=M(s,mf);if(cx+w>RX+HALF){cx=RX;cy+=22}T(s,cx,cy,mf,C.ink);cx+=w})});
+shareUI(card,()=>`rust-raid-${V.picked.map(t=>`${t.id}-x${S.n[t.id]}`).join('_').slice(0,80)}.png`,
+  ()=>`${V.picked.map(t=>`${t.name} × ${S.n[t.id]}`).join(', ')}: ${needText(V.pick)}, sulfur ${num(V.pick.total)}`,
+  'The link opens the calculator with the same choice. The image puts the picked way, its breakdown and the making on one card.');
+</script>
+</body></html>
