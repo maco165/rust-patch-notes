@@ -34,51 +34,49 @@
   <h1 class="ra-patch-sub" lang="en">Craft Planner</h1>
   <p class="ra-lead">作る爆発物、手持ちの物資、炉の数を入れると、足りない材料と、それを用意するのにかかる時間を出します。</p>
 </div>
-<section class="ra-block" aria-labelledby="h-make">
-  <h2 class="ra-section" id="h-make">作る物 <small>作る数を入れる</small></h2>
+<section class="ra-block" aria-labelledby="h-make"><details class="ra-sec" open data-fold="h-make"><summary><h2 class="ra-section" id="h-make">作る物 <small>作る数を入れる</small></h2><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i></summary><div class="ra-block">
   <p class="ra-cp-from" id="from" hidden>Raid Planner で選んだ方法の数を入れてあります。<a href="raid.html" id="back">Raid Planner に戻って選び直す</a></p>
   <div class="ra-rd-tiles" role="group" aria-label="作る爆発物" id="makes"></div>
-</section>
-<section class="ra-block" aria-labelledby="h-stock">
-  <h2 class="ra-section" id="h-stock">手持ちの物資 <small>いま持っている数を入れる。無ければ 0 のまま</small></h2>
+</div></details></section>
+<section class="ra-block" aria-labelledby="h-stock"><details class="ra-sec" data-fold="h-stock"><summary><h2 class="ra-section" id="h-stock">手持ちの物資 <small id="stock-sub"></small></h2><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i></summary><div class="ra-block">
   <div class="ra-cp-stock" id="stocks"></div>
   <p class="ra-rd-hint" id="stock-note"></p>
-</section>
-<section class="ra-block" aria-labelledby="h-oven">
-  <h2 class="ra-section" id="h-oven">設備 <small>焼くのに使う炉</small></h2>
+</div></details></section>
+<section class="ra-block" aria-labelledby="h-oven"><details class="ra-sec" open data-fold="h-oven"><summary><h2 class="ra-section" id="h-oven">設備 <small>焼くのに使う炉</small></h2><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i></summary><div class="ra-block">
   <div class="ra-rd-controls">
     <div class="ra-rd-field"><span id="l-oven">炉</span><div class="ra-tabs" role="radiogroup" aria-labelledby="l-oven" id="ovens-pick"></div></div>
     <div class="ra-rd-field"><label for="ovens">台数</label>
       <div class="ra-step"><button type="button" data-step="ovens" data-d="-1" aria-label="台数を 1 減らす">−</button><input id="ovens" type="number" min="1" max="50" value="1" inputmode="numeric"><button type="button" data-step="ovens" data-d="1" aria-label="台数を 1 増やす">+</button></div></div>
   </div>
-</section>
+</div></details></section>
 <section class="ra-block" id="none">
   <h2 class="ra-section">結果</h2>
   <p class="ra-lead">作る物の数を 1 以上にすると、ここに足りない材料と時間が出ます。</p>
 </section>
 <div id="result" class="ra-rd-result">
-<section class="ra-block" aria-live="polite" aria-labelledby="h-result">
-  <h2 class="ra-section" id="h-result">追加で要る物と時間 <small id="make-sub"></small></h2>
+<section class="ra-block" aria-live="polite" aria-labelledby="h-result"><details class="ra-sec" open data-fold="h-result"><summary><h2 class="ra-section" id="h-result">追加で要る物と時間 <small id="make-sub"></small></h2><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i></summary><div class="ra-block">
   <div class="ra-cp-top">
     <div class="ra-rd-stat"><span class="ra-rd-label">追加で掘る硫黄鉱石</span><span class="ra-rd-big ra-rd-sulfur" id="mine"></span><span class="ra-rd-label" id="mine-note"></span></div>
     <div class="ra-rd-stat"><span class="ra-rd-label">追加で集める木</span><span class="ra-rd-big" id="wood"></span><span class="ra-rd-label" id="wood-note"></span></div>
     <div class="ra-rd-stat"><span class="ra-rd-label">炉が要る時間</span><span class="ra-rd-big ra-cp-time" id="all-time"></span><span class="ra-rd-label" id="time-note"></span></div>
   </div>
+  <div class="ra-rd-share ra-cp-share"><span class="ra-rd-label">いまの結果を渡す</span>
+    <div class="ra-rd-share-row"><button type="button" class="ra-rd-share-go" id="sh-link"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>リンクをコピー</button>
+      <div class="ra-rd-img" role="group" aria-label="結果の画像"><span><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>画像</span><button type="button" id="sh-send" aria-label="画像を共有" hidden><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><path d="m8.59 13.51 6.83 3.98"></path><path d="m15.41 6.51-6.82 3.98"></path></svg>共有</button><button type="button" id="sh-copy" aria-label="画像をコピー" hidden><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>コピー</button><button type="button" id="sh-save" aria-label="画像を保存"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="m7 10 5 5 5-5"></path><path d="M12 15V3"></path></svg>保存</button></div></div>
+    <span class="ra-rd-share-msg" id="sh-msg" role="status"></span></div>
   <div class="ra-cp-row ra-cp-head" aria-hidden="true"><span>材料</span><span class="ra-rd-n">要る数</span><span class="ra-rd-n">手持ち</span><span class="ra-rd-n">足りない数</span></div>
   <div id="rows"></div>
   <p class="ra-more">足りない数が「足りている」の材料は、手持ちで間に合います。</p>
-</section>
-<section class="ra-block" aria-live="polite" aria-labelledby="h-time">
-  <h2 class="ra-section" id="h-time">炉の時間 <small id="oven-sub"></small></h2>
+</div></details></section>
+<section class="ra-block" aria-live="polite" aria-labelledby="h-time"><details class="ra-sec" open data-fold="h-time"><summary><h2 class="ra-section" id="h-time">炉の時間 <small id="oven-sub"></small></h2><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i></summary><div class="ra-block">
   <div class="ra-rd-smelt">
     <div class="ra-rd-stat"><span class="ra-rd-label">硫黄鉱石を焼く</span><span class="ra-rd-time" id="s-time"></span><span class="ra-rd-sub" id="s-ore"></span></div>
     <div class="ra-rd-stat"><span class="ra-rd-label">木を燃やして木炭を作る</span><span class="ra-rd-time" id="c-time"></span><span class="ra-rd-sub" id="c-wood"></span></div>
     <div class="ra-rd-stat"><span class="ra-rd-label">同じ炉で両方を作る</span><span class="ra-rd-time" id="b-time"></span><span class="ra-rd-sub" id="b-wood"></span></div>
   </div>
-</section>
+</div></details></section>
 </div>
-<section class="ra-block" aria-labelledby="h-notes">
-  <h2 class="ra-section" id="h-notes">計算の前提</h2>
+<section class="ra-block" aria-labelledby="h-notes"><details class="ra-sec" open data-fold="h-notes"><summary><h2 class="ra-section" id="h-notes">計算の前提</h2><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i></summary><div class="ra-block">
   <ul class="ra-cp-notes">
     <li>材料は、爆薬・火薬・ビーンカングレネードを作るところまでさかのぼって数えています。</li>
     <li>時間は炉で焼く時間だけです。作業台で作る時間 (クラフトの時間) と、掘る・集める時間は入れていません。</li>
@@ -86,7 +84,7 @@
     <li>金属片は金属片のまま数えています。金属鉱石を焼く数と時間は入れていません。</li>
     <li>時間はサーバーが軽いときの数です。重いサーバーでは木と木炭の時間が長くなることがあります。</li>
   </ul>
-</section>
+</div></details></section>
 </main>
 <footer class="ra-foot"><p>Facepunch Studios とは関係のない、個人が解析して作った非公式のサイトです。変更点は公式の変更点の一覧を自分の言葉で日本語にしたもので、各回に出典のリンクがあります。アイテムの値はゲームのサーバーのデータから、版の差分はゲームの本体 (クライアント) の各月の版のデータから読んだもので、正しさは保証しません。</p>
 <p>アイコンの一部は <a class="ra-link" href="https://lucide.dev/" rel="noopener">Lucide</a> (ISC License) です。</p></footer>
@@ -110,6 +108,62 @@ const showSmelt=(m,Su,o,c)=>{$('#s-time').textContent=dur(m.ts);$('#s-ore').text
   $('#b-wood').textContent=o.burn?`木 ${num(Math.ceil(m.bothWood))} 個`:'電気炉は木を燃やせません。木炭は燃料の炉で作るとして、左の時間を数えています。';
   $('#b-wood').classList.toggle('ra-rd-plain',!o.burn)};
 const matOrder=mats=>Object.keys(mats).sort((a,b)=>(b==='sulfur')-(a==='sulfur')||mats[b]-mats[a]);
+// The sections fold at their headings; which ones are folded is remembered on this device, per page.
+const FOLD='ra-fold-'+location.pathname.split('/').pop(),folds=()=>[...document.querySelectorAll('details[data-fold]')];
+try{const st=JSON.parse(localStorage.getItem(FOLD)||'{}');for(const d of folds())if(d.dataset.fold in st)d.open=!!st[d.dataset.fold]}catch(_){}
+document.addEventListener('toggle',ev=>{if(ev.target.dataset&&ev.target.dataset.fold)try{localStorage.setItem(FOLD,JSON.stringify(Object.fromEntries(folds().map(d=>[d.dataset.fold,d.open]))))}catch(_){}},true);
+// The share image: a 1200x675 card (drawn at 2x) in the page's own colours and fonts, with the site's name and `title` on
+// top and the page's address below. paint(h) draws the rest with the helpers h; icons are the names it draws with h.pic.
+const css=k=>getComputedStyle(document.documentElement).getPropertyValue(k).trim();
+async function drawCard(title,icons,paint){
+  const W=1200,H=675,K=2,L=48,HALF=(W-L*2-24)/2,cv=document.createElement('canvas');cv.width=W*K;cv.height=H*K;
+  const x=cv.getContext('2d');x.scale(K,K);
+  const C={bg:css('--plate'),up:css('--plate-raised'),sunk:css('--plate-sunken'),line:css('--line'),strong:css('--line-strong'),ink:css('--ink'),mute:css('--ink-muted'),rust:css('--rust')};
+  const F={sans:css('--font-sans'),mono:css('--font-mono'),disp:css('--font-display')},f=(w,px,fam)=>`${w} ${px}px ${F[fam]}`;
+  const used=[],pics={};
+  const pic=(k,px,py,sz)=>{if(pics[k])x.drawImage(pics[k],px,py,sz,sz)};
+  const M=(s,font)=>{x.font=font;return x.measureText(s).width};
+  // T draws text and returns the x where it ended (where it began, when right-aligned)
+  const T=(s,px,py,font,col,right)=>{used.push([font,s]);x.font=font;x.fillStyle=col;x.textAlign=right?'right':'left';x.fillText(s,px,py);
+    const w=x.measureText(s).width;return right?px-w:px+w};
+  const fit=(s,font,max)=>{if(M(s,font)<=max)return s;while(s.length>1&&M(s+'…',font)>max)s=s.slice(0,-1);return s+'…'};
+  const box=(col,a,b,w,h)=>{x.fillStyle=col;x.fillRect(a,b,w,h)};
+  const rule=(col,a,b,w,h,lw)=>{x.strokeStyle=col;x.lineWidth=lw;x.strokeRect(a+lw/2,b+lw/2,w-lw,h-lw)};
+  const h={x,W,H,L,HALF,C,f,T,M,fit,box,rule,pic};
+  const all=()=>{box(C.bg,0,0,W,H);const e=T('Rust Analysis',L,60,f(700,26,'disp'),C.ink);T(title,e+16,60,f(600,17,'sans'),C.mute);
+    T(`本体の書き出し ${R.version}`,W-L,60,f(400,14,'mono'),C.mute,1);box(C.ink,L,78,W-L*2,2);paint(h);
+    box(C.line,L,642,W-L*2,1);T('maco165.github.io/rust-patch-notes/tools/craft.html',L,662,f(400,13,'mono'),C.mute);T('ゲームのデータからの計算値 ／ 非公式',W-L,662,f(400,13,'sans'),C.mute,1)};
+  // the first pass lists the text of each font, so the web fonts (split by unicode range) load before the pass that counts
+  all();try{await Promise.all(used.map(([font,s])=>document.fonts.load(font,s)))}catch(_){}
+  // the icons, as SVG images stroked in the ink colour; one that fails to load is left out
+  await Promise.all([...new Set(icons.filter(Boolean))].map(async k=>{try{const im=new Image();
+    im.src='data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 24 24" fill="none" stroke="${C.ink}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${R.icons[k]}</svg>`);
+    await im.decode();pics[k]=im}catch(_){}}));
+  used.length=0;all();return cv}
+// The three stats of the smelting, at the left edge sx and the top sy of a half-width column.
+const cardSmelt=(h,sx,sy,m,Su,o,c)=>{const{HALF,C,f,T}=h,stat=(px,label,time,sub)=>{T(label,px,sy,f(400,12,'sans'),C.mute);T(time,px,sy+30,f(600,26,'disp'),C.ink);T(sub,px,sy+50,f(400,12,'mono'),C.ink)};
+  stat(sx,'硫黄鉱石を焼く',dur(m.ts),`硫黄鉱石 ${num(Math.ceil(Su*o.ore))} 個`);
+  stat(sx+HALF/3,o.burn?'木を燃やして木炭を作る':`木炭を作る (${fuelOven.name} ${c} 台)`,dur(m.tc),`木 ${num(Math.ceil(m.wood))} 個`);
+  if(o.burn)stat(sx+HALF*2/3,'同じ炉で両方を作る',dur(m.both),`木 ${num(Math.ceil(m.bothWood))} 個`)};
+// The buttons under "いまの結果を渡す": the link, and the image made by card() shared, copied or saved as name().
+let say=()=>{};
+function shareUI(card,name,summary,hint){
+  const png=async()=>{const cv=await card();return new Promise((ok,ng)=>cv.toBlob(b=>b?ok(b):ng(new Error('toBlob')),'image/png'))};
+  say=m=>{$('#sh-msg').textContent=m||hint};say();document.addEventListener('change',()=>say());
+  const clip=navigator.clipboard;
+  $('#sh-link').addEventListener('click',async()=>{try{await clip.writeText(location.href);say('リンクをコピーしました。')}
+    catch(_){say('コピーできませんでした。アドレス欄の URL をそのまま使えます。')}});
+  $('#sh-save').addEventListener('click',async()=>{try{const a=document.createElement('a');a.href=URL.createObjectURL(await png());a.download=name();
+    document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),10000);say(`画像を保存しました (${name()})。`)}
+    catch(_){say('画像を作れませんでした。')}});
+  if(clip&&clip.write&&window.ClipboardItem){$('#sh-copy').hidden=false;
+    $('#sh-copy').addEventListener('click',async()=>{try{await clip.write([new ClipboardItem({'image/png':png()})]);say('画像をコピーしました。貼り付けて送れます。')}
+      catch(_){say('画像をコピーできませんでした。「保存」を使ってください。')}})}
+  const probe=()=>{try{return navigator.canShare&&navigator.canShare({files:[new File([''],'a.png',{type:'image/png'})]})}catch(_){return false}};
+  if(probe()){$('#sh-send').hidden=false;
+    $('#sh-send').addEventListener('click',async()=>{try{const file=new File([await png()],name(),{type:'image/png'});
+        await navigator.share({files:[file],text:`${summary()}\n${location.href}`});say('')}
+      catch(e){if(e.name!=='AbortError')say('共有できませんでした。「保存」を使ってください。')}})}}
 
 const P=new URLSearchParams(location.search);
 const pairs=(s,ok)=>{const out={};for(const part of(s||'').split(',')){const[id,q]=part.split(':'),n=parseInt(q,10);if(ok(id)&&n>0)out[id]=Math.min(n,9999999)}return out};
@@ -123,6 +177,7 @@ $('#stocks').innerHTML=R.stock.map(k=>`<label>${esc(k[1])}<input type="number" m
 $('#ovens-pick').innerHTML=R.ovens.map(o=>`<label class="ra-tab"><input type="radio" name="oven" value="${esc(o.id)}">${esc(o.name)}</label>`).join('');
 const GP=R.gunpowder,gpName=R.stock.find(k=>k[0]==='gunpowder')[1],oreName=R.stock.find(k=>k[0]==='sulfur.ore')[1];
 $('#stock-note').textContent=`${gpName}は、作る物が使う数までを、1 個あたり${matOrder(GP).map(m=>`${R.materials[m]} ${num(GP[m])}`).join('と')}として数えます。${oreName}は、焼いて硫黄にする分に先に使います。`;
+let V;  // what render() last showed, for the share image
 function render(){
   for(const e of R.explosives){const q=S.m[e.id]||0,i=document.querySelector(`[data-q="${e.id}"]`);
     if(document.activeElement!==i||i.value!=='')i.value=q;document.querySelector(`[data-tile="${e.id}"]`).classList.toggle('is-on',q>0)}
@@ -133,7 +188,9 @@ function render(){
   $('#none').hidden=made.length>0;$('#result').hidden=!made.length;
   const u=new URLSearchParams({m:made.map(e=>`${e.id}:${S.m[e.id]}`).join(',')});const ks=R.stock.filter(k=>S.k[k[0]]>0).map(k=>`${k[0]}:${S.k[k[0]]}`).join(',');
   if(ks)u.set('k',ks);u.set('o',S.o);if(c>1)u.set('c',c);if(P.get('r'))u.set('r',P.get('r'));history.replaceState(null,'',`?${u}`);
-  if(!made.length)return;
+  const held=R.stock.filter(k=>S.k[k[0]]>0);
+  $('#stock-sub').textContent=held.length?held.map(k=>`${k[1]} ${num(S.k[k[0]])}`).join('、'):'持っている物があれば、開いて数を入れる';
+  V=null;if(!made.length)return;
   const need={};for(const e of made)for(const[m,v]of Object.entries(e.cost))need[m]=(need[m]||0)+v*S.m[e.id];
   // gunpowder in hand stands for the sulphur and charcoal it is made of, up to the gunpowder the recipes take (it cannot be
   // turned back into sulphur); ore in hand is smelted before any is mined
@@ -148,7 +205,8 @@ function render(){
     return`<div class="ra-cp-row"><span class="ra-cp-name"><b>${esc(R.materials[k])}</b>${gp&&GP[k]?`<small>${esc(gpName)} ${num(gp)} 個の分を手持ちに足しています</small>`:''}</span>`+
       `<span class="ra-rd-n ra-cp-need">${num(need[k])}</span><span class="ra-rd-n ra-cp-have">${num(have(k))}</span>`+
       `<span class="ra-rd-n ra-cp-lack${l?' is-short':''}">${l?num(l):'足りている'}</span></div>`}).join('');
-  $('#oven-sub').textContent=`${o.name} ${c} 台`;showSmelt(m,Ls,o,c)}
+  $('#oven-sub').textContent=`${o.name} ${c} 台`;showSmelt(m,Ls,o,c);
+  V={made,need,have,lack,held,gp,Ls,Lc,mine,m,o,c}}
 const setN=(box,id,v,max)=>{const q=Math.max(0,Math.min(max,parseInt(v,10)||0));if(q)box[id]=q;else delete box[id]};
 const onPick=ev=>{const i=ev.target;
   if(i.dataset.q)setN(S.m,i.dataset.q,i.value,9999999);else if(i.dataset.k)setN(S.k,i.dataset.k,i.value,9999999);else if(i.name==='oven')S.o=i.value;
@@ -157,7 +215,33 @@ const onPick=ev=>{const i=ev.target;
 document.addEventListener('change',onPick);
 document.addEventListener('input',ev=>{if(ev.target.dataset.q||ev.target.dataset.k||ev.target.id==='ovens')onPick(ev)});
 document.addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b)return;
-  if(b.dataset.t)setN(S.m,b.dataset.t,(S.m[b.dataset.t]||0)+Number(b.dataset.d),9999999);else if(b.dataset.step)S.c=clamp(S.c+Number(b.dataset.d),1,50);else return;render()});
+  if(b.dataset.t)setN(S.m,b.dataset.t,(S.m[b.dataset.t]||0)+Number(b.dataset.d),9999999);else if(b.dataset.step)S.c=clamp(S.c+Number(b.dataset.d),1,50);else return;render();say()});
+// stock that came with the link is shown; otherwise the section starts folded (the page's HTML) unless it was opened before
+if(Object.keys(S.k).length)document.querySelector('[data-fold="h-stock"]').open=true;
 render();
+// The share image: what is made, the three totals, the materials (needed, in hand, short) and the ovens' time.
+const card=()=>drawCard('Craft Planner',V.made.map(e=>e.icon),h=>{
+  const{W,L,HALF,C,f,T,M,fit,box,rule,pic}=h,{made,need,have,lack,held,Ls,mine,m,o,c}=V;
+  let px=T('作る物',L,124,f(600,34,'sans'),C.ink)+28,py=124;const cf=f(400,17,'sans');
+  for(const e of made){const s=`${e.name} ${num(S.m[e.id])} ${unit(e)}`,w=26+M(s,cf);if(px+w>W-L){px=L;py+=30}pic(e.icon,px,py-16,20);T(s,px+26,py,cf,C.ink);px+=w+20}
+  const top=py+18,TW=(W-L*2-48)/3,big=(i,label,v,col,note)=>{const bx=L+i*(TW+24);rule(i?C.strong:C.ink,bx,top,TW,92,i?1:2);if(!i)box(C.up,bx+2,top+2,TW-4,88);
+    T(label,bx+16,top+23,f(400,13,'sans'),C.mute);T(v,bx+16,top+62,f(600,i===2?32:40,'disp'),col);T(fit(note,f(400,12,'sans'),TW-32),bx+16,top+82,f(400,12,'sans'),C.mute)};
+  big(0,'追加で掘る硫黄鉱石',num(Math.ceil(mine)),C.rust,Ls?`足りない硫黄 ${num(Ls)}`:'硫黄は手持ちで足りています');
+  big(1,'追加で集める木',num(Math.ceil(m.wood)),C.ink,V.Lc?`足りない木炭 ${num(V.Lc)} を作る分 (平均)`:'木炭は手持ちで足りています');
+  big(2,'炉が要る時間',dur(m.both),C.ink,`${o.name} ${c} 台${o.burn?'':`と${fuelOven.name} ${c} 台`}`);
+  const lt=top+92+20,RX=L+HALF+24,hf=f(600,16,'sans'),sf=f(400,13,'sans'),keys=matOrder(need).sort((a,b)=>R.order.indexOf(a)-R.order.indexOf(b));
+  T('材料',L,lt+16,hf,C.ink);T('要る数',L+HALF-230,lt+16,sf,C.mute,1);T('手持ち',L+HALF-115,lt+16,sf,C.mute,1);T('足りない数',L+HALF,lt+16,sf,C.mute,1);box(C.ink,L,lt+26,HALF,2);
+  const rh=Math.min(34,Math.floor((632-lt-28)/keys.length)),fs=rh<26?12:15;
+  keys.forEach((k,i)=>{const y=lt+28+i*rh,b=y+rh/2+fs*.36,l=lack(k);T(R.materials[k],L,b,f(600,fs,'sans'),C.ink);
+    T(num(need[k]),L+HALF-230,b,f(400,fs,'mono'),C.ink,1);T(num(have(k)),L+HALF-115,b,f(400,fs,'mono'),C.mute,1);
+    T(l?num(l):'足りている',L+HALF,b,l?f(500,fs,'mono'):f(400,fs-1,'sans'),l?C.rust:C.mute,1);box(C.line,L,y+rh-1,HALF,1)});
+  T('炉の時間',RX,lt+16,hf,C.ink);T(`${o.name} ${c} 台`,RX+HALF,lt+16,sf,C.mute,1);box(C.ink,RX,lt+26,HALF,2);
+  cardSmelt(h,RX,lt+50,m,Ls,o,c);
+  box(C.line,RX,lt+116,HALF,1);T('手持ちの物資',RX,lt+138,f(400,12,'sans'),C.mute);
+  let cx=RX,cy=lt+160;const mf=f(400,14,'sans'),hs=held.length?held.map(k=>`${k[1]} ${num(S.k[k[0]])}`):['入れていません'];
+  hs.forEach((s,i,a)=>{s+=i<a.length-1?'、':'';const w=M(s,mf);if(cx+w>RX+HALF){cx=RX;cy+=22}T(s,cx,cy,mf,C.ink);cx+=w})});
+shareUI(card,()=>`rust-craft-${V.made.map(e=>`${e.id}-x${S.m[e.id]}`).join('_').slice(0,80)}.png`,
+  ()=>`${V.made.map(e=>`${e.name} ${num(S.m[e.id])} ${unit(e)}`).join('、')}: 追加で掘る硫黄鉱石 ${num(Math.ceil(V.mine))}、木 ${num(Math.ceil(V.m.wood))}、炉 ${dur(V.m.both)}`,
+  'リンクを開くと、同じ入力のままこのページが開きます。画像は、足りない材料と炉の時間を 1 枚にまとめたものです。');
 </script>
 </body></html>
