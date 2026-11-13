@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The slot machine loses more the more you spin. Average return is 91.8% | Rust Analysis</title>
+<title>Slot machines return 91.8%: spin more, lose more | Rust Analysis</title>
 <meta name="description" content="How the slot machine picks symbols and pays out, read from the server code and data. A 2 Scrap bet returns 1.84 on average. No machine or time pays better.">
 <meta name="theme-color" content="#f2f4f5" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15181a" media="(prefers-color-scheme: dark)">
@@ -9,7 +9,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Rust Analysis">
 <meta property="og:locale" content="en_US">
-<meta property="og:title" content="The slot machine loses more the more you spin. Average return is 91.8% | Rust Analysis">
+<meta property="og:title" content="Slot machines return 91.8%: spin more, lose more | Rust Analysis">
 <meta property="og:description" content="How the slot machine picks symbols and pays out, read from the server code and data. A 2 Scrap bet returns 1.84 on average. No machine or time pays better.">
 <meta property="og:url" content="https://maco165.github.io/rust-patch-notes/en/columns/slot-machine.html">
 <meta property="og:image" content="https://maco165.github.io/rust-patch-notes/assets/og.png">
@@ -20,6 +20,8 @@
 <link rel="alternate" hreflang="ja" href="https://maco165.github.io/rust-patch-notes/columns/slot-machine.html">
 <link rel="alternate" hreflang="en" href="https://maco165.github.io/rust-patch-notes/en/columns/slot-machine.html">
 <link rel="alternate" hreflang="x-default" href="https://maco165.github.io/rust-patch-notes/columns/slot-machine.html">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Slot machines return 91.8%: spin more, lose more", "description": "How the slot machine picks symbols and pays out, read from the server code and data. A 2 Scrap bet returns 1.84 on average. No machine or time pays better.", "inLanguage": "en", "datePublished": "2026-11-12", "dateModified": "2026-11-12", "url": "https://maco165.github.io/rust-patch-notes/en/columns/slot-machine.html", "mainEntityOfPage": "https://maco165.github.io/rust-patch-notes/en/columns/slot-machine.html", "image": "https://maco165.github.io/rust-patch-notes/assets/og.png", "author": {"@type": "Organization", "name": "Rust Analysis", "url": "https://maco165.github.io/rust-patch-notes/"}, "publisher": {"@type": "Organization", "name": "Rust Analysis", "url": "https://maco165.github.io/rust-patch-notes/"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Rust Analysis", "item": "https://maco165.github.io/rust-patch-notes/en/tools.html"}, {"@type": "ListItem", "position": 2, "name": "Articles", "item": "https://maco165.github.io/rust-patch-notes/en/columns.html"}, {"@type": "ListItem", "position": 3, "name": "Slot machines return 91.8%: spin more, lose more", "item": "https://maco165.github.io/rust-patch-notes/en/columns/slot-machine.html"}]}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+JP:wght@400;600&display=swap">
@@ -32,7 +34,7 @@
   <span class="ra-site-lang"><a href="../../columns/slot-machine.html" lang="ja" hreflang="ja">Japanese</a></span><a class="ra-site-link" href="https://github.com/maco165/rust-patch-notes" rel="noopener"><i class="ra-ico ra-ico-github" aria-hidden="true"></i>GitHub</a>
 </header>
 <script>(()=>{const n=document.querySelector('.ra-nav'),a=n&&n.querySelector('[aria-current]');if(a&&n.scrollWidth>n.clientWidth)n.scrollLeft=a.offsetLeft-(n.clientWidth-a.offsetWidth)/2})()</script>
-<main class="ra-page"><article class="ra-prose"><p class="ra-patch-meta"><a class="ra-link" href="../columns.html">Articles</a><time datetime="2026-11-12">2026-11-12</time><span><i class="ra-ico ra-ico-economy" aria-hidden="true"></i> Economy & shops</span><span class="ra-src ra-src-export"><i class="ra-ico ra-ico-export" aria-hidden="true"></i>Game build 2026-11-07</span></p><h1 class="ra-prose-title">The slot machine loses more the more you spin. Average return is 91.8%</h1><p class="ra-prose-lead">How the slot machine picks symbols and pays out, read from the server code and data. A 2 Scrap bet returns 1.84 on average. No machine or time pays better.</p><div class="ra-callout">
+<main class="ra-page"><article class="ra-prose"><p class="ra-patch-meta"><a class="ra-link" href="../columns.html">Articles</a><time datetime="2026-11-12">2026-11-12</time><span><i class="ra-ico ra-ico-economy" aria-hidden="true"></i> Economy & shops</span><span class="ra-src ra-src-export"><i class="ra-ico ra-ico-export" aria-hidden="true"></i>Game build 2026-11-07</span></p><h1 class="ra-prose-title">Slot machines return 91.8%: spin more, lose more</h1><p class="ra-prose-lead">How the slot machine picks symbols and pays out, read from the server code and data. A 2 Scrap bet returns 1.84 on average. No machine or time pays better.</p><div class="ra-callout">
 <p class="ra-callout-label">Answer</p>
 <p class="ra-callout-main">Bet 2 Scrap, get 1.84 back on average</p>
 <p>On average, the return is 91.8% of the bet. All 3 symbols are decided the moment you pull the lever. Previous results, the time, the machine and the bet multiplier are not used. The more you spin, the more you lose on average.</p>
