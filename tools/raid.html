@@ -50,6 +50,10 @@
     <div class="ra-rd-stat"><span class="ra-rd-label">硫黄がいちばん少ない</span><span class="ra-rd-best-name" id="best-name"></span></div>
     <div class="ra-rd-stat"><span class="ra-rd-label">要る数</span><span class="ra-rd-big" id="best-n"></span></div>
     <div class="ra-rd-stat"><span class="ra-rd-label">硫黄</span><span class="ra-rd-big ra-rd-sulfur" id="best-s"></span></div>
+    <div class="ra-rd-share"><span class="ra-rd-label">いまの結果を渡す</span>
+      <div class="ra-rd-share-row"><button type="button" class="ra-rd-share-go" id="sh-link"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>リンクをコピー</button>
+        <div class="ra-rd-img" role="group" aria-label="結果の画像"><span><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>画像</span><button type="button" id="sh-send" aria-label="画像を共有" hidden><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><path d="m8.59 13.51 6.83 3.98"></path><path d="m15.41 6.51-6.82 3.98"></path></svg>共有</button><button type="button" id="sh-copy" aria-label="画像をコピー" hidden><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>コピー</button><button type="button" id="sh-save" aria-label="画像を保存"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="m7 10 5 5 5-5"></path><path d="M12 15V3"></path></svg>保存</button></div></div>
+      <span class="ra-rd-share-msg" id="sh-msg" role="status"></span></div>
   </div>
   <div class="ra-rd-row ra-rd-head" aria-hidden="true"><span>爆発物</span><span class="ra-rd-n">要る数</span><span>硫黄の量</span><span class="ra-rd-s">硫黄</span></div>
   <div role="radiogroup" aria-label="作る手間を見る爆発物" id="raid-rows"></div>
@@ -68,16 +72,6 @@
     <div class="ra-rd-stat"><span class="ra-rd-label">同じ炉で両方を作る</span><span class="ra-rd-time" id="b-time"></span><span class="ra-rd-sub" id="b-wood"></span></div>
   </div>
   <p class="ra-more" id="smelt-note"></p>
-</section>
-<section class="ra-block" aria-labelledby="h-share">
-  <h2 class="ra-section" id="h-share">共有 <small>いまの結果を渡す</small></h2>
-  <div class="ra-rd-share">
-    <button type="button" class="ra-button" id="sh-link">リンクをコピー</button>
-    <button type="button" class="ra-button" id="sh-send" hidden>画像を共有</button>
-    <button type="button" class="ra-button" id="sh-copy" hidden>画像をコピー</button>
-    <button type="button" class="ra-button" id="sh-save">画像を保存</button>
-  </div>
-  <p class="ra-rd-hint" id="sh-msg" role="status">リンクを開くと、同じ選択のまま計算機が開きます。画像は、上の結果と作る手間を 1 枚にまとめたものです。</p>
 </section>
 <section class="ra-block" aria-labelledby="h-notes">
   <h2 class="ra-section" id="h-notes">計算の前提</h2>
@@ -101,13 +95,14 @@
 <footer class="ra-foot"><p>Facepunch Studios とは関係のない、個人が解析して作った非公式のサイトです。変更点は公式の変更点の一覧を自分の言葉で日本語にしたもので、各回に出典のリンクがあります。アイテムの値はゲームのサーバーのデータから、版の差分はゲームの本体 (クライアント) の各月の版のデータから読んだもので、正しさは保証しません。</p>
 <p>アイコンの一部は <a class="ra-link" href="https://lucide.dev/" rel="noopener">Lucide</a> (ISC License) です。</p></footer>
 <script>
-const R={"version":"2026-11-07","targets":[{"id":"wall.twigs","name":"わらの壁","health":10.0,"kind":"壁","n":{"explosive.timed":1,"ammo.rocket.basic":1,"explosive.satchel":1,"ammo.rifle.explosive":1,"grenade.beancan":1,"grenade.f1":2},"soft":{"ammo.rifle.explosive":1}},{"id":"wall.wood","name":"木の壁","health":250.0,"kind":"壁","n":{"explosive.timed":1,"ammo.rocket.basic":2,"explosive.satchel":3,"ammo.rifle.explosive":48,"grenade.beancan":18,"grenade.f1":189},"soft":{"ammo.rifle.explosive":42}},{"id":"wall.stone","name":"石の壁","health":500.0,"kind":"壁","n":{"explosive.timed":2,"ammo.rocket.basic":4,"explosive.satchel":10,"ammo.rifle.explosive":182,"grenade.beancan":64,"grenade.f1":870},"soft":{"ammo.rifle.explosive":167}},{"id":"wall.metal","name":"金属の壁","health":1000.0,"kind":"壁","n":{"explosive.timed":4,"ammo.rocket.basic":8,"explosive.satchel":23,"ammo.rifle.explosive":399,"grenade.beancan":131,"grenade.f1":9638},"soft":{"ammo.rifle.explosive":399}},{"id":"wall.toptier","name":"高品質金属の壁","health":2000.0,"kind":"壁","n":{"explosive.timed":8,"ammo.rocket.basic":15,"explosive.satchel":46,"ammo.rifle.explosive":798,"grenade.beancan":262,"grenade.f1":19276},"soft":{"ammo.rifle.explosive":797}},{"id":"door.hinged.wood","name":"木の扉","health":200.0,"kind":"扉","n":{"explosive.timed":1,"ammo.rocket.basic":1,"explosive.satchel":2,"ammo.rifle.explosive":18,"grenade.beancan":7,"grenade.f1":85}},{"id":"door.hinged.metal","name":"板金の扉","health":250.0,"kind":"扉","n":{"explosive.timed":1,"ammo.rocket.basic":2,"explosive.satchel":4,"ammo.rifle.explosive":63,"grenade.beancan":21,"grenade.f1":500}},{"id":"wall.frame.garagedoor","name":"ガレージの扉","health":600.0,"kind":"扉","n":{"explosive.timed":2,"ammo.rocket.basic":3,"explosive.satchel":9,"ammo.rifle.explosive":150,"grenade.beancan":49,"grenade.f1":1200}},{"id":"door.hinged.toptier","name":"装甲の扉","health":1000.0,"kind":"扉","n":{"explosive.timed":3,"ammo.rocket.basic":5,"explosive.satchel":15,"ammo.rifle.explosive":250,"grenade.beancan":82,"grenade.f1":2000}},{"id":"wall.external.high","name":"高い木の外壁","health":500.0,"kind":"高い外壁","n":{"explosive.timed":2,"ammo.rocket.basic":3,"explosive.satchel":6,"ammo.rifle.explosive":96,"grenade.beancan":36,"grenade.f1":378}},{"id":"wall.external.high.stone","name":"高い石の外壁","health":500.0,"kind":"高い外壁","n":{"explosive.timed":2,"ammo.rocket.basic":4,"explosive.satchel":10,"ammo.rifle.explosive":182,"grenade.beancan":64,"grenade.f1":870}}],"explosives":[{"id":"explosive.timed","name":"時限爆弾 (C4)","dud":0.0,"cost":{"charcoal":3000.0,"sulfur":2200.0,"metal.fragments":200.0,"lowgradefuel":60.0,"cloth":5.0,"techparts":2.0},"bullet":false},{"id":"ammo.rocket.basic","name":"ロケット弾","dud":0.0,"cost":{"charcoal":1950.0,"sulfur":1400.0,"metal.fragments":100.0,"lowgradefuel":30.0,"metalpipe":2.0},"bullet":false},{"id":"explosive.satchel","name":"サッチェルチャージ","dud":0.2,"cost":{"charcoal":720.0,"sulfur":480.0,"metal.fragments":80.0,"stash.small":1.0,"rope":1.0},"bullet":false},{"id":"ammo.rifle.explosive","name":"爆発 5.56 ライフル弾","dud":0.0,"cost":{"charcoal":30.0,"sulfur":25.0,"metal.fragments":5.0},"bullet":true},{"id":"grenade.beancan","name":"ビーンカングレネード","dud":0.15,"cost":{"charcoal":180.0,"sulfur":120.0,"metal.fragments":20.0},"bullet":false},{"id":"grenade.f1","name":"F1 グレネード","dud":0.0,"cost":{"charcoal":90.0,"sulfur":60.0,"metal.fragments":25.0},"bullet":false}],"ovens":[{"id":"furnace","name":"小さい炉","sulfur":1.6666666666666667,"ore":1.0,"ore_name":"硫黄鉱石","burn":2.0,"charcoal":0.75},{"id":"furnace.large","name":"大きい炉","sulfur":0.3333333333333333,"ore":1.0,"ore_name":"硫黄鉱石","burn":2.0,"charcoal":0.75},{"id":"electric.furnace","name":"電気炉","sulfur":1.0,"ore":1.0,"ore_name":"硫黄鉱石","burn":null,"charcoal":0}],"materials":{"charcoal":"木炭","cloth":"布","lowgradefuel":"低品質燃料","metal.fragments":"金属片","metalpipe":"金属パイプ","rope":"ロープ","stash.small":"小さな隠し袋","sulfur":"硫黄","techparts":"テックトラッシュ"}};
+const R={"version":"2026-11-07","targets":[{"id":"wall.twigs","name":"わらの壁","icon":"wall-twig","health":10.0,"kind":"壁","n":{"explosive.timed":1,"ammo.rocket.basic":1,"explosive.satchel":1,"ammo.rifle.explosive":1,"grenade.beancan":1,"grenade.f1":2},"soft":{"ammo.rifle.explosive":1}},{"id":"wall.wood","name":"木の壁","icon":"wall-wood","health":250.0,"kind":"壁","n":{"explosive.timed":1,"ammo.rocket.basic":2,"explosive.satchel":3,"ammo.rifle.explosive":48,"grenade.beancan":18,"grenade.f1":189},"soft":{"ammo.rifle.explosive":42}},{"id":"wall.stone","name":"石の壁","icon":"brick-wall","health":500.0,"kind":"壁","n":{"explosive.timed":2,"ammo.rocket.basic":4,"explosive.satchel":10,"ammo.rifle.explosive":182,"grenade.beancan":64,"grenade.f1":870},"soft":{"ammo.rifle.explosive":167}},{"id":"wall.metal","name":"金属の壁","icon":"wall-metal","health":1000.0,"kind":"壁","n":{"explosive.timed":4,"ammo.rocket.basic":8,"explosive.satchel":23,"ammo.rifle.explosive":399,"grenade.beancan":131,"grenade.f1":9638},"soft":{"ammo.rifle.explosive":399}},{"id":"wall.toptier","name":"高品質金属の壁","icon":"wall-hqm","health":2000.0,"kind":"壁","n":{"explosive.timed":8,"ammo.rocket.basic":15,"explosive.satchel":46,"ammo.rifle.explosive":798,"grenade.beancan":262,"grenade.f1":19276},"soft":{"ammo.rifle.explosive":797}},{"id":"door.hinged.wood","name":"木の扉","icon":"door-wood","health":200.0,"kind":"扉","n":{"explosive.timed":1,"ammo.rocket.basic":1,"explosive.satchel":2,"ammo.rifle.explosive":18,"grenade.beancan":7,"grenade.f1":85}},{"id":"door.hinged.metal","name":"板金の扉","icon":"door-sheet","health":250.0,"kind":"扉","n":{"explosive.timed":1,"ammo.rocket.basic":2,"explosive.satchel":4,"ammo.rifle.explosive":63,"grenade.beancan":21,"grenade.f1":500}},{"id":"wall.frame.garagedoor","name":"ガレージの扉","icon":"door-garage","health":600.0,"kind":"扉","n":{"explosive.timed":2,"ammo.rocket.basic":3,"explosive.satchel":9,"ammo.rifle.explosive":150,"grenade.beancan":49,"grenade.f1":1200}},{"id":"door.hinged.toptier","name":"装甲の扉","icon":"door-armored","health":1000.0,"kind":"扉","n":{"explosive.timed":3,"ammo.rocket.basic":5,"explosive.satchel":15,"ammo.rifle.explosive":250,"grenade.beancan":82,"grenade.f1":2000}},{"id":"wall.external.high","name":"高い木の外壁","icon":"palisade","health":500.0,"kind":"高い外壁","n":{"explosive.timed":2,"ammo.rocket.basic":3,"explosive.satchel":6,"ammo.rifle.explosive":96,"grenade.beancan":36,"grenade.f1":378}},{"id":"wall.external.high.stone","name":"高い石の外壁","icon":"wall-stone-high","health":500.0,"kind":"高い外壁","n":{"explosive.timed":2,"ammo.rocket.basic":4,"explosive.satchel":10,"ammo.rifle.explosive":182,"grenade.beancan":64,"grenade.f1":870}}],"explosives":[{"id":"explosive.timed","name":"時限爆弾 (C4)","icon":"c4","dud":0.0,"cost":{"charcoal":3000.0,"sulfur":2200.0,"metal.fragments":200.0,"lowgradefuel":60.0,"cloth":5.0,"techparts":2.0},"bullet":false},{"id":"ammo.rocket.basic","name":"ロケット弾","icon":"rocket","dud":0.0,"cost":{"charcoal":1950.0,"sulfur":1400.0,"metal.fragments":100.0,"lowgradefuel":30.0,"metalpipe":2.0},"bullet":false},{"id":"explosive.satchel","name":"サッチェルチャージ","icon":"satchel","dud":0.2,"cost":{"charcoal":720.0,"sulfur":480.0,"metal.fragments":80.0,"stash.small":1.0,"rope":1.0},"bullet":false},{"id":"ammo.rifle.explosive","name":"爆発 5.56 ライフル弾","icon":"bullet","dud":0.0,"cost":{"charcoal":30.0,"sulfur":25.0,"metal.fragments":5.0},"bullet":true},{"id":"grenade.beancan","name":"ビーンカングレネード","icon":"beancan","dud":0.15,"cost":{"charcoal":180.0,"sulfur":120.0,"metal.fragments":20.0},"bullet":false},{"id":"grenade.f1","name":"F1 グレネード","icon":"grenade","dud":0.0,"cost":{"charcoal":90.0,"sulfur":60.0,"metal.fragments":25.0},"bullet":false}],"ovens":[{"id":"furnace","name":"小さい炉","sulfur":1.6666666666666667,"ore":1.0,"ore_name":"硫黄鉱石","burn":2.0,"charcoal":0.75},{"id":"furnace.large","name":"大きい炉","sulfur":0.3333333333333333,"ore":1.0,"ore_name":"硫黄鉱石","burn":2.0,"charcoal":0.75},{"id":"electric.furnace","name":"電気炉","sulfur":1.0,"ore":1.0,"ore_name":"硫黄鉱石","burn":null,"charcoal":0}],"materials":{"charcoal":"木炭","cloth":"布","lowgradefuel":"低品質燃料","metal.fragments":"金属片","metalpipe":"金属パイプ","rope":"ロープ","stash.small":"小さな隠し袋","sulfur":"硫黄","techparts":"テックトラッシュ"},"icons":{"beancan":"<path d=\"M6 8h12v13H6z\"/><path d=\"M6 12h12\"/><path d=\"M6 17h12\"/><path d=\"M12 8V6.5c0-2 3-1.5 3-3.5\"/>","brick-wall":"<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\"/><path d=\"M12 9v6\"/><path d=\"M16 15v6\"/><path d=\"M16 3v6\"/><path d=\"M3 15h18\"/><path d=\"M3 9h18\"/><path d=\"M8 15v6\"/><path d=\"M8 3v6\"/>","bullet":"<path d=\"M9 21V10c0-4 1.5-6 3-7 1.5 1 3 3 3 7v11z\"/><path d=\"M9 17h6\"/><path d=\"M9 11h6\"/>","c4":"<path d=\"M3 10h18v10H3z\"/><path d=\"M9 10v10\"/><path d=\"M15 10v10\"/><path d=\"M8 4h8v6H8z\"/><path d=\"M10.5 7h3\"/><path d=\"M5 10V6\"/>","door-armored":"<path d=\"M6 21V3h12v18\"/><path d=\"M3 21h18\"/><path d=\"M9 6h6v4H9z\"/><path d=\"M9 14v.01\"/><path d=\"M15 14v.01\"/><path d=\"M9 18v.01\"/><path d=\"M15 18v.01\"/>","door-garage":"<path d=\"M3 21V5h18v16\"/><path d=\"M1 21h22\"/><path d=\"M3 9h18\"/><path d=\"M3 13h18\"/><path d=\"M3 17h18\"/>","door-sheet":"<path d=\"M6 21V3h12v18\"/><path d=\"M3 21h18\"/><path d=\"M6 8h12\"/><path d=\"M6 13h12\"/><path d=\"M15.5 10.5v.01\"/>","door-wood":"<path d=\"M6 21V3h12v18\"/><path d=\"M3 21h18\"/><path d=\"M10 3v18\"/><path d=\"M14 3v18\"/><path d=\"M16 12v.01\"/>","grenade":"<ellipse cx=\"12\" cy=\"15\" rx=\"5\" ry=\"6\"/><path d=\"M10 9V6h4v3\"/><path d=\"M14 6h3l1.5 5\"/><circle cx=\"7.5\" cy=\"5\" r=\"1.5\"/><path d=\"M9 5.5l1 .5\"/><path d=\"M7 15h10\"/>","palisade":"<path d=\"M3 21V7l3-4 3 4v14\"/><path d=\"m9 7 3-4 3 4v14\"/><path d=\"m15 7 3-4 3 4v14\"/><path d=\"M3 21h18\"/><path d=\"M3 13h18\"/>","rocket":"<path d=\"M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z\"/><path d=\"m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z\"/><path d=\"M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0\"/><path d=\"M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5\"/>","satchel":"<path d=\"M4 9h16v11H4z\"/><path d=\"M4 14h16\"/><path d=\"M10 9v11\"/><path d=\"M13 9V7c0-2 3-1.5 3-3.5\"/><path d=\"M18 2v.01\"/>","wall-hqm":"<path d=\"M3 3h18v18H3z\"/><path d=\"M7 7h10v10H7z\"/><path d=\"m3 3 4 4\"/><path d=\"m21 3-4 4\"/><path d=\"m3 21 4-4\"/><path d=\"m21 21-4-4\"/>","wall-metal":"<path d=\"M3 3h18v18H3z\"/><path d=\"M3 12h18\"/><path d=\"M6.5 6.5v.01\"/><path d=\"M17.5 6.5v.01\"/><path d=\"M6.5 17.5v.01\"/><path d=\"M17.5 17.5v.01\"/>","wall-stone-high":"<path d=\"M3 21V4h4v3h3.5V4h3v3H17V4h4v17z\"/><path d=\"M3 12h18\"/><path d=\"M3 16.5h18\"/><path d=\"M12 7v5\"/><path d=\"M8 12v4.5\"/><path d=\"M16 12v4.5\"/><path d=\"M12 16.5V21\"/>","wall-twig":"<path d=\"M3 3h18v18H3z\"/><path d=\"m3 9 12 12\"/><path d=\"m9 3 12 12\"/><path d=\"M15 3 3 15\"/><path d=\"M21 9 9 21\"/>","wall-wood":"<path d=\"M3 3h18v18H3z\"/><path d=\"M9 3v18\"/><path d=\"M15 3v18\"/><path d=\"M6 8v3\"/><path d=\"M12 13v3\"/><path d=\"M18 7v3\"/>"}};
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const num=n=>Number(n).toLocaleString('en-US',{maximumFractionDigits:1});
 const dur=s=>{s=Math.round(s);const h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return h?`${h} 時間 ${m} 分`:m?`${m} 分${x?` ${x} 秒`:''}`:`${x} 秒`};
 const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,parseInt(v,10)||lo));
 const unit=e=>e.id.startsWith('ammo.')?'発':'個';
+const ii=k=>`<i class="ra-ico ra-ii-${esc(k)}" aria-hidden="true"></i>`;
 const P=new URLSearchParams(location.search);
 const S={t:R.targets.some(t=>t.id===P.get('t'))?P.get('t'):R.targets[0].id,q:clamp(P.get('n'),1,100),
   o:R.ovens.some(o=>o.id===P.get('o'))?P.get('o'):R.ovens[0].id,c:clamp(P.get('c'),1,50),e:P.get('e'),soft:P.get('s')==='1'};
@@ -115,7 +110,7 @@ let V;  // what render() last showed, for the share image
 const fuelOven=R.ovens.find(o=>o.burn);
 const kinds=[...new Set(R.targets.map(t=>t.kind))];
 $('#targets').innerHTML=kinds.map(k=>`<div class="ra-rd-group"><span class="ra-rd-kind">${esc(k)}</span><div class="ra-chips" role="radiogroup" aria-label="${esc(k)}">`+
-  R.targets.filter(t=>t.kind===k).map(t=>`<label class="ra-chip"><input type="radio" name="target" value="${esc(t.id)}">${esc(t.name)}<span class="ra-chip-n">${num(t.health)}</span></label>`).join('')+'</div></div>').join('');
+  R.targets.filter(t=>t.kind===k).map(t=>`<label class="ra-chip"><input type="radio" name="target" value="${esc(t.id)}">${ii(t.icon)}${esc(t.name)}<span class="ra-chip-n">${num(t.health)}</span></label>`).join('')+'</div></div>').join('');
 $('#ovens-pick').innerHTML=R.ovens.map(o=>`<label class="ra-tab"><input type="radio" name="oven" value="${esc(o.id)}">${esc(o.name)}</label>`).join('');
 function render(){
   const t=R.targets.find(x=>x.id===S.t),q=S.q,soft=!!(t.soft&&S.soft);
@@ -127,24 +122,24 @@ function render(){
   const ok=list.filter(r=>r.n!=null),best=ok[0],min=best.s;
   const scale=Math.max(...ok.filter(r=>r.s<=min*3).map(r=>r.s))||1;
   const pick=ok.some(r=>r.e.id===S.e)?S.e:best.e.id;
-  $('#raid-h').innerHTML=`${esc(t.name)} × ${q} <small>体力 ${num(t.health)} × ${q}</small>`;
-  $('#best-name').textContent=best.e.name;
+  $('#raid-h').innerHTML=`<span class="ra-rd-name">${ii(t.icon)}${esc(t.name)} × ${q}</span> <small>体力 ${num(t.health)} × ${q}</small>`;
+  $('#best-name').innerHTML=ii(best.e.icon)+esc(best.e.name);
   $('#best-n').innerHTML=`${num(best.n)}<small>${unit(best.e)}</small>`;
   $('#best-s').textContent=num(best.s);
   $('#raid-rows').innerHTML=list.map((r,i)=>{const e=r.e;
-    if(r.n==null)return`<div class="ra-rd-row ra-rd-none"><span class="ra-rd-name">${esc(e.name)}</span><span class="ra-rd-m">壊せない</span></div>`;
+    if(r.n==null)return`<div class="ra-rd-row ra-rd-none"><span class="ra-rd-name">${ii(e.icon)}${esc(e.name)}</span><span class="ra-rd-m">壊せない</span></div>`;
     const k=r.s/min,on=e.id===pick;
     const mats=Object.entries(e.cost).filter(([m])=>m!=='sulfur').map(([m,v])=>`${esc(R.materials[m])} ${num(v*r.n)}`).join('、');
     const extra=(e.dud?` ／ 不発 ${Math.round(e.dud*100)}% (点ける回数は平均 ${num(r.n/(1-e.dud))})`:'')+(r.s>scale?' ／ 棒は枠に収まらない長さです':'')+(on?' ／ <b>下に作る手間を表示中</b>':'');
     return`<label class="ra-rd-row"><input type="radio" name="explosive" value="${esc(e.id)}"${on?' checked':''}>`+
-      `<span class="ra-rd-name">${esc(e.name)}</span><span class="ra-rd-n">${num(r.n)}<small>${unit(e)}</small></span>`+
+      `<span class="ra-rd-name">${ii(e.icon)}${esc(e.name)}</span><span class="ra-rd-n">${num(r.n)}<small>${unit(e)}</small></span>`+
       `<span class="ra-rd-bar"><span style="width:${Math.min(100,r.s/scale*100).toFixed(1)}%"${i===0?' class="ra-rd-bar-best"':''}></span></span>`+
       `<span class="ra-rd-s">${num(r.s)}<small>${i===0?'最少':`最少の ${k>=10?Math.round(k):k.toFixed(2)} 倍`}</small></span>`+
       `<span class="ra-rd-m">ほかの材料: ${mats}${extra}</span></label>`}).join('');
   const p=ok.find(r=>r.e.id===pick),o=R.ovens.find(x=>x.id===S.o),c=S.c,burner=o.burn?o:fuelOven;
   const Su=(p.e.cost.sulfur||0)*p.n,C=(p.e.cost.charcoal||0)*p.n;
   const ts=Su*o.sulfur/c,wood=C/burner.charcoal,tc=wood*burner.burn/c,both=Math.max(ts,tc);
-  $('#smelt-h').innerHTML=`${esc(p.e.name)} ${num(p.n)} ${unit(p.e)}を作る手間 <small>硫黄鉱石と木</small>`;
+  $('#smelt-h').innerHTML=`<span class="ra-rd-name">${ii(p.e.icon)}${esc(p.e.name)} ${num(p.n)} ${unit(p.e)}を作る手間</span> <small>硫黄鉱石と木</small>`;
   $('#s-time').textContent=dur(ts);$('#s-ore').textContent=`硫黄鉱石 ${num(Math.ceil(Su*o.ore))} 個`;
   $('#c-time').textContent=dur(tc);$('#c-wood').textContent=`木 ${num(Math.ceil(wood))} 個`;
   $('#b-time').textContent=o.burn?dur(both):'';
@@ -171,7 +166,8 @@ async function card(){
   const x=cv.getContext('2d');x.scale(K,K);
   const C={bg:css('--plate'),up:css('--plate-raised'),sunk:css('--plate-sunken'),line:css('--line'),strong:css('--line-strong'),ink:css('--ink'),mute:css('--ink-muted'),rust:css('--rust')};
   const F={sans:css('--font-sans'),mono:css('--font-mono'),disp:css('--font-display')},f=(w,px,fam)=>`${w} ${px}px ${F[fam]}`;
-  const used=[];
+  const used=[],pics={};
+  const pic=(k,px,py,sz)=>{if(pics[k])x.drawImage(pics[k],px,py,sz,sz)};
   // T draws text and returns the x where it ended (where it began, when right-aligned)
   const T=(s,px,py,font,col,right)=>{used.push([font,s]);x.font=font;x.fillStyle=col;x.textAlign=right?'right':'left';x.fillText(s,px,py);
     const w=x.measureText(s).width;return right?px-w:px+w};
@@ -180,22 +176,22 @@ async function card(){
     box(C.bg,0,0,W,H);
     let e=T('Rust Analysis',L,60,f(700,26,'disp'),C.ink);T('レイドの費用',e+16,60,f(600,17,'sans'),C.mute);
     T(`本体の書き出し ${R.version}`,W-L,60,f(400,14,'mono'),C.mute,1);box(C.ink,L,78,W-L*2,2);
-    e=T(`${t.name} × ${q}`,L,130,f(600,40,'sans'),C.ink);
+    pic(t.icon,L,95,40);e=T(`${t.name} × ${q}`,L+52,130,f(600,40,'sans'),C.ink);
     T(`体力 ${num(t.health)} × ${q}${soft?' ／ 爆発 5.56 弾は柔らかい側から':''}`,e+20,130,f(400,18,'sans'),C.mute);
-    T('硫黄がいちばん少ない',L,168,f(400,14,'sans'),C.mute);T(best.e.name,L,216,f(600,30,'sans'),C.ink);
+    T('硫黄がいちばん少ない',L,168,f(400,14,'sans'),C.mute);pic(best.e.icon,L,190,30);T(best.e.name,L+40,216,f(600,30,'sans'),C.ink);
     T('要る数',520,168,f(400,14,'sans'),C.mute);e=T(num(best.n),520,222,f(600,60,'disp'),C.ink);T(unit(best.e),e+8,222,f(400,18,'sans'),C.ink);
     T('硫黄',800,168,f(400,14,'sans'),C.mute);T(num(best.s),800,222,f(600,60,'disp'),C.rust);
     const hd=f(600,14,'sans');T('爆発物',L+12,262,hd,C.mute);T('要る数',470,262,hd,C.mute,1);T('硫黄の量',500,262,hd,C.mute);T('硫黄',960,262,hd,C.mute,1);
     box(C.ink,L,272,W-L*2,2);
     list.forEach((r,i)=>{const y=274+i*38,b=y+25;
       if(r.e.id===pick){box(C.up,L,y,W-L*2,38);x.strokeStyle=C.ink;x.lineWidth=2;x.strokeRect(L+1,y+1,W-L*2-2,36)}else box(C.line,L,y+37,W-L*2,1);
-      T(r.e.name,L+12,b,f(600,16,'sans'),C.ink);
+      pic(r.e.icon,L+12,y+9,20);T(r.e.name,L+40,b,f(600,16,'sans'),C.ink);
       if(r.n==null){T('壊せない',500,b,f(400,14,'sans'),C.mute);return}
       T(unit(r.e),470,b,f(400,13,'sans'),C.mute,1);T(num(r.n),448,b,f(500,17,'mono'),C.ink,1);
       box(C.sunk,500,y+12,320,14);box(i?C.strong:C.rust,500,y+12,Math.max(2,Math.min(1,r.s/scale)*320),14);
       T(num(r.s),960,b,f(500,16,'mono'),C.ink,1);const k=r.s/min;
       T(i?`最少の ${k>=10?Math.round(k):k.toFixed(2)} 倍`:'最少',972,b,f(400,13,'sans'),C.mute)});
-    e=T(`${p.e.name} ${num(p.n)} ${unit(p.e)}を作る手間`,L,542,f(600,18,'sans'),C.ink);T(`${o.name} ${c} 台`,e+16,542,f(400,16,'sans'),C.mute);
+    pic(p.e.icon,L,525,22);e=T(`${p.e.name} ${num(p.n)} ${unit(p.e)}を作る手間`,L+30,542,f(600,18,'sans'),C.ink);T(`${o.name} ${c} 台`,e+16,542,f(400,16,'sans'),C.mute);
     const stat=(px,label,time,sub)=>{T(label,px,568,f(400,13,'sans'),C.mute);T(time,px,604,f(600,30,'disp'),C.ink);T(sub,px,626,f(400,13,'mono'),C.ink)};
     stat(L,'硫黄鉱石を焼く',dur(ts),`硫黄鉱石 ${num(Math.ceil(Su*o.ore))} 個`);
     stat(430,o.burn?'木を燃やして木炭を作る':`木を燃やして木炭を作る (${fuelOven.name} ${c} 台)`,dur(tc),`木 ${num(Math.ceil(wood))} 個`);
@@ -203,10 +199,15 @@ async function card(){
     box(C.line,L,642,W-L*2,1);T('maco165.github.io/rust-patch-notes/tools/raid.html',L,662,f(400,13,'mono'),C.mute);T('ゲームのデータからの計算値 ／ 非公式',W-L,662,f(400,13,'sans'),C.mute,1)};
   // the first pass lists the text of each font, so the web fonts (split by unicode range) load before the pass that counts
   paint();try{await Promise.all(used.map(([font,s])=>document.fonts.load(font,s)))}catch(_){}
+  // the icons, as SVG images stroked in the ink colour; one that fails to load is left out
+  await Promise.all([V.t.icon,...V.list.map(r=>r.e.icon)].map(async k=>{try{const im=new Image();
+    im.src='data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 24 24" fill="none" stroke="${C.ink}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${R.icons[k]}</svg>`);
+    await im.decode();pics[k]=im}catch(_){}}));
   used.length=0;paint();return cv}
 const png=async()=>{const cv=await card();return new Promise((ok,ng)=>cv.toBlob(b=>b?ok(b):ng(new Error('toBlob')),'image/png'))};
 const pngName=()=>`rust-raid-${V.t.id}-x${V.q}.png`;
-const say=m=>{$('#sh-msg').textContent=m};
+const HINT='リンクを開くと、同じ選択のまま計算機が開きます。画像は、結果と作る手間を 1 枚にまとめたものです。';
+const say=m=>{$('#sh-msg').textContent=m||HINT};say();document.addEventListener('change',()=>say());for(const b of document.querySelectorAll('[data-step]'))b.addEventListener('click',()=>say());
 const summary=()=>`${V.t.name} × ${V.q}: ${V.best.e.name} ${num(V.best.n)} ${unit(V.best.e)}、硫黄 ${num(V.best.s)}`;
 const clip=navigator.clipboard;
 $('#sh-link').addEventListener('click',async()=>{try{await clip.writeText(location.href);say('リンクをコピーしました。')}
