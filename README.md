@@ -83,6 +83,7 @@ flowchart LR
 | [tools.html](tools.html) | ツールの一覧と、壊す物ごとの最安の爆発物の早見 | tools/raid.html と同じ計算 |
 | [tools/craft.html](tools/craft.html) | 作る爆発物と手持ちの物資・炉の数から、足りない材料と炉の時間 | tools/raid.html と同じデータ |
 | [tools/raid.html](tools/raid.html) | 壁・扉・外壁・設置物をまとめて壊すのに要る爆発物の数・硫黄・材料と、硫黄鉱石・木の数と炉の時間 | サーバー本体のデータ (建材・爆発物・炉、版 2026-11-07) と、ダメージと製錬の計算の仕方をサーバーの処理 (IL) から確かめた結果 |
+| [404.html](404.html) | 見つからないアドレスで出るページ (検索には載せない) | このサイトの文言 |
 | [en/tools.html](en/tools.html) | English の tools.html | tools.html と同じ計算。文言は content/i18n/en.yml から |
 | [en/tools/craft.html](en/tools/craft.html) | English の tools/craft.html | tools/craft.html と同じ計算。文言は content/i18n/en.yml から |
 | [en/tools/raid.html](en/tools/raid.html) | English の tools/raid.html | tools/raid.html と同じ計算。文言は content/i18n/en.yml から |

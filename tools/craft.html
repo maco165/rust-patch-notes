@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Craft Planner | Rust Analysis</title>
-<meta name="description" content="ゲーム Rust で、作る爆発物と手持ちの物資、炉の数から、足りない材料と焼く時間を計算するツール。">
+<title>Craft Planner: Rust の爆発物の材料と炉の時間 | Rust Analysis</title>
+<meta name="description" content="ゲーム Rust で C4・ロケットなどの爆発物を作るときに、手持ちの物資と炉の数から、足りない硫黄・木炭・材料と、追加で掘る硫黄鉱石・集める木、炉で焼く時間を計算するツール。">
 <meta name="theme-color" content="#f2f4f5" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15181a" media="(prefers-color-scheme: dark)">
 <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
@@ -9,8 +9,8 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Rust Analysis">
 <meta property="og:locale" content="ja_JP">
-<meta property="og:title" content="Craft Planner | Rust Analysis">
-<meta property="og:description" content="ゲーム Rust で、作る爆発物と手持ちの物資、炉の数から、足りない材料と焼く時間を計算するツール。">
+<meta property="og:title" content="Craft Planner: Rust の爆発物の材料と炉の時間 | Rust Analysis">
+<meta property="og:description" content="ゲーム Rust で C4・ロケットなどの爆発物を作るときに、手持ちの物資と炉の数から、足りない硫黄・木炭・材料と、追加で掘る硫黄鉱石・集める木、炉で焼く時間を計算するツール。">
 <meta property="og:url" content="https://maco165.github.io/rust-patch-notes/tools/craft.html">
 <meta property="og:image" content="https://maco165.github.io/rust-patch-notes/assets/og.png">
 <meta property="og:image:width" content="1200">
@@ -20,6 +20,8 @@
 <link rel="alternate" hreflang="ja" href="https://maco165.github.io/rust-patch-notes/tools/craft.html">
 <link rel="alternate" hreflang="en" href="https://maco165.github.io/rust-patch-notes/en/tools/craft.html">
 <link rel="alternate" hreflang="x-default" href="https://maco165.github.io/rust-patch-notes/tools/craft.html">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Craft Planner", "url": "https://maco165.github.io/rust-patch-notes/tools/craft.html", "description": "ゲーム Rust で C4・ロケットなどの爆発物を作るときに、手持ちの物資と炉の数から、足りない硫黄・木炭・材料と、追加で掘る硫黄鉱石・集める木、炉で焼く時間を計算するツール。", "applicationCategory": "GameApplication", "operatingSystem": "Any", "inLanguage": "ja", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "isPartOf": {"@type": "WebSite", "name": "Rust Analysis", "url": "https://maco165.github.io/rust-patch-notes/"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Rust Analysis", "item": "https://maco165.github.io/rust-patch-notes/"}, {"@type": "ListItem", "position": 2, "name": "ツール", "item": "https://maco165.github.io/rust-patch-notes/tools.html"}, {"@type": "ListItem", "position": 3, "name": "Craft Planner", "item": "https://maco165.github.io/rust-patch-notes/tools/craft.html"}]}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+JP:wght@400;600&display=swap">
