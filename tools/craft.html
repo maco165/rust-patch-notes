@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>作る計画 | Rust Analysis</title>
+<meta name="description" content="ゲーム Rust で、作る爆発物と手持ちの物資、炉の数から、足りない材料と焼く時間を計算するツール。">
+<meta name="theme-color" content="#f2f4f5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15181a" media="(prefers-color-scheme: dark)">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rust Analysis">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:title" content="作る計画 | Rust Analysis">
+<meta property="og:description" content="ゲーム Rust で、作る爆発物と手持ちの物資、炉の数から、足りない材料と焼く時間を計算するツール。">
+<meta property="og:url" content="https://maco165.github.io/rust-patch-notes/tools/craft.html">
+<meta property="og:image" content="https://maco165.github.io/rust-patch-notes/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://maco165.github.io/rust-patch-notes/tools/craft.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+JP:wght@400;600&display=swap">
+<link rel="stylesheet" href="../assets/style.css">
+</head><body>
+<header class="ra-site">
+  <a class="ra-site-name" href="../index.html"><b>Rust</b> Analysis</a>
+  <nav class="ra-nav" aria-label="ページ"><a href="../index.html"><i class="ra-ico ra-ico-month" aria-hidden="true"></i>今月</a><a href="../history.html"><i class="ra-ico ra-ico-history" aria-hidden="true"></i>これまで</a><a href="../genres.html"><i class="ra-ico ra-ico-genres" aria-hidden="true"></i>ジャンル</a><a href="../numbers.html"><i class="ra-ico ra-ico-numbers" aria-hidden="true"></i>数値</a><a href="../diffs.html"><i class="ra-ico ra-ico-diffs" aria-hidden="true"></i>版の差分</a><a href="../items.html"><i class="ra-ico ra-ico-items" aria-hidden="true"></i>アイテム</a><a href="../spec.html"><i class="ra-ico ra-ico-spec" aria-hidden="true"></i>仕様書</a><a href="../columns.html"><i class="ra-ico ra-ico-columns" aria-hidden="true"></i>コラム</a><a href="../tools.html" aria-current="page"><i class="ra-ico ra-ico-tools" aria-hidden="true"></i>ツール</a></nav>
+  <span class="ra-site-meta">データ 2026-11-05 まで</span>
+  <a class="ra-site-link" href="https://github.com/maco165/rust-patch-notes" rel="noopener"><i class="ra-ico ra-ico-github" aria-hidden="true"></i>GitHub</a>
+</header>
+<main class="ra-page">
+<div class="ra-block">
+  <p class="ra-patch-meta"><a class="ra-link" href="../tools.html">ツール</a><a class="ra-link" href="raid.html" id="back-top">レイドの費用</a><span class="ra-src ra-src-export"><i class="ra-ico ra-ico-export" aria-hidden="true"></i>本体の書き出し 2026-11-07</span></p>
+  <h1 class="ra-patch-sub">作る計画</h1>
+  <p class="ra-lead">作る爆発物、手持ちの物資、炉の数を入れると、足りない材料と、それを用意するのにかかる時間を出します。</p>
+</div>
+<section class="ra-block" aria-labelledby="h-make">
+  <h2 class="ra-section" id="h-make">作る物 <small>作る数を入れる</small></h2>
+  <p class="ra-cp-from" id="from" hidden>レイドの費用で選んだ方法の数を入れてあります。<a href="raid.html" id="back">レイドの費用に戻って選び直す</a></p>
+  <div class="ra-rd-tiles" role="group" aria-label="作る爆発物" id="makes"></div>
+</section>
+<section class="ra-block" aria-labelledby="h-stock">
+  <h2 class="ra-section" id="h-stock">手持ちの物資 <small>いま持っている数を入れる。無ければ 0 のまま</small></h2>
+  <div class="ra-cp-stock" id="stocks"></div>
+  <p class="ra-rd-hint" id="stock-note"></p>
+</section>
+<section class="ra-block" aria-labelledby="h-oven">
+  <h2 class="ra-section" id="h-oven">設備 <small>焼くのに使う炉</small></h2>
+  <div class="ra-rd-controls">
+    <div class="ra-rd-field"><span id="l-oven">炉</span><div class="ra-tabs" role="radiogroup" aria-labelledby="l-oven" id="ovens-pick"></div></div>
+    <div class="ra-rd-field"><label for="ovens">台数</label>
+      <div class="ra-step"><button type="button" data-step="ovens" data-d="-1" aria-label="台数を 1 減らす">−</button><input id="ovens" type="number" min="1" max="50" value="1" inputmode="numeric"><button type="button" data-step="ovens" data-d="1" aria-label="台数を 1 増やす">+</button></div></div>
+  </div>
+</section>
+<section class="ra-block" id="none">
+  <h2 class="ra-section">結果</h2>
+  <p class="ra-lead">作る物の数を 1 以上にすると、ここに足りない材料と時間が出ます。</p>
+</section>
+<div id="result" class="ra-rd-result">
+<section class="ra-block" aria-live="polite" aria-labelledby="h-result">
+  <h2 class="ra-section" id="h-result">追加で要る物と時間 <small id="make-sub"></small></h2>
+  <div class="ra-cp-top">
+    <div class="ra-rd-stat"><span class="ra-rd-label">追加で掘る硫黄鉱石</span><span class="ra-rd-big ra-rd-sulfur" id="mine"></span><span class="ra-rd-label" id="mine-note"></span></div>
+    <div class="ra-rd-stat"><span class="ra-rd-label">追加で集める木</span><span class="ra-rd-big" id="wood"></span><span class="ra-rd-label" id="wood-note"></span></div>
+    <div class="ra-rd-stat"><span class="ra-rd-label">炉が要る時間</span><span class="ra-rd-big ra-cp-time" id="all-time"></span><span class="ra-rd-label" id="time-note"></span></div>
+  </div>
+  <div class="ra-cp-row ra-cp-head" aria-hidden="true"><span>材料</span><span class="ra-rd-n">要る数</span><span class="ra-rd-n">手持ち</span><span class="ra-rd-n">足りない数</span></div>
+  <div id="rows"></div>
+  <p class="ra-more">足りない数が「足りている」の材料は、手持ちで間に合います。</p>
+</section>
+<section class="ra-block" aria-live="polite" aria-labelledby="h-time">
+  <h2 class="ra-section" id="h-time">炉の時間 <small id="oven-sub"></small></h2>
+  <div class="ra-rd-smelt">
+    <div class="ra-rd-stat"><span class="ra-rd-label">硫黄鉱石を焼く</span><span class="ra-rd-time" id="s-time"></span><span class="ra-rd-sub" id="s-ore"></span></div>
+    <div class="ra-rd-stat"><span class="ra-rd-label">木を燃やして木炭を作る</span><span class="ra-rd-time" id="c-time"></span><span class="ra-rd-sub" id="c-wood"></span></div>
+    <div class="ra-rd-stat"><span class="ra-rd-label">同じ炉で両方を作る</span><span class="ra-rd-time" id="b-time"></span><span class="ra-rd-sub" id="b-wood"></span></div>
+  </div>
+</section>
+</div>
+<section class="ra-block" aria-labelledby="h-notes">
+  <h2 class="ra-section" id="h-notes">計算の前提</h2>
+  <ul class="ra-cp-notes">
+    <li>材料は、爆薬・火薬・ビーンカングレネードを作るところまでさかのぼって数えています。</li>
+    <li>時間は炉で焼く時間だけです。作業台で作る時間 (クラフトの時間) と、掘る・集める時間は入れていません。</li>
+    <li>木 1 個から木炭は平均 0.75 個できます。木の数は期待値です。</li>
+    <li>金属片は金属片のまま数えています。金属鉱石を焼く数と時間は入れていません。</li>
+    <li>時間はサーバーが軽いときの数です。重いサーバーでは木と木炭の時間が長くなることがあります。</li>
+  </ul>
+</section>
+</main>
+<footer class="ra-foot"><p>Facepunch Studios とは関係のない、個人が解析して作った非公式のサイトです。変更点は公式の変更点の一覧を自分の言葉で日本語にしたもので、各回に出典のリンクがあります。アイテムの値はゲームのサーバーのデータから、版の差分はゲームの本体 (クライアント) の各月の版のデータから読んだもので、正しさは保証しません。</p>
+<p>アイコンの一部は <a class="ra-link" href="https://lucide.dev/" rel="noopener">Lucide</a> (ISC License) です。</p></footer>
+<script>
+const R={"version":"2026-11-07","targets":[{"id":"wall.stone","name":"石壁","icon":"brick-wall","health":500.0,"kind":"壁","n":{"explosive.timed":2,"ammo.rocket.basic":4,"ammo.rocket.hv":32,"explosive.satchel":10,"ammo.rifle.explosive":182,"grenade.beancan":64,"grenade.f1":870},"soft":{"ammo.rifle.explosive":167}},{"id":"wall.metal","name":"金属壁","icon":"wall-metal","health":1000.0,"kind":"壁","n":{"explosive.timed":4,"ammo.rocket.basic":8,"ammo.rocket.hv":67,"explosive.satchel":23,"ammo.rifle.explosive":399,"grenade.beancan":131,"grenade.f1":9638},"soft":{"ammo.rifle.explosive":399}},{"id":"wall.toptier","name":"装甲板","icon":"wall-hqm","health":2000.0,"kind":"壁","n":{"explosive.timed":8,"ammo.rocket.basic":15,"ammo.rocket.hv":134,"explosive.satchel":46,"ammo.rifle.explosive":798,"grenade.beancan":262,"grenade.f1":19276},"soft":{"ammo.rifle.explosive":797}},{"id":"door.hinged.metal","name":"板金の扉","icon":"door-sheet","health":250.0,"kind":"扉","n":{"explosive.timed":1,"ammo.rocket.basic":2,"ammo.rocket.hv":11,"explosive.satchel":4,"ammo.rifle.explosive":63,"grenade.beancan":21,"grenade.f1":500}},{"id":"wall.frame.garagedoor","name":"ガレージ","icon":"door-garage","health":600.0,"kind":"扉","n":{"explosive.timed":2,"ammo.rocket.basic":3,"ammo.rocket.hv":25,"explosive.satchel":9,"ammo.rifle.explosive":150,"grenade.beancan":49,"grenade.f1":1200}},{"id":"door.hinged.toptier","name":"装甲の扉","icon":"door-armored","health":1000.0,"kind":"扉","n":{"explosive.timed":3,"ammo.rocket.basic":5,"ammo.rocket.hv":42,"explosive.satchel":15,"ammo.rifle.explosive":250,"grenade.beancan":82,"grenade.f1":2000}},{"id":"wall.external.high","name":"木の外壁","icon":"palisade","health":500.0,"kind":"外壁","n":{"explosive.timed":2,"ammo.rocket.basic":3,"ammo.rocket.hv":18,"explosive.satchel":6,"ammo.rifle.explosive":96,"grenade.beancan":36,"grenade.f1":378}},{"id":"wall.external.high.stone","name":"石の外壁","icon":"wall-stone-high","health":500.0,"kind":"外壁","n":{"explosive.timed":2,"ammo.rocket.basic":4,"ammo.rocket.hv":32,"explosive.satchel":10,"ammo.rifle.explosive":182,"grenade.beancan":64,"grenade.f1":870}},{"id":"autoturret","name":"オートタレット","icon":"turret","health":1000.0,"kind":"設置物","n":{"explosive.timed":2,"ammo.rocket.basic":4,"ammo.rocket.hv":3,"explosive.satchel":4,"ammo.rifle.explosive":100,"grenade.beancan":16,"grenade.f1":10},"use":"ammo.rocket.hv"},{"id":"sam.site","name":"SAM サイト","icon":"sam-site","health":1000.0,"kind":"設置物","n":{"explosive.timed":2,"ammo.rocket.basic":4,"ammo.rocket.hv":34,"explosive.satchel":4,"ammo.rifle.explosive":200,"grenade.beancan":16,"grenade.f1":20},"use":"ammo.rocket.hv"}],"explosives":[{"id":"explosive.timed","name":"時限爆弾 (C4)","icon":"c4","opt":true,"gp":1000.0,"dud":0.0,"cost":{"charcoal":3000.0,"sulfur":2200.0,"metal.fragments":200.0,"lowgradefuel":60.0,"cloth":5.0,"techparts":2.0},"bullet":false},{"id":"ammo.rocket.basic","name":"ロケット弾","icon":"rocket","opt":true,"gp":650.0,"dud":0.0,"cost":{"charcoal":1950.0,"sulfur":1400.0,"metal.fragments":100.0,"lowgradefuel":30.0,"metalpipe":2.0},"bullet":false},{"id":"ammo.rocket.hv","name":"高速ロケット弾","icon":"rocket","opt":false,"gp":100.0,"dud":0.0,"cost":{"charcoal":300.0,"sulfur":200.0,"metalpipe":1.0},"bullet":false},{"id":"explosive.satchel","name":"サッチェルチャージ","icon":"satchel","opt":true,"gp":240.0,"dud":0.2,"cost":{"charcoal":720.0,"sulfur":480.0,"metal.fragments":80.0,"stash.small":1.0,"rope":1.0},"bullet":false},{"id":"ammo.rifle.explosive","name":"爆発 5.56 ライフル弾","icon":"bullet","opt":true,"gp":10.0,"dud":0.0,"cost":{"charcoal":30.0,"sulfur":25.0,"metal.fragments":5.0},"bullet":true},{"id":"grenade.beancan","name":"ビーンカングレネード","icon":"beancan","opt":true,"gp":60.0,"dud":0.15,"cost":{"charcoal":180.0,"sulfur":120.0,"metal.fragments":20.0},"bullet":false},{"id":"grenade.f1","name":"F1 グレネード","icon":"grenade","opt":true,"gp":30.0,"dud":0.0,"cost":{"charcoal":90.0,"sulfur":60.0,"metal.fragments":25.0},"bullet":false}],"ovens":[{"id":"furnace","name":"小さい炉","sulfur":1.6666666666666667,"ore":1.0,"ore_name":"硫黄鉱石","burn":2.0,"charcoal":0.75},{"id":"furnace.large","name":"大きい炉","sulfur":0.3333333333333333,"ore":1.0,"ore_name":"硫黄鉱石","burn":2.0,"charcoal":0.75},{"id":"electric.furnace","name":"電気炉","sulfur":1.0,"ore":1.0,"ore_name":"硫黄鉱石","burn":null,"charcoal":0}],"materials":{"charcoal":"木炭","cloth":"布","lowgradefuel":"低品質燃料","metal.fragments":"金属片","metalpipe":"金属パイプ","rope":"ロープ","stash.small":"小さな隠し袋","sulfur":"硫黄","techparts":"テックトラッシュ"},"icons":{"beancan":"<path d=\"M6 8h12v13H6z\"/><path d=\"M6 12h12\"/><path d=\"M6 17h12\"/><path d=\"M12 8V6.5c0-2 3-1.5 3-3.5\"/>","brick-wall":"<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\"/><path d=\"M12 9v6\"/><path d=\"M16 15v6\"/><path d=\"M16 3v6\"/><path d=\"M3 15h18\"/><path d=\"M3 9h18\"/><path d=\"M8 15v6\"/><path d=\"M8 3v6\"/>","bullet":"<path d=\"M9 21V10c0-4 1.5-6 3-7 1.5 1 3 3 3 7v11z\"/><path d=\"M9 17h6\"/><path d=\"M9 11h6\"/>","c4":"<path d=\"M3 10h18v10H3z\"/><path d=\"M9 10v10\"/><path d=\"M15 10v10\"/><path d=\"M8 4h8v6H8z\"/><path d=\"M10.5 7h3\"/><path d=\"M5 10V6\"/>","door-armored":"<path d=\"M6 21V3h12v18\"/><path d=\"M3 21h18\"/><path d=\"M9 6h6v4H9z\"/><path d=\"M9 14v.01\"/><path d=\"M15 14v.01\"/><path d=\"M9 18v.01\"/><path d=\"M15 18v.01\"/>","door-garage":"<path d=\"M3 21V5h18v16\"/><path d=\"M1 21h22\"/><path d=\"M3 9h18\"/><path d=\"M3 13h18\"/><path d=\"M3 17h18\"/>","door-sheet":"<path d=\"M6 21V3h12v18\"/><path d=\"M3 21h18\"/><path d=\"M6 8h12\"/><path d=\"M6 13h12\"/><path d=\"M15.5 10.5v.01\"/>","grenade":"<ellipse cx=\"12\" cy=\"15\" rx=\"5\" ry=\"6\"/><path d=\"M10 9V6h4v3\"/><path d=\"M14 6h3l1.5 5\"/><circle cx=\"7.5\" cy=\"5\" r=\"1.5\"/><path d=\"M9 5.5l1 .5\"/><path d=\"M7 15h10\"/>","palisade":"<path d=\"M3 21V7l3-4 3 4v14\"/><path d=\"m9 7 3-4 3 4v14\"/><path d=\"m15 7 3-4 3 4v14\"/><path d=\"M3 21h18\"/><path d=\"M3 13h18\"/>","rocket":"<path d=\"M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z\"/><path d=\"m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z\"/><path d=\"M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0\"/><path d=\"M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5\"/>","sam-site":"<path d=\"M4 21h16\"/><path d=\"M12 21v-5\"/><path d=\"m5 12.5 11-6.5 2.5 4.3-11 6.5z\"/><path d=\"m10.5 9.3 2.5 4.3\"/><path d=\"M19.5 4.5v.01\"/>","satchel":"<path d=\"M4 9h16v11H4z\"/><path d=\"M4 14h16\"/><path d=\"M10 9v11\"/><path d=\"M13 9V7c0-2 3-1.5 3-3.5\"/><path d=\"M18 2v.01\"/>","turret":"<path d=\"M6 21h12\"/><path d=\"M12 21v-5\"/><path d=\"M6 9h10v7H6z\"/><path d=\"M16 11h6\"/><path d=\"M16 14h6\"/><circle cx=\"9.5\" cy=\"12.5\" r=\"1\"/><path d=\"M9 9V6h4\"/>","wall-hqm":"<path d=\"M3 3h18v18H3z\"/><path d=\"M7 7h10v10H7z\"/><path d=\"m3 3 4 4\"/><path d=\"m21 3-4 4\"/><path d=\"m3 21 4-4\"/><path d=\"m21 21-4-4\"/>","wall-metal":"<path d=\"M3 3h18v18H3z\"/><path d=\"M3 12h18\"/><path d=\"M6.5 6.5v.01\"/><path d=\"M17.5 6.5v.01\"/><path d=\"M6.5 17.5v.01\"/><path d=\"M17.5 17.5v.01\"/>","wall-stone-high":"<path d=\"M3 21V4h4v3h3.5V4h3v3H17V4h4v17z\"/><path d=\"M3 12h18\"/><path d=\"M3 16.5h18\"/><path d=\"M12 7v5\"/><path d=\"M8 12v4.5\"/><path d=\"M16 12v4.5\"/><path d=\"M12 16.5V21\"/>"},"order":["sulfur","charcoal","metal.fragments","lowgradefuel","cloth","techparts","metalpipe","stash.small","rope"],"stock":[["sulfur","硫黄"],["sulfur.ore","硫黄鉱石"],["gunpowder","火薬"],["charcoal","木炭"],["metal.fragments","金属片"],["lowgradefuel","低品質燃料"],["cloth","布"],["techparts","テックトラッシュ"],["metalpipe","金属パイプ"],["stash.small","小さな隠し袋"],["rope","ロープ"]],"gunpowder":{"charcoal":3.0,"sulfur":2.0}};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const num=n=>Number(n).toLocaleString('en-US',{maximumFractionDigits:1});
+const dur=s=>{s=Math.round(s);const h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return h?`${h} 時間 ${m} 分`:m?`${m} 分${x?` ${x} 秒`:''}`:`${x} 秒`};
+const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,parseInt(v,10)||lo));
+const unit=e=>e.id.startsWith('ammo.')?'発':'個';
+const ii=k=>`<i class="ra-ico ra-ii-${esc(k)}" aria-hidden="true"></i>`;
+const EX=Object.fromEntries(R.explosives.map(e=>[e.id,e]));
+const fuelOven=R.ovens.find(o=>o.burn);
+// sulphur Su and charcoal C on c ovens of the kind o: seconds for the ore, wood for the charcoal and its seconds
+const smelt=(Su,C,o,c)=>{const burner=o.burn?o:fuelOven,ts=Su*o.sulfur/c,wood=C/burner.charcoal,tc=wood*burner.burn/c,both=Math.max(ts,tc);
+  return{ts,tc,wood,both,bothWood:o.burn?both*c/o.burn:null}};
+const showSmelt=(m,Su,o,c)=>{$('#s-time').textContent=dur(m.ts);$('#s-ore').textContent=`硫黄鉱石 ${num(Math.ceil(Su*o.ore))} 個`;
+  $('#c-time').textContent=dur(m.tc);$('#c-wood').textContent=`木 ${num(Math.ceil(m.wood))} 個`;
+  $('#b-time').textContent=o.burn?dur(m.both):'';
+  $('#b-wood').textContent=o.burn?`木 ${num(Math.ceil(m.bothWood))} 個`:'電気炉は木を燃やせません。木炭は燃料の炉で作るとして、左の時間を数えています。';
+  $('#b-wood').classList.toggle('ra-rd-plain',!o.burn)};
+const matOrder=mats=>Object.keys(mats).sort((a,b)=>(b==='sulfur')-(a==='sulfur')||mats[b]-mats[a]);
+
+const P=new URLSearchParams(location.search);
+const pairs=(s,ok)=>{const out={};for(const part of(s||'').split(',')){const[id,q]=part.split(':'),n=parseInt(q,10);if(ok(id)&&n>0)out[id]=Math.min(n,9999999)}return out};
+const S={m:pairs(P.get('m'),id=>EX[id]),k:pairs(P.get('k'),id=>R.stock.some(k=>k[0]===id)),o:R.ovens.some(o=>o.id===P.get('o'))?P.get('o'):R.ovens[0].id,c:clamp(P.get('c'),1,50)};
+if(P.get('r')){$('#from').hidden=false;$('#back').href=$('#back-top').href=`raid.html?${P.get('r')}`}
+$('#makes').innerHTML=R.explosives.map(e=>`<div class="ra-rd-tile ra-cp-tile" data-tile="${esc(e.id)}"><span class="ra-rd-tname">${ii(e.icon)}<span><b>${esc(e.name)}</b></span></span>`+
+  `<div class="ra-step"><button type="button" data-t="${esc(e.id)}" data-d="-1" aria-label="${esc(e.name)}を 1 減らす">−</button>`+
+  `<input type="number" min="0" max="9999999" inputmode="numeric" data-q="${esc(e.id)}" aria-label="${esc(e.name)}を作る数">`+
+  `<button type="button" data-t="${esc(e.id)}" data-d="1" aria-label="${esc(e.name)}を 1 増やす">+</button></div></div>`).join('');
+$('#stocks').innerHTML=R.stock.map(k=>`<label>${esc(k[1])}<input type="number" min="0" inputmode="numeric" data-k="${esc(k[0])}"></label>`).join('');
+$('#ovens-pick').innerHTML=R.ovens.map(o=>`<label class="ra-tab"><input type="radio" name="oven" value="${esc(o.id)}">${esc(o.name)}</label>`).join('');
+const GP=R.gunpowder,gpName=R.stock.find(k=>k[0]==='gunpowder')[1],oreName=R.stock.find(k=>k[0]==='sulfur.ore')[1];
+$('#stock-note').textContent=`${gpName}は、作る物が使う数までを、1 個あたり${matOrder(GP).map(m=>`${R.materials[m]} ${num(GP[m])}`).join('と')}として数えます。${oreName}は、焼いて硫黄にする分に先に使います。`;
+function render(){
+  for(const e of R.explosives){const q=S.m[e.id]||0,i=document.querySelector(`[data-q="${e.id}"]`);
+    if(document.activeElement!==i||i.value!=='')i.value=q;document.querySelector(`[data-tile="${e.id}"]`).classList.toggle('is-on',q>0)}
+  for(const k of R.stock){const i=document.querySelector(`[data-k="${k[0]}"]`);if(document.activeElement!==i||i.value!=='')i.value=S.k[k[0]]||0}
+  for(const i of document.querySelectorAll('input[name=oven]'))i.checked=i.value===S.o;
+  if(document.activeElement!==$('#ovens')||$('#ovens').value!=='')$('#ovens').value=S.c;
+  const made=R.explosives.filter(e=>S.m[e.id]>0),o=R.ovens.find(x=>x.id===S.o),c=S.c;
+  $('#none').hidden=made.length>0;$('#result').hidden=!made.length;
+  const u=new URLSearchParams({m:made.map(e=>`${e.id}:${S.m[e.id]}`).join(',')});const ks=R.stock.filter(k=>S.k[k[0]]>0).map(k=>`${k[0]}:${S.k[k[0]]}`).join(',');
+  if(ks)u.set('k',ks);u.set('o',S.o);if(c>1)u.set('c',c);if(P.get('r'))u.set('r',P.get('r'));history.replaceState(null,'',`?${u}`);
+  if(!made.length)return;
+  const need={};for(const e of made)for(const[m,v]of Object.entries(e.cost))need[m]=(need[m]||0)+v*S.m[e.id];
+  // gunpowder in hand stands for the sulphur and charcoal it is made of, up to the gunpowder the recipes take (it cannot be
+  // turned back into sulphur); ore in hand is smelted before any is mined
+  const gp=Math.min(S.k.gunpowder||0,made.reduce((a,e)=>a+e.gp*S.m[e.id],0)),ore=S.k['sulfur.ore']||0,have=m=>(S.k[m]||0)+gp*(GP[m]||0),lack=m=>Math.max(0,(need[m]||0)-have(m));
+  const Ls=lack('sulfur'),Lc=lack('charcoal'),mine=Math.max(0,Ls*o.ore-ore),m=smelt(Ls,Lc,o,c);
+  $('#make-sub').textContent=made.map(e=>`${e.name} ${num(S.m[e.id])} ${unit(e)}`).join('、');
+  $('#mine').textContent=num(Math.ceil(mine));
+  $('#mine-note').textContent=Ls?`足りない硫黄 ${num(Ls)} のうち、手持ちの鉱石で ${num(Math.min(ore/o.ore,Ls))} をまかなえます`:'硫黄は手持ちで足りています';
+  $('#wood').textContent=num(Math.ceil(m.wood));$('#wood-note').textContent=Lc?`足りない木炭 ${num(Lc)} を作る分です (平均)`:'木炭は手持ちで足りています';
+  $('#all-time').textContent=dur(m.both);$('#time-note').textContent=`${o.name} ${c} 台${o.burn?'':`と${fuelOven.name} ${c} 台`}で、硫黄鉱石と木の両方を済ませるまで`;
+  $('#rows').innerHTML=matOrder(need).sort((a,b)=>R.order.indexOf(a)-R.order.indexOf(b)).map(k=>{const l=lack(k);
+    return`<div class="ra-cp-row"><span class="ra-cp-name"><b>${esc(R.materials[k])}</b>${gp&&GP[k]?`<small>${esc(gpName)} ${num(gp)} 個の分を手持ちに足しています</small>`:''}</span>`+
+      `<span class="ra-rd-n ra-cp-need">${num(need[k])}</span><span class="ra-rd-n ra-cp-have">${num(have(k))}</span>`+
+      `<span class="ra-rd-n ra-cp-lack${l?' is-short':''}">${l?num(l):'足りている'}</span></div>`}).join('');
+  $('#oven-sub').textContent=`${o.name} ${c} 台`;showSmelt(m,Ls,o,c)}
+const setN=(box,id,v,max)=>{const q=Math.max(0,Math.min(max,parseInt(v,10)||0));if(q)box[id]=q;else delete box[id]};
+const onPick=ev=>{const i=ev.target;
+  if(i.dataset.q)setN(S.m,i.dataset.q,i.value,9999999);else if(i.dataset.k)setN(S.k,i.dataset.k,i.value,9999999);else if(i.name==='oven')S.o=i.value;
+  else if(i.id==='ovens')S.c=clamp(i.value,1,50);else return;
+  render();if(ev.type==='change'){if(i.dataset.q)i.value=S.m[i.dataset.q]||0;if(i.dataset.k)i.value=S.k[i.dataset.k]||0;if(i.id==='ovens')i.value=S.c}};
+document.addEventListener('change',onPick);
+document.addEventListener('input',ev=>{if(ev.target.dataset.q||ev.target.dataset.k||ev.target.id==='ovens')onPick(ev)});
+document.addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b)return;
+  if(b.dataset.t)setN(S.m,b.dataset.t,(S.m[b.dataset.t]||0)+Number(b.dataset.d),9999999);else if(b.dataset.step)S.c=clamp(S.c+Number(b.dataset.d),1,50);else return;render()});
+render();
+</script>
+</body></html>
