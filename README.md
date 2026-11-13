@@ -9,6 +9,18 @@
 - このリポジトリには、生成したページだけを置いています。ページを作る仕組みとデータは別の非公開のリポジトリにあります。
 - アイコンの一部は [Lucide](https://lucide.dev/) (ISC License。`LICENSE-lucide.txt`) です。ゲームのアイコンや画像は使っていません。
 
+## 言語 / Languages
+
+サイトとこの README は、いまは日本語だけです。ツール (Raid Planner・Craft Planner) から順に、ほかの言語に対応していきます。変更点の一覧は公式の英語の文章を日本語にしたものなので、英語にはしません。
+
+| 言語 | 状態 |
+|---|---|
+| 日本語 | 対応済み |
+| English | 準備中 — In preparation, starting with the tools. For the change lists, read the official page: https://rust.facepunch.com/changes |
+| 简体中文 | 今後対応する予定 — 计划支持。 |
+| 한국어 | 今後対応する予定 — 지원할 예정입니다. |
+| Русский | 今後対応する予定 — Планируется поддержка. |
+
 ## 各ページが何を元に描かれているか
 
 | ページ | 中身 | 元にしたもの |
