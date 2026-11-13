@@ -231,7 +231,19 @@ a.ra-gbar:hover .ra-gbar-name { text-decoration: underline; text-underline-offse
 :target { scroll-margin-top: 72px; }
 .ra-gbar-n { white-space: nowrap; }
 .ra-gbars-wide .ra-gbar { grid-template-columns: var(--icon) 11em minmax(0, 1fr) 5ch; }
-@media (max-width: 640px) { .ra-site { position: static; } }
+@media (max-width: 640px) {
+  .ra-site { position: static; gap: var(--space-1) var(--space-2); }
+  .ra-site-name { order: 1; margin-right: auto; }
+  .ra-site .ra-site-meta { order: 2; margin-left: 0; font-size: 12px; }
+  .ra-site-meta-w { display: none; }
+  .ra-site .ra-site-lang { order: 3; }
+  .ra-site .ra-site-lang a { min-height: 36px; padding: 0 var(--space-2); font-size: 13px; }
+  .ra-site .ra-site-link { order: 4; min-height: 36px; padding: 0 var(--space-2); font-size: 0; gap: 0; }
+  /* one row that scrolls sideways instead of three rows of links */
+  .ra-nav { order: 5; position: relative; flex: 1 1 100%; flex-wrap: nowrap; overflow-x: auto; margin: 0 calc(var(--space-4) * -1); padding: 0 var(--space-4) var(--space-1); scrollbar-width: none; }
+  .ra-nav::-webkit-scrollbar { display: none; }
+  .ra-nav a { flex: none; white-space: nowrap; }
+}
 @media (max-width: 560px) { .ra-gbars-wide .ra-gbar { grid-template-columns: var(--icon) minmax(0, 1fr) 5ch; } }
 .ra-item > summary { flex-wrap: wrap; gap: var(--space-1) var(--space-3); }
 .ra-item-name { font-weight: 600; }
