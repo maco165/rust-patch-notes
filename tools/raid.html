@@ -33,6 +33,7 @@
   <p class="ra-patch-meta"><a class="ra-link" href="../tools.html">ツール</a><span class="ra-src ra-src-export"><i class="ra-ico ra-ico-export" aria-hidden="true"></i>本体の書き出し 2026-11-07</span></p>
   <h1 class="ra-patch-sub" lang="en">Raid Planner</h1>
   <p class="ra-lead">壊す物ごとに数を入れると、全部を壊すのに要る爆発物と硫黄を、硫黄の少ない順に出します。</p>
+  <a class="ra-rd-top-go" id="to-craft-top" href="craft.html">Craft Planner を開く<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg><small>足りない材料と時間を出す</small></a>
 </div>
 <section class="ra-block" aria-labelledby="h-target">
   <h2 class="ra-section" id="h-target">壊す物 <small>壊す数を入れる。いくつでも選べる</small></h2>
@@ -184,7 +185,7 @@ function render(){
   V=plan();
   $('#none').hidden=!!V;$('#result').hidden=!V;$('#soft-wrap').hidden=!(V&&V.hasSoft);$('#soft').checked=!!(V&&V.soft);$('#reset').hidden=!V;
   $('#sum').textContent=V?`選んだ物: ${V.picked.map(t=>`${t.name} × ${S.n[t.id]}`).join('、')} (計 ${V.total})`:'まだ何も選んでいません';
-  if(!V){history.replaceState(null,'','?p=');return}
+  if(!V){history.replaceState(null,'','?p=');$('#to-craft-top').href='craft.html';return}
   const{picked,opts,best,pick,min,scale,o,c}=V;
   $('#raid-h').innerHTML=`${num(V.total)} か所を壊す <small>${picked.length===1?`${esc(picked[0].name)} × ${V.total}`:`${esc(picked[0].name)} × ${S.n[picked[0].id]} ほか ${picked.length-1} 種類`}</small>`;
   $('#pick-name').innerHTML=(pick.icon?ii(pick.icon):'')+esc(pick.name);
@@ -217,7 +218,7 @@ function render(){
   const u=new URLSearchParams({p:picked.map(t=>`${t.id}:${S.n[t.id]}`).join(',')});if(pick!==best)u.set('e',pick.id);u.set('o',S.o);if(c>1)u.set('c',c);if(V.soft)u.set('s','1');
   history.replaceState(null,'',`?${u}`);
   const cu=new URLSearchParams({m:pick.needs.map(x=>`${x.e.id}:${x.n}`).join(','),o:S.o});if(c>1)cu.set('c',c);cu.set('r',u.toString());
-  $('#to-craft').href=`craft.html?${cu}`}
+  $('#to-craft').href=$('#to-craft-top').href=`craft.html?${cu}`}
 const setQ=(id,v)=>{const q=Math.max(0,Math.min(100,parseInt(v,10)||0));if(q)S.n[id]=q;else delete S.n[id]};
 const onPick=ev=>{const i=ev.target;
   if(i.dataset.q)setQ(i.dataset.q,i.value);else if(i.name==='oven')S.o=i.value;else if(i.name==='plan')S.e=i.value;

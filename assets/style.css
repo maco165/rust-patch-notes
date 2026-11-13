@@ -508,6 +508,9 @@ label .ra-rd-n { font-size: 18px; }
 .ra-rd-li.ra-rd-li-col { flex-direction: column; align-items: stretch; gap: var(--space-1); padding: 10px 0; }
 .ra-rd-go { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-4); margin-top: var(--space-2); padding: var(--space-3); border: var(--rule) solid var(--line-strong); background: var(--plate-raised); }
 .ra-rd-go > span { flex: 1 1 320px; font-size: 14px; line-height: 22px; }
+.ra-rd-top-go, .ra-rd-top-go:hover { justify-self: start; display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-2); min-height: 44px; padding: var(--space-2) var(--space-4); border: var(--rule) solid var(--line-strong); border-radius: var(--radius-xs); background: var(--plate-raised); color: var(--ink); font-weight: 600; text-decoration: none; }
+.ra-rd-top-go:hover { background: var(--plate-sunken); }
+.ra-rd-top-go small { padding-left: var(--space-2); font-size: 14px; font-weight: 400; color: var(--ink-muted); }
 a.ra-rd-share-go, a.ra-rd-share-go:hover { color: var(--plate); text-decoration: none; }
 .ra-cp-from { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); margin: 0; padding: var(--space-3); border: var(--rule) solid var(--blueprint); background: var(--blueprint-soft); color: var(--blueprint); font-size: 14px; line-height: 22px; }
 .ra-cp-from a { color: var(--blueprint); font-weight: 600; }
