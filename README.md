@@ -1,4 +1,4 @@
-**日本語** | [English](README.en.md)
+**日本語** | [English](README.en.md) | [简体中文](README.zh.md) | [한국어](README.ko.md) | [Русский](README.ru.md)
 
 # Rust Analysis
 
@@ -58,15 +58,15 @@ flowchart LR
 
 ## 言語 / Languages
 
-サイトは、いまは日本語だけです。ツール (Raid Planner・Craft Planner) とコラムから順に、ほかの言語に対応していきます。変更点の一覧は公式の英語の文章を日本語にしたものなので、英語にはしません。
+ツール (Raid Planner・Craft Planner) とコラムは日本語と英語、ほかのページは日本語だけです。README は 5 言語あります。変更点の一覧は公式の英語の文章を日本語にしたものなので、英語にはしません。
 
 | 言語 | 状態 |
 |---|---|
 | 日本語 | 対応済み |
-| English | 準備中 (README は [English](README.en.md) あり) — In preparation, starting with the tools and the articles. For the change lists, read the official page: https://rust.facepunch.com/changes |
-| 简体中文 | 今後対応する予定 — 计划支持。 |
-| 한국어 | 今後対応する予定 — 지원할 예정입니다. |
-| Русский | 今後対応する予定 — Планируется поддержка. |
+| English | ツールとコラムは英語版あり。README は [English](README.en.md) — The tools and the articles are in English. For the change lists, read the official page: https://rust.facepunch.com/changes |
+| 简体中文 | README は [简体中文](README.zh.md)。ページは今後対応する予定 |
+| 한국어 | README は [한국어](README.ko.md)。ページは今後対応する予定 |
+| Русский | README は [Русский](README.ru.md)。ページは今後対応する予定 |
 
 ## 各ページが何を元に描かれているか
 
