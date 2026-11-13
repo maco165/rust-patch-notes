@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>レイドの費用 | Rust Analysis</title>
+<meta name="description" content="ゲーム Rust で、壁や扉を壊すのに要る爆発物の数と、それを作る硫黄・材料を計算するツール。">
+<meta name="theme-color" content="#f2f4f5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15181a" media="(prefers-color-scheme: dark)">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rust Analysis">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:title" content="レイドの費用 | Rust Analysis">
+<meta property="og:description" content="ゲーム Rust で、壁や扉を壊すのに要る爆発物の数と、それを作る硫黄・材料を計算するツール。">
+<meta property="og:url" content="https://maco165.github.io/rust-patch-notes/tools/raid.html">
+<meta property="og:image" content="https://maco165.github.io/rust-patch-notes/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://maco165.github.io/rust-patch-notes/tools/raid.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+JP:wght@400;600&display=swap">
+<link rel="stylesheet" href="../assets/style.css">
+</head><body>
+<header class="ra-site">
+  <a class="ra-site-name" href="../index.html"><b>Rust</b> Analysis</a>
+  <nav class="ra-nav" aria-label="ページ"><a href="../index.html"><i class="ra-ico ra-ico-month" aria-hidden="true"></i>今月</a><a href="../history.html"><i class="ra-ico ra-ico-history" aria-hidden="true"></i>これまで</a><a href="../genres.html"><i class="ra-ico ra-ico-genres" aria-hidden="true"></i>ジャンル</a><a href="../numbers.html"><i class="ra-ico ra-ico-numbers" aria-hidden="true"></i>数値</a><a href="../diffs.html"><i class="ra-ico ra-ico-diffs" aria-hidden="true"></i>版の差分</a><a href="../items.html"><i class="ra-ico ra-ico-items" aria-hidden="true"></i>アイテム</a><a href="../spec.html"><i class="ra-ico ra-ico-spec" aria-hidden="true"></i>仕様書</a><a href="../columns.html"><i class="ra-ico ra-ico-columns" aria-hidden="true"></i>コラム</a><a href="../tools.html" aria-current="page"><i class="ra-ico ra-ico-tools" aria-hidden="true"></i>ツール</a></nav>
+  <span class="ra-site-meta">データ 2026-11-05 まで</span>
+  <a class="ra-site-link" href="https://github.com/maco165/rust-patch-notes" rel="noopener"><i class="ra-ico ra-ico-github" aria-hidden="true"></i>GitHub</a>
+</header>
+<main class="ra-page">
+<div class="ra-block">
+  <p class="ra-patch-meta"><a class="ra-link" href="../tools.html">ツール</a><span class="ra-src ra-src-export"><i class="ra-ico ra-ico-export" aria-hidden="true"></i>本体の書き出し 2026-11-07</span></p>
+  <h1 class="ra-patch-sub">レイドの費用</h1>
+  <p class="ra-lead">壊したい物を選ぶと、爆発物ごとに要る数と、それを作るのに要る硫黄と材料を、硫黄の少ない順に出します。数はゲームのサーバーのデータと処理から計算したもので、ゲームの中で壊して数えたものではありません。</p>
+  <form class="ra-filter ra-raid-form" onsubmit="return false">
+    <label class="ra-toggle">壊す物<select class="ra-select" id="target" aria-label="壊す物"></select></label>
+    <label class="ra-toggle">数<input class="ra-input ra-raid-qty" id="qty" type="number" min="1" max="100" value="1" inputmode="numeric" aria-label="壊す数"></label>
+    <label class="ra-toggle" id="soft-wrap"><input id="soft" type="checkbox">爆発 5.56 弾を壁の柔らかい側から撃つ</label>
+  </form>
+</div>
+<section class="ra-block" aria-live="polite">
+  <h2 class="ra-section" id="raid-h"></h2>
+  <div class="ra-delta-wrap"><table class="ra-delta ra-raid"><thead><tr><th scope="col">爆発物</th><th scope="col" class="ra-n">要る数</th>
+  <th scope="col" class="ra-n">硫黄</th><th scope="col">ほかの材料</th></tr></thead><tbody id="raid-rows"></tbody></table></div>
+</section>
+<section class="ra-block" aria-live="polite">
+  <h2 class="ra-section">材料を作る手間 <small>硫黄鉱石と木</small></h2>
+  <form class="ra-filter" onsubmit="return false">
+    <label class="ra-toggle">炉<select class="ra-select" id="oven" aria-label="炉"></select></label>
+    <label class="ra-toggle">台数<input class="ra-input ra-raid-qty" id="ovens" type="number" min="1" max="50" value="1" inputmode="numeric" aria-label="炉の台数"></label>
+  </form>
+  <div class="ra-delta-wrap"><table class="ra-delta ra-raid ra-smelt"><thead><tr><th scope="col">爆発物</th><th scope="col" class="ra-n">硫黄鉱石</th>
+  <th scope="col" class="ra-n">焼く時間</th><th scope="col" class="ra-n">木 (木炭の分)</th><th scope="col" class="ra-n">燃やす時間</th><th scope="col" class="ra-n">同じ炉で両方</th></tr></thead><tbody id="smelt-rows"></tbody></table></div>
+  <p class="ra-more" id="smelt-note"></p>
+</section>
+<section class="ra-block">
+  <h2 class="ra-section">計算の前提</h2>
+  <ul class="ra-notes">
+    <li>時限爆弾とサッチェルは、壊す物に貼ったときの数です。貼った物だけに全部のダメージが入り、隣の壁や扉には入りません。</li>
+    <li>ロケット弾とグレネードは、壊す物の際で爆発したときの数です。離れて爆発すると、ダメージが減って数が増えます。</li>
+    <li>爆風には、どの向きから当てても建物の向きの保護が効きます。向きで数が変わるのは、爆発 5.56 弾で壁を撃つときだけです。</li>
+    <li>爆発 5.56 弾は、アサルトライフルで 20 m 以内から撃ったときの数です。武器によって変わります。</li>
+    <li>サッチェルは 20%、ビーンカングレネードは 15% で不発になります。不発は拾って点け直せるので、要る数は変わりませんが、点ける回数は増えます。</li>
+    <li>硫黄と材料は、爆薬・火薬・ビーンカングレネードを作るところまでさかのぼって数えています。サーバーの設定 (ダメージの倍率) は既定のままとしています。</li>
+    <li>硫黄鉱石は 1 個から硫黄が 1 個できます。炉は鉱石を何枠に分けても全体の速さが同じで、小さい炉は 1 秒に 0.6 個、大きい炉は 3 個、電気炉は 1 個を焼きます。</li>
+    <li>燃料の炉は、焼く物の有無にかかわらず木を 2 秒に 1 個燃やし、木 1 個あたり平均 0.75 個の木炭ができます (75%)。木の数は期待値です。電気炉は木を燃やせないので、木炭は燃料の炉で作るとして数えています。</li>
+    <li>「同じ炉で両方」は、燃料の炉で硫黄鉱石を焼きながら、その燃料の木から木炭も取るときです。長いほうの時間で両方そろいます。</li>
+    <li>時間はサーバーが軽いときの数です。重いサーバーでは木 1 個が燃える時間が延び、木と木炭の時間がこれより長くなることがあります。硫黄鉱石を焼く時間は変わりません。</li>
+  </ul>
+</section>
+</main>
+<footer class="ra-foot"><p>Facepunch Studios とは関係のない、個人が解析して作った非公式のサイトです。変更点は公式の変更点の一覧を自分の言葉で日本語にしたもので、各回に出典のリンクがあります。アイテムの値はゲームのサーバーのデータから、版の差分はゲームの本体 (クライアント) の各月の版のデータから読んだもので、正しさは保証しません。</p>
+<p>アイコンの一部は <a class="ra-link" href="https://lucide.dev/" rel="noopener">Lucide</a> (ISC License) です。</p></footer>
+<script>
+const R={"version":"2026-11-07","targets":[{"id":"wall.twigs","name":"わらの壁","health":10.0,"kind":"壁","n":{"explosive.timed":1,"ammo.rocket.basic":1,"explosive.satchel":1,"ammo.rifle.explosive":1,"grenade.beancan":1,"grenade.f1":2},"soft":{"ammo.rifle.explosive":1}},{"id":"wall.wood","name":"木の壁","health":250.0,"kind":"壁","n":{"explosive.timed":1,"ammo.rocket.basic":2,"explosive.satchel":3,"ammo.rifle.explosive":48,"grenade.beancan":18,"grenade.f1":189},"soft":{"ammo.rifle.explosive":42}},{"id":"wall.stone","name":"石の壁","health":500.0,"kind":"壁","n":{"explosive.timed":2,"ammo.rocket.basic":4,"explosive.satchel":10,"ammo.rifle.explosive":182,"grenade.beancan":64,"grenade.f1":870},"soft":{"ammo.rifle.explosive":167}},{"id":"wall.metal","name":"金属の壁","health":1000.0,"kind":"壁","n":{"explosive.timed":4,"ammo.rocket.basic":8,"explosive.satchel":23,"ammo.rifle.explosive":399,"grenade.beancan":131,"grenade.f1":9638},"soft":{"ammo.rifle.explosive":399}},{"id":"wall.toptier","name":"高品質金属の壁","health":2000.0,"kind":"壁","n":{"explosive.timed":8,"ammo.rocket.basic":15,"explosive.satchel":46,"ammo.rifle.explosive":798,"grenade.beancan":262,"grenade.f1":19276},"soft":{"ammo.rifle.explosive":797}},{"id":"door.hinged.wood","name":"木の扉","health":200.0,"kind":"扉","n":{"explosive.timed":1,"ammo.rocket.basic":1,"explosive.satchel":2,"ammo.rifle.explosive":18,"grenade.beancan":7,"grenade.f1":85}},{"id":"door.hinged.metal","name":"板金の扉","health":250.0,"kind":"扉","n":{"explosive.timed":1,"ammo.rocket.basic":2,"explosive.satchel":4,"ammo.rifle.explosive":63,"grenade.beancan":21,"grenade.f1":500}},{"id":"wall.frame.garagedoor","name":"ガレージの扉","health":600.0,"kind":"扉","n":{"explosive.timed":2,"ammo.rocket.basic":3,"explosive.satchel":9,"ammo.rifle.explosive":150,"grenade.beancan":49,"grenade.f1":1200}},{"id":"door.hinged.toptier","name":"装甲の扉","health":1000.0,"kind":"扉","n":{"explosive.timed":3,"ammo.rocket.basic":5,"explosive.satchel":15,"ammo.rifle.explosive":250,"grenade.beancan":82,"grenade.f1":2000}},{"id":"wall.external.high","name":"高い木の外壁","health":500.0,"kind":"高い外壁","n":{"explosive.timed":2,"ammo.rocket.basic":3,"explosive.satchel":6,"ammo.rifle.explosive":96,"grenade.beancan":36,"grenade.f1":378}},{"id":"wall.external.high.stone","name":"高い石の外壁","health":500.0,"kind":"高い外壁","n":{"explosive.timed":2,"ammo.rocket.basic":4,"explosive.satchel":10,"ammo.rifle.explosive":182,"grenade.beancan":64,"grenade.f1":870}}],"explosives":[{"id":"explosive.timed","name":"時限爆弾 (C4)","icon":"c4","dud":0.0,"cost":{"charcoal":3000.0,"sulfur":2200.0,"metal.fragments":200.0,"lowgradefuel":60.0,"cloth":5.0,"techparts":2.0},"bullet":false},{"id":"ammo.rocket.basic","name":"ロケット弾","icon":"rocket","dud":0.0,"cost":{"charcoal":1950.0,"sulfur":1400.0,"metal.fragments":100.0,"lowgradefuel":30.0,"metalpipe":2.0},"bullet":false},{"id":"explosive.satchel","name":"サッチェルチャージ","icon":"c4","dud":0.2,"cost":{"charcoal":720.0,"sulfur":480.0,"metal.fragments":80.0,"stash.small":1.0,"rope":1.0},"bullet":false},{"id":"ammo.rifle.explosive","name":"爆発 5.56 ライフル弾","icon":"bullet","dud":0.0,"cost":{"charcoal":30.0,"sulfur":25.0,"metal.fragments":5.0},"bullet":true},{"id":"grenade.beancan","name":"ビーンカングレネード","icon":"grenade","dud":0.15,"cost":{"charcoal":180.0,"sulfur":120.0,"metal.fragments":20.0},"bullet":false},{"id":"grenade.f1","name":"F1 グレネード","icon":"grenade","dud":0.0,"cost":{"charcoal":90.0,"sulfur":60.0,"metal.fragments":25.0},"bullet":false}],"ovens":[{"id":"furnace","name":"小さい炉","sulfur":1.6666666666666667,"ore":1.0,"ore_name":"硫黄鉱石","burn":2.0,"charcoal":0.75},{"id":"furnace.large","name":"大きい炉","sulfur":0.3333333333333333,"ore":1.0,"ore_name":"硫黄鉱石","burn":2.0,"charcoal":0.75},{"id":"electric.furnace","name":"電気炉","sulfur":1.0,"ore":1.0,"ore_name":"硫黄鉱石","burn":null,"charcoal":0}],"materials":{"charcoal":["木炭","powder"],"cloth":["布","cloth"],"lowgradefuel":["低品質燃料","fuel-can"],"metal.fragments":["金属片","ingot"],"metalpipe":["金属パイプ","pipe"],"rope":["ロープ","rope"],"stash.small":["小さな隠し袋","crate"],"sulfur":["硫黄","powder"],"techparts":["テックトラッシュ","nut"]}};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const num=n=>Number(n).toLocaleString('en-US',{maximumFractionDigits:1});
+const ii=n=>`<i class="ra-ico ra-ii-${n}" aria-hidden="true"></i>`;
+const dur=s=>{s=Math.round(s);const h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return h?`${h} 時間 ${m} 分`:m?`${m} 分${x?` ${x} 秒`:''}`:`${x} 秒`};
+const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,parseInt(v)||lo));
+const groups={};for(const t of R.targets)(groups[t.kind]=groups[t.kind]||[]).push(t);
+for(const[k,ts]of Object.entries(groups)){const g=document.createElement('optgroup');g.label=k;for(const t of ts)g.append(new Option(`${t.name} (体力 ${num(t.health)})`,t.id));$('#target').append(g)}
+for(const o of R.ovens)$('#oven').add(new Option(o.name,o.id));
+const P=new URLSearchParams(location.search);
+for(const[k,id]of[['t','#target'],['n','#qty'],['o','#oven'],['c','#ovens']])if(P.get(k))$(id).value=P.get(k);
+for(const id of['#target','#oven'])if($(id).selectedIndex<0)$(id).selectedIndex=0;
+const fix=()=>{$('#qty').value=clamp($('#qty').value,1,100);$('#ovens').value=clamp($('#ovens').value,1,50)};fix();
+for(const id of['#qty','#ovens'])$(id).addEventListener('change',()=>{fix();render()});
+const fuelOven=R.ovens.find(o=>o.burn);
+function rows(){
+  const t=R.targets.find(x=>x.id===$('#target').value),q=clamp($('#qty').value,1,100);
+  $('#soft-wrap').hidden=!t.soft;const soft=t.soft&&$('#soft').checked;
+  const list=R.explosives.map(e=>{const one=soft&&t.soft[e.id]!=null?t.soft[e.id]:t.n[e.id];const n=one==null?null:one*q;
+    return{e,n,s:n==null?Infinity:(e.cost.sulfur||0)*n}}).sort((a,b)=>a.s-b.s);
+  return{t,q,list}}
+function costs({t,q,list}){
+  $('#raid-h').innerHTML=`${esc(t.name)}${q>1?` × ${q}`:''} <small>体力 ${num(t.health)}${q>1?` × ${q}`:''}</small>`;
+  $('#raid-rows').innerHTML=list.map(({e,n,s})=>{
+    if(n==null)return`<tr><td>${ii(e.icon)}${esc(e.name)}</td><td class="ra-n" colspan="3">壊せない</td></tr>`;
+    const mats=Object.entries(e.cost).filter(([k])=>k!=='sulfur').map(([k,v])=>`${ii(R.materials[k][1])}${esc(R.materials[k][0])} ${num(v*n)}`).join('、');
+    const dud=e.dud?`<small class="ra-raid-dud">不発 ${Math.round(e.dud*100)}% (点ける回数は平均 ${num(n/(1-e.dud))})</small>`:'';
+    return`<tr><td><span class="ra-loot-src">${ii(e.icon)}${esc(e.name)}</span>${dud}</td><td class="ra-n" data-l="数">${num(n)}</td><td class="ra-n" data-l="硫黄">${num(s)}</td><td class="ra-raid-mats">${mats}</td></tr>`}).join('')}
+function smelting({list}){
+  const o=R.ovens.find(x=>x.id===$('#oven').value),c=clamp($('#ovens').value,1,50),burner=o.burn?o:fuelOven;
+  $('#smelt-rows').innerHTML=list.filter(r=>r.n!=null).map(({e,n})=>{
+    const S=(e.cost.sulfur||0)*n,C=(e.cost.charcoal||0)*n;
+    const ts=S*o.sulfur/c,wood=C/burner.charcoal,tc=wood*burner.burn/c;
+    const both=o.burn?`${dur(Math.max(ts,tc))} (木 ${num(Math.ceil(Math.max(ts,tc)*c/o.burn))})`:'—';
+    return`<tr><td><span class="ra-loot-src">${ii(e.icon)}${esc(e.name)}</span></td><td class="ra-n" data-l="硫黄鉱石">${num(Math.ceil(S*o.ore))}</td><td class="ra-n" data-l="焼く時間">${dur(ts)}</td>`+
+      `<td class="ra-n" data-l="木">${num(Math.ceil(wood))}</td><td class="ra-n" data-l="燃やす時間">${dur(tc)}</td><td class="ra-n" data-l="同じ炉で両方">${both}</td></tr>`}).join('');
+  $('#smelt-note').textContent=`${o.name} ${c} 台。硫黄鉱石は 1 台あたり 1 秒に ${num(1/o.sulfur)} 個を焼きます。`+
+    (o.burn?`木は 1 台あたり ${num(o.burn)} 秒に 1 個燃えます。`:`電気炉は木を燃やせないので、木炭は${fuelOven.name}など燃料の炉 ${c} 台で作るとして数えています。`);
+  return{o:o.id,c}}
+function render(){
+  const r=rows();costs(r);const{o,c}=smelting(r);
+  const u=new URLSearchParams({t:r.t.id});if(r.q>1)u.set('n',r.q);u.set('o',o);if(c>1)u.set('c',c);
+  history.replaceState(null,'',`?${u}`)}
+for(const id of['#target','#qty','#soft','#oven','#ovens'])$(id).addEventListener('input',render);render();
+</script>
+</body></html>
