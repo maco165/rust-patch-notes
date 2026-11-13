@@ -86,6 +86,11 @@ flowchart LR
 | [en/tools.html](en/tools.html) | English の tools.html | tools.html と同じ計算。文言は content/i18n/en.yml から |
 | [en/tools/craft.html](en/tools/craft.html) | English の tools/craft.html | tools/craft.html と同じ計算。文言は content/i18n/en.yml から |
 | [en/tools/raid.html](en/tools/raid.html) | English の tools/raid.html | tools/raid.html と同じ計算。文言は content/i18n/en.yml から |
+| [en/columns.html](en/columns.html) | English の columns.html | content/columns/en/ の記事 (日本語の記事と同じ内容) |
+| [en/columns/wheel-myths.html](en/columns/wheel-myths.html) | English の columns/wheel-myths.html | content/columns/en/ の記事 (日本語の記事と同じ内容) |
+| [en/columns/slot-machine.html](en/columns/slot-machine.html) | English の columns/slot-machine.html | content/columns/en/ の記事 (日本語の記事と同じ内容) |
+| [en/columns/loot-containers.html](en/columns/loot-containers.html) | English の columns/loot-containers.html | content/columns/en/ の記事 (日本語の記事と同じ内容) |
+| [en/columns/card-games.html](en/columns/card-games.html) | English の columns/card-games.html | content/columns/en/ の記事 (日本語の記事と同じ内容) |
 
 ## コラム
 

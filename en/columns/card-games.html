@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Can you beat blackjack and poker by counting cards? | Rust Analysis</title>
+<meta name="description" content="From the server code, the blackjack deck is rebuilt and reshuffled every round, so counting cards gives no edge. The house edge is about 0.8%.">
+<meta name="theme-color" content="#f2f4f5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15181a" media="(prefers-color-scheme: dark)">
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+<link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rust Analysis">
+<meta property="og:locale" content="en_US">
+<meta property="og:title" content="Can you beat blackjack and poker by counting cards? | Rust Analysis">
+<meta property="og:description" content="From the server code, the blackjack deck is rebuilt and reshuffled every round, so counting cards gives no edge. The house edge is about 0.8%.">
+<meta property="og:url" content="https://maco165.github.io/rust-patch-notes/en/columns/card-games.html">
+<meta property="og:image" content="https://maco165.github.io/rust-patch-notes/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://maco165.github.io/rust-patch-notes/en/columns/card-games.html">
+<link rel="alternate" hreflang="ja" href="https://maco165.github.io/rust-patch-notes/columns/card-games.html">
+<link rel="alternate" hreflang="en" href="https://maco165.github.io/rust-patch-notes/en/columns/card-games.html">
+<link rel="alternate" hreflang="x-default" href="https://maco165.github.io/rust-patch-notes/columns/card-games.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+JP:wght@400;600&display=swap">
+<link rel="stylesheet" href="../../assets/style.css">
+</head><body>
+<header class="ra-site">
+  <a class="ra-site-name" href="../tools.html"><b>Rust</b> Analysis</a>
+  <nav class="ra-nav" aria-label="Pages"><a href="../columns.html" aria-current="page"><i class="ra-ico ra-ico-columns" aria-hidden="true"></i>Articles</a><a href="../tools.html"><i class="ra-ico ra-ico-tools" aria-hidden="true"></i>Tools</a></nav>
+  <span class="ra-site-meta">2026-11-05</span>
+  <span class="ra-site-lang"><a href="../../columns/card-games.html" lang="ja" hreflang="ja">Japanese</a></span><a class="ra-site-link" href="https://github.com/maco165/rust-patch-notes" rel="noopener"><i class="ra-ico ra-ico-github" aria-hidden="true"></i>GitHub</a>
+</header>
+<script>(()=>{const n=document.querySelector('.ra-nav'),a=n&&n.querySelector('[aria-current]');if(a&&n.scrollWidth>n.clientWidth)n.scrollLeft=a.offsetLeft-(n.clientWidth-a.offsetWidth)/2})()</script>
+<main class="ra-page"><article class="ra-prose"><p class="ra-patch-meta"><a class="ra-link" href="../columns.html">Articles</a><time datetime="2026-11-12">2026-11-12</time><span><i class="ra-ico ra-ico-economy" aria-hidden="true"></i> Economy & shops</span><span class="ra-src ra-src-export"><i class="ra-ico ra-ico-export" aria-hidden="true"></i>Game build 2026-11-07</span></p><h1 class="ra-prose-title">Can you beat blackjack and poker by counting cards?</h1><p class="ra-prose-lead">From the server code, the blackjack deck is rebuilt and reshuffled every round, so counting cards gives no edge. The house edge is about 0.8%.</p><div class="ra-callout">
+<p class="ra-callout-label">Answer</p>
+<p class="ra-callout-main">Counting cards gives you no edge</p>
+<p>The deck is built fresh and shuffled at the start of every round. Blackjack uses 10 decks (520 cards); poker uses 1 deck (52 cards). The cards dealt in one round leave nothing behind for the next.</p>
+</div>
+<ul class="ra-facts">
+<li><span class="ra-facts-n">520 cards</span><span class="ra-facts-l">The blackjack shoe. Rebuilt every round</span></li>
+<li><span class="ra-facts-n">About −0.8%</span><span class="ra-facts-l">Average result in blackjack with basic strategy (estimate)</span></li>
+<li><span class="ra-facts-n">0</span><span class="ra-facts-l">The house's cut in poker. Every chip goes back to the players</span></li>
+</ul>
+<p>Played by the book, blackjack loses money much more slowly than roulette (−4% with the best bet). It still loses on average. Poker has no house cut; your result depends only on winning or losing against the other players.</p>
+<p>This article covers the blackjack machine found at places like Bandit Camp (class name <code>BlackjackMachine</code>) and the card table (<code>CardTable</code>; the game it offers is Texas hold'em).</p>
+<h2 class="ra-section">How blackjack works</h2>
+<h3>One round</h3>
+<ol class="ra-timeline" aria-label="One round of blackjack">
+<li class="ra-timeline-hot" style="--w:14"><strong>Build the shoe</strong><span>Instant</span><small>A new set of 10 decks (520 cards) is laid out and shuffled. Before any bets</small></li>
+<li style="--w:30"><strong>Betting</strong><span>Up to 30 seconds</span><small>5-500 Scrap</small></li>
+<li style="--w:14"><strong>Deal</strong><span>1 second</span><small>2 cards each, in seat-number order. The dealer has 1 card face down</small></li>
+<li style="--w:30"><strong>Players' turn</strong><span>30 seconds per action</span><small>Everyone plays at the same time</small></li>
+<li style="--w:20"><strong>Dealer's turn</strong><span>1 card per second</span><small>Draws mechanically, based only on the total</small></li>
+<li style="--w:14"><strong>Payout</strong><span>1 second later</span><small>Next round 4 seconds later</small></li>
+</ol>
+<p>The shoe is built <strong>before</strong> bets are taken. There is no code that arranges the cards after seeing how much was bet.</p>
+<h3>Rules</h3>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">Item</th><th scope="col">Rule on this machine</th><th scope="col">For the player</th></tr></thead><tbody><tr><td>Shoe</td><td>10 decks, 520 cards. Rebuilt every round</td><td>Counting is pointless</td></tr><tr><td>Dealer</td><td>Stands on 17 or more, but hits soft 17 (17 counting an ace as 11)</td><td>Slightly worse</td></tr><tr><td>Blackjack (21 with 2 cards)</td><td>3:2. You get back 2.5 times your bet (rounded down)</td><td>Standard</td></tr><tr><td>Dealer's hole card</td><td>Not checked until the end. If the dealer has a 2-card 21, the extra bets from doubling or splitting are lost too</td><td>Slightly worse</td></tr><tr><td>Double</td><td>Allowed on any first 2 cards without an ace, whatever the total. Not allowed on hands with an ace</td><td>Slightly worse</td></tr><tr><td>Split</td><td>Once only. Cards with the same value, such as a 10 and a face card, count as a pair. Split aces get 1 card each and stop</td><td>Standard</td></tr><tr><td>Double after split</td><td>Allowed (if the hand has no ace)</td><td>Better</td></tr><tr><td>2-card 21 after a split</td><td>Also pays 3:2</td><td>Better</td></tr><tr><td>Insurance</td><td>When the up card is an ace. Costs half the bet, pays 2:1 if it hits</td><td>Taking it loses</td></tr><tr><td>Surrender, side bets</td><td>None</td><td>—</td></tr><tr><td>Bet</td><td>5-500 Scrap. The limit can be changed with the server setting <code>blackjackmachine.maxbet</code> (25-1,000,000)</td><td>—</td></tr><tr><td>Seats</td><td>3 seats per machine</td><td>—</td></tr></tbody></table></div>
+<p>Wins and losses work as follows. If the player goes over 21 first, the hand loses on the spot. Nothing comes back even if the dealer busts later. This is where the house edge comes from.</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">Result</th><th scope="col">Return</th></tr></thead><tbody><tr><td>Win with a 2-card 21 (also wins against a dealer 21 of 3 or more cards)</td><td>2.5 times the bet</td></tr><tr><td>Normal win</td><td>2 times</td></tr><tr><td>Push</td><td>The bet comes back as is</td></tr><tr><td>Loss, bust</td><td>0</td></tr><tr><td>Insurance hits (dealer has a 2-card 21)</td><td>3 times the insurance bet</td></tr></tbody></table></div>
+<p>The 2.5 times payout is rounded down. A bet of 5 returns 12, not 12.5, so <strong>betting even amounts</strong> avoids the loss.</p>
+<h3>What decides the cards, and what does not</h3>
+<div class="ra-uses">
+<div><p class="ra-uses-head ra-uses-yes">Used</p><ul><li>A shoe laid out fresh for that round</li><li>A cryptographic random number generator (only when shuffling)</li><li>The card total (whether the dealer draws)</li></ul></div>
+<div><p class="ra-uses-head ra-uses-no">Not used</p><ul><li>Cards and results of earlier rounds</li><li>Time of day, round count</li><li>Number of players on the server</li><li>Bet size</li><li>Who bet, and their win/loss history</li><li>How much the machine has paid out so far</li></ul></div>
+</div>
+<p>The Scrap you bet disappears at the end of the round, and payouts are created new. The machine holds no "stored-up" amount, so there is no state in which it is "about to pay out."</p>
+<h2 class="ra-section">How the shoe is shuffled</h2>
+<p>The only random number call in the shuffle is .NET's built-in <code>System.Security.Cryptography.RandomNumberGenerator.GetInt32</code>. It is the OS cryptographic random number generator and has no seed and no in-game state. It is separate from the Unity random number generator that roulette uses.</p>
+<p>In plain words, the shuffle works like this.</p>
+<pre class="ra-code">When building a new shoe:
+  lay out cards in order from the 2 of spades to the ace of clubs, once per deck
+  starting from the top position and moving down:
+    pick 1 position "below" this one with equal probability, and swap the cards
+When dealing:
+  take cards from the top, 1 at a time</pre>
+<h3>Off from uniform by just one card</h3>
+<p>The textbook shuffle (Fisher–Yates) includes "the position itself" as a possible swap partner, because a card may happen to stay where it is. This machine picks the partner only from "below that position." This is known as Sattolo's algorithm, and <strong>no card ever stays in the position it held before the shuffle.</strong></p>
+<p>Before the shuffle, the top 13 cards of a new shoe are in this order (all clubs).</p>
+<div class="ra-strip" role="img" aria-label="Top 13 cards of the shoe before shuffling. Clubs: A, K, Q, J, 10, 9, 8, 7, 6, 5, 4, 3, 2"><span class="ra-strip-hot">A</span><span>K</span><span>Q</span><span>J</span><span>10</span><span>9</span><span>8</span><span>7</span><span>6</span><span>5</span><span>4</span><span>3</span><span>2</span></div>
+<p>After the shuffle, the top card is chosen with equal probability from every card except "the ace of clubs that was originally on top." The second card is chosen from every card except "the king of clubs that was originally second," and so on. In other words, <strong>the first card dealt is never that one ace of clubs.</strong></p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">Shoe</th><th scope="col">Chance the first card is an ace</th><th scope="col">With a uniform shuffle</th></tr></thead><tbody><tr><td>Blackjack (520 cards)</td><td>39/519 = 7.51%</td><td>40/520 = 7.69%</td></tr><tr><td>Poker (52 cards)</td><td>3/51 = 5.88%</td><td>4/52 = 7.69%</td></tr></tbody></table></div>
+<p>The bias is one card's worth. By our calculation it adds about 0.1 points to the blackjack house edge (see a later section). The bias does not build up across rounds, because the shoe is rebuilt every round.</p>
+<h2 class="ra-section">The house edge</h2>
+<h3>Average loss per 100 Scrap bet</h3>
+<ol class="ra-gbars ra-loss" style="--max:16" aria-label="Average loss per 100 Scrap bet"><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Basic strategy</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:0.8"></span></span><span class="ra-gbar-n">−0.8</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Roulette (1, 3, 5)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:4"></span></span><span class="ra-gbar-n">−4</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Play like the dealer</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:5.9"></span></span><span class="ra-gbar-n">−5.9</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Always stand on 12 or more</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:6"></span></span><span class="ra-gbar-n">−6.0</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Insurance</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:7.9"></span></span><span class="ra-gbar-n">−7.9</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Roulette (20)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:16"></span></span><span class="ra-gbar-n">−16</span></span></li></ol>
+<p>The blackjack figures are <strong>estimates</strong> from our own program, described below. The Wheel figures come from the column "Is there a winning pattern on the Wheel?"</p>
+<p>On the same machine, the way you play makes a difference of more than 7 times. Playing "by feel" does worse than roulette.</p>
+<h3>Do not take insurance</h3>
+<p>When the up card is an ace, the chance that the hole card is a 10 or a face card is 159/518 = 30.7% (slightly lower than the 160/519 of a uniform shuffle, because the hole-card position never gets the one face card that sat there before the shuffle). A hit returns 3 times, so the average is 3 × 0.307 − 1 = <strong>−7.9%</strong>. That is about 10 times worse than the main bet. Whether your hand is good or bad, you are better off not taking it.</p>
+<h3>Basic strategy</h3>
+<p>This table gives the action with the best average for each hand under this machine's rules. H is hit, S is stand, D is double, P is split. The columns are the dealer's up card.</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table ra-prose-short"><thead><tr><th scope="col">Your hand (no ace)</th><th scope="col">2</th><th scope="col">3</th><th scope="col">4</th><th scope="col">5</th><th scope="col">6</th><th scope="col">7</th><th scope="col">8</th><th scope="col">9</th><th scope="col">10</th><th scope="col">A</th></tr></thead><tbody><tr><td>8 or less</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td></tr><tr><td>9</td><td>H</td><td>D</td><td>D</td><td>D</td><td>D</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td></tr><tr><td>10, 11</td><td>D</td><td>D</td><td>D</td><td>D</td><td>D</td><td>D</td><td>D</td><td>D</td><td>H</td><td>H</td></tr><tr><td>12</td><td>H</td><td>H</td><td>S</td><td>S</td><td>S</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td></tr><tr><td>13-16</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td></tr><tr><td>17 or more</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td></tr></tbody></table></div>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table ra-prose-short"><thead><tr><th scope="col">Your hand (ace counted as 11)</th><th scope="col">2</th><th scope="col">3</th><th scope="col">4</th><th scope="col">5</th><th scope="col">6</th><th scope="col">7</th><th scope="col">8</th><th scope="col">9</th><th scope="col">10</th><th scope="col">A</th></tr></thead><tbody><tr><td>13-17</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td></tr><tr><td>18</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>H</td><td>H</td><td>H</td></tr><tr><td>19 or more</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td></tr></tbody></table></div>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table ra-prose-short"><thead><tr><th scope="col">Pair</th><th scope="col">2</th><th scope="col">3</th><th scope="col">4</th><th scope="col">5</th><th scope="col">6</th><th scope="col">7</th><th scope="col">8</th><th scope="col">9</th><th scope="col">10</th><th scope="col">A</th></tr></thead><tbody><tr><td>2, 3, 7</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>H</td><td>H</td><td>H</td><td>H</td></tr><tr><td>4</td><td>H</td><td>H</td><td>H</td><td>P</td><td>P</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td></tr><tr><td>5</td><td>D</td><td>D</td><td>D</td><td>D</td><td>D</td><td>D</td><td>D</td><td>D</td><td>H</td><td>H</td></tr><tr><td>6</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td></tr><tr><td>8</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>H</td><td>H</td></tr><tr><td>9</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>S</td><td>P</td><td>P</td><td>S</td><td>S</td></tr><tr><td>10, face cards</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td></tr><tr><td>A</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td></tr></tbody></table></div>
+<p>There are 2 differences from the well-known chart. First, <strong>hands with an ace cannot be doubled</strong>, so the rows for hands counting an ace as 11 have only H or S. Second, <strong>when the up card is a 10 or an ace</strong>: this machine does not check for a dealer 2-card 21 until the end, so you can lose the added bets as well. For that reason you do not double on 11 and do not split 8s.</p>
+<h2 class="ra-section">A program that behaves the same way</h2>
+<p>This is a program we wrote from scratch based on the rules we found by reading the code. No game code was copied. The parts for the shoe, the dealer's drawing, and the payout are just this.</p>
+<pre class="ra-code ra-code-src">DECKS = 10
+VALUES = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11]  # One suit. 2-K, ace (11) last
+SHOE = VALUES * 4 * DECKS                                # 520 cards in order. The end is the top of the shoe
+
+class Shoe:
+    def __init__(self, rng, fair=False, cards=SHOE):
+        self.cards, self.n, self.rng, self.fair = cards[:], len(cards), rng, fair
+
+    def take(self):
+        """Take 1 card from the top. First swap position n with some position below n (n itself is never chosen)"""
+        self.n -= 1
+        n = self.n
+        if n:
+            k = self.rng.randrange(n + 1 if self.fair else n)
+            self.cards[k], self.cards[n] = self.cards[n], self.cards[k]
+        return self.cards[n]
+
+def dealer_draws(hard, ace):
+    """hard is the total counting aces as 1. Stands on 17 or more and on soft 18-21. Hits soft 17"""
+    return not (hard &gt;= 17 or (ace and 18 &lt;= hard + 10 &lt;= 21))
+
+def settle(cards, bet, dealer):
+    """Return for one hand. A 2-card 21 pays 2.5 times (rounded down), a win 2 times, a push 1 time"""
+    mine, natural = best(*state(cards)), len(cards) == 2 and best(*state(cards)) == 21
+    if mine &gt; 21:
+        return 0
+    house = best(*state(dealer))
+    if len(dealer) == 2 and house == 21:
+        return bet if natural else 0
+    if house &gt; 21:
+        house = 0
+    if mine &gt; house or (mine == house and natural):
+        return bet * 5 // 2 if natural else bet * 2
+    return bet if mine == house else 0</pre>
+<p><code>state</code> turns a hand into "the total counting aces as 1" and "whether there is an ace," and <code>best</code> returns the total with one ace counted as 11 when that is possible (the full code is in the file).</p>
+<p>The shuffle does each position's swap "when that card is taken." Position n never moves again after its own swap, so the result is the same as shuffling everything first and then dealing. The random number generator is Python's, so the card order will not match the game's, but the shuffle method and the rules are the same.</p>
+<p>Neither <code>take</code> nor <code>settle</code> has any input for earlier results, the time, or who bet. All that goes in is the random source and the cards of that round.</p>
+<p>Basic strategy is calculated inside the same program. It treats the shoe as "every value always comes up with probability 1/13," compares the averages of standing, hitting, doubling, and splitting for each hand, and picks the best. The tables above are its output.</p>
+<h3>Results of 1 million rounds</h3>
+<p>One player, betting 10 Scrap every round for 1 million rounds (random seed 1). Results are given as a share of the initial bet.</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table ra-prose-short"><thead><tr><th scope="col">Play style</th><th scope="col">Average (per round)</th><th scope="col">Error</th><th scope="col">Win</th><th scope="col">Push</th><th scope="col">Loss</th></tr></thead><tbody><tr><td>Basic strategy</td><td>−0.66%</td><td>±0.11</td><td>43.43%</td><td>8.63%</td><td>47.94%</td></tr><tr><td>Play like the dealer (no doubles, no splits)</td><td>−5.86%</td><td>±0.10</td><td>41.11%</td><td>9.70%</td><td>49.19%</td></tr><tr><td>Always stand on 12 or more</td><td>−6.02%</td><td>±0.10</td><td>42.61%</td><td>6.51%</td><td>50.87%</td></tr></tbody></table></div>
+<p>The same basic strategy, worked out by calculation instead of simulation, gives the following.</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">Method</th><th scope="col">Average</th></tr></thead><tbody><tr><td>Calculation (infinite shoe)</td><td>−0.79%</td></tr><tr><td>Calculation (as above, plus the first 4 cards use this machine's shuffle probabilities)</td><td>−0.87%</td></tr><tr><td>Simulation, 1 million rounds</td><td>−0.66% (±0.11)</td></tr><tr><td>Simulation, 5.5 million rounds (1 million with seed 1, plus 1.5 million each with seeds 2, 3, 4)</td><td>−0.77% (±0.05)</td></tr></tbody></table></div>
+<p>Blackjack swings a lot from round to round, and even after 1 million rounds a ±0.1 point range remains. Taking the calculations and simulations together, we put <strong>the house edge at about 0.8% (0.7-0.9%)</strong>.</p>
+<p>2-card 21s came up 4.69% of the time. That is a little lower than the 4.74% of a uniform shuffle, and the gap is the effect of "the first card is never that one ace."</p>
+<p>The full program is in <a class="ra-link" href="card-games.py">card-games.py</a>. <code>python3 card-games.py</code> produces the same numbers (it takes about 1 minute).</p>
+<h2 class="ra-section">Poker (Texas hold'em)</h2>
+<ul class="ra-facts">
+<li><span class="ra-facts-n">52 cards</span><span class="ra-facts-l">1 deck. Rebuilt every hand</span></li>
+<li><span class="ra-facts-n">5 / 10</span><span class="ra-facts-l">Blinds. No ante</span></li>
+<li><span class="ra-facts-n">100-1,000</span><span class="ra-facts-l">Scrap you can bring to the table</span></li>
+</ul>
+<ol class="ra-timeline" aria-label="One hand of Texas hold'em">
+<li class="ra-timeline-hot" style="--w:14"><strong>Build the deck</strong><span>Instant</span><small>A new set of 52 cards is laid out and shuffled</small></li>
+<li style="--w:20"><strong>Blinds and hole cards</strong><span>Automatic</span><small>5 and 10 are posted, 2 cards dealt to each player</small></li>
+<li style="--w:36"><strong>4 betting rounds</strong><span>30 seconds per player</span><small>With the flop (3 cards), turn, and river in between</small></li>
+<li style="--w:16"><strong>Showdown</strong><span>Instant</span><small>Hands compared using 2 hole cards + 5 community cards</small></li>
+<li style="--w:14"><strong>Payout</strong><span>Instant</span><small>The whole pot goes to the winner. Next hand 8 seconds later</small></li>
+</ol>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">Item</th><th scope="col">Card table rule</th></tr></thead><tbody><tr><td>Players</td><td>2 or more. Tables come in 4 sizes: 2, 3, 4, and 6 seats</td></tr><tr><td>Blinds</td><td>The player after the button posts 5, the next posts 10 (with 2 players, the button posts 5). The button moves one seat each hand</td></tr><tr><td>Buy-in</td><td>100-1,000 Scrap in the seat's storage. Below 10, you are left out from the next hand</td></tr><tr><td>Minimum raise</td><td>10 or more (not smaller than the previous raise)</td></tr><tr><td>Timeout</td><td>Fold after 30 seconds. 4 minutes with no action removes you from the seat</td></tr><tr><td>Hand ranking</td><td>Best hand from 7 cards: 2 hole cards and 5 community cards. Ties split the pot evenly</td></tr><tr><td>House cut (rake)</td><td><strong>None</strong></td></tr></tbody></table></div>
+<p>The payout code hands the pot to the winners layer by layer, starting from the smallest stake, and at the end checks that "the pot should now be empty." There is no code where the table takes anything. <strong>Every bit of Scrap bet goes back to one of the players.</strong></p>
+<p>So poker has no "average return against the house." Add up every player's gains and losses at the table and the total is always 0. Whether you win depends only on whether you play better than your opponents.</p>
+<h2 class="ra-section">Checking common claims</h2>
+<div class="ra-myth"><p class="ra-myth-q">"If you count the cards dealt, you can bet big when the odds favor you"</p><p class="ra-myth-a"><span class="ra-verdict">Doesn't hold</span>Card counting works only when used cards stay out of the shoe into the next round. This machine rebuilds all 520 cards every round, so what you counted cannot carry over. The shoe is built before betting, so you also cannot see that round's cards before you bet.</p></div>
+<div class="ra-myth"><p class="ra-myth-q">"I've lost several in a row. The machine is storing it up, so a win is coming"</p><p class="ra-myth-a"><span class="ra-verdict">Doesn't hold</span>The machine remembers neither what it paid out nor what it took in. Bet Scrap disappears at the end of the round, and payouts are created new. The only things carried between rounds are the seats and the Scrap players hold.</p></div>
+<div class="ra-myth"><p class="ra-myth-q">"Bet big and you get bad cards"</p><p class="ra-myth-a"><span class="ra-verdict">No effect</span>The shoe is fully shuffled before bets are taken. Neither the shuffle nor the deal has any input for bet size or who bet.</p></div>
+<div class="ra-myth"><p class="ra-myth-q">"The dealer changes how it draws based on your hand"</p><p class="ra-myth-a"><span class="ra-verdict">It doesn't</span>Whether the dealer draws depends only on the total of its own cards. It stands on 17 or more and hits soft 17. Neither the players' hands nor their bets are used.</p></div>
+<div class="ra-myth"><p class="ra-myth-q">"Your chances change with the time of day or the number of players on the server"</p><p class="ra-myth-a"><span class="ra-verdict">They don't</span>Random numbers are used in only one place, the shuffle, and they come from the OS cryptographic random number generator. Neither the time nor the player count goes in.</p></div>
+<div class="ra-myth"><p class="ra-myth-q">"You can peek at the dealer's hole card with a tool"</p><p class="ra-myth-a"><span class="ra-verdict">Not sent</span>During a round, the server does not send the hole card's value to the client. The same goes for other players' hole cards in poker. No amount of digging on the client side can show what is not there.</p></div>
+<div class="ra-myth"><p class="ra-myth-q">"Insurance is protection, so take it when you have a good hand"</p><p class="ra-myth-a"><span class="ra-verdict">Taking it loses</span>Insurance is a separate bet from the main one, and its average is −7.9%. Your hand being good or bad does not change that.</p></div>
+<div class="ra-myth"><p class="ra-myth-q">"Double your bet after each loss and you win in the end"</p><p class="ra-myth-a"><span class="ra-verdict">Average unchanged</span>Each result is unrelated to earlier rounds, so the order of bet sizes does not move the average. The limit is 500, so even starting from 5, after 7 losses in a row you can no longer place the next doubled bet (640).</p></div>
+<div class="ra-myth"><p class="ra-myth-q">"The seat you choose changes the cards you get"</p><p class="ra-myth-a"><span class="ra-verdict">By one card only</span>Cards are dealt in seat-number order, and the shuffle has the one-card bias described above. The next section checks it. The difference is not large enough to affect who wins.</p></div>
+<div class="ra-myth"><p class="ra-myth-q">"In poker, the table pits strong hands against each other to make it exciting"</p><p class="ra-myth-a"><span class="ra-verdict">It doesn't</span>It just shuffles 52 cards and deals from the top. There is no code that chooses who gets what. The table takes no cut, so it has no reason to make things exciting either.</p></div>
+<h2 class="ra-section">Seats and the shuffle bias</h2>
+<p>Cards are always dealt starting from the lowest-numbered seat, regardless of where the button is. The shuffle bias (the first card is never the ace of clubs) shows up directly in that seat.</p>
+<p>For 2-player poker, we counted how often each seat holds the ace of clubs over 1 million hands.</p>
+<ol class="ra-gbars ra-plain" style="--max:4" aria-label="How often each seat holds the ace of clubs in 2-player poker"><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Seat dealt first (this machine's shuffle)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:1.97"></span></span><span class="ra-gbar-n">1.97%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Seat dealt second (this machine's shuffle)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:3.91"></span></span><span class="ra-gbar-n">3.91%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Either seat (uniform shuffle)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:3.85"></span></span><span class="ra-gbar-n">3.85%</span></span></li></ol>
+<p>The seat dealt first holds the ace of clubs only half as often. It can never get it as the 1st card, only as the 2nd. In the same way, the seat dealt second has one position where the king of clubs never lands, and the community cards have positions where the 10, 9, and 8 of clubs never land.</p>
+<p>Does this affect who wins? Hardly at all.</p>
+<ul><li><strong>Poker:</strong> Assuming nobody ever folds, 1 million trials showed no visible difference in pot share with 2 players (49.97% and 50.03%, error ±0.05). With 6 players, the first seat got 16.57%, only about 0.1 points below the even share of 16.67% (error ±0.04).</li><li><strong>Blackjack:</strong> It is 1 card out of 520, so the effect is even smaller. By calculation, the house edge rises by 0.09 points for a single player. With 3 players seated, it is 0.15 points for the lowest-numbered seat and 0.03-0.04 points for the other seats. These are all calculated figures only; we did not run simulations with 3 players. The 3-player figures came from a throwaway program separate from the one in this article.</li></ul>
+<p>The difference is not big enough to say "this seat can't win." We record it as a fact: reading the code shows a one-card bias.</p>
+<h2 class="ra-section">What we don't know</h2>
+<ul><li><strong>Which position the lowest-numbered seat is.</strong> We have not checked which seat on the table is number 0.</li><li><strong>How hands are ranked.</strong> Ranking is handed to a component shaped like a well-known public hand evaluator. We have not read its internals.</li><li><strong>All-ins with 3 or more players.</strong> When a player with a smaller stack goes all in and wins, we do not know whether side pots split according to the usual rules. Reading the code, there are places where the payout looks like it may differ from the usual. We have not checked this by playing.</li><li><strong>The exact digits of the house edge.</strong> About 0.8% is an estimate from our own program. The calculation is an approximation that treats the shoe as infinite, and the simulations have an error of ±0.05-0.1 points.</li><li><strong>What this article covers.</strong> The PC server at the 2026-11-07 version, with the default bet limit of 500. The limit can be changed per server, and the rules may change in future updates.</li></ul>
+<h2 class="ra-section">How we checked</h2>
+<p>We read the server's own code (the intermediate code of the blackjack and poker classes) and read the machine and table settings from data files. We did not run the server. The shoe size, the dealer's drawing rule, the payout multipliers, the bet range, the blinds, and the timers are all values we read.</p>
+<p>The house edge, the basic strategy tables, and the per-seat shares were calculated and simulated with a program in which we rewrote the rules we read. <a class="ra-link" href="card-games.py">card-games.py</a> produces everything up to the share of holding the ace of clubs. The poker pot shares and the per-seat differences for 3-player blackjack came from a separate throwaway program.</p>
+<p>These are not results counted by actually playing in the game. They confirm what the code is written to do.</p><h2 class="ra-section">Sources</h2><ul><li><a class="ra-link" href="https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.randomnumbergenerator.getint32" rel="noopener">.NET documentation, RandomNumberGenerator.GetInt32</a></li><li><a class="ra-link" href="https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle" rel="noopener">Wikipedia, Fisher–Yates shuffle (section on Sattolo&#x27;s algorithm)</a></li></ul></article></main>
+<footer class="ra-foot"><p>An unofficial site made by one person, not affiliated with Facepunch Studios. The values are read from the game server’s data and code; there is no guarantee that they are right.</p>
+<p>Some icons are from <a class="ra-link" href="https://lucide.dev/" rel="noopener">Lucide</a> (ISC License).</p></footer>
+</body></html>
