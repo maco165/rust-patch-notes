@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ルーレットに必勝パターンはあるのか | Rust Analysis</title>
-<meta name="description" content="Bandit Camp のルーレットにまつわる 7 つの話を、サーバーの処理を読んだ結果から 1 つずつ確かめます。結論は、パターンはありません。">
+<meta name="description" content="Bandit Camp のルーレットにまつわる 7 つの話を、サーバーの処理を読んだ結果から 1 つずつ確かめます。今はパターンはありません。2024 年 5 月より前は、前の当たりから次の当たりが偏っていました。">
 <meta name="theme-color" content="#f2f4f5" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15181a" media="(prefers-color-scheme: dark)">
 <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
@@ -10,7 +10,7 @@
 <meta property="og:site_name" content="Rust Analysis">
 <meta property="og:locale" content="ja_JP">
 <meta property="og:title" content="ルーレットに必勝パターンはあるのか | Rust Analysis">
-<meta property="og:description" content="Bandit Camp のルーレットにまつわる 7 つの話を、サーバーの処理を読んだ結果から 1 つずつ確かめます。結論は、パターンはありません。">
+<meta property="og:description" content="Bandit Camp のルーレットにまつわる 7 つの話を、サーバーの処理を読んだ結果から 1 つずつ確かめます。今はパターンはありません。2024 年 5 月より前は、前の当たりから次の当たりが偏っていました。">
 <meta property="og:url" content="https://maco165.github.io/rust-patch-notes/columns/wheel-myths.html">
 <meta property="og:image" content="https://maco165.github.io/rust-patch-notes/assets/og.png">
 <meta property="og:image:width" content="1200">
@@ -28,10 +28,10 @@
   <span class="ra-site-meta">データ 2026-11-05 まで</span>
   <a class="ra-site-link" href="https://github.com/maco165/rust-patch-notes" rel="noopener"><i class="ra-ico ra-ico-github" aria-hidden="true"></i>GitHub</a>
 </header>
-<main class="ra-page"><article class="ra-prose"><p class="ra-patch-meta"><a class="ra-link" href="../columns.html">コラム</a><time datetime="2026-11-12">2026-11-12</time><span><i class="ra-ico ra-ico-economy" aria-hidden="true"></i> 経済・店</span><span class="ra-src ra-src-export"><i class="ra-ico ra-ico-export" aria-hidden="true"></i>本体の書き出し 2026-11-07</span></p><h1 class="ra-prose-title">ルーレットに必勝パターンはあるのか</h1><p class="ra-prose-lead">Bandit Camp のルーレットにまつわる 7 つの話を、サーバーの処理を読んだ結果から 1 つずつ確かめます。結論は、パターンはありません。</p><div class="ra-callout">
+<main class="ra-page"><article class="ra-prose"><p class="ra-patch-meta"><a class="ra-link" href="../columns.html">コラム</a><time datetime="2026-11-12">2026-11-12</time><span><i class="ra-ico ra-ico-economy" aria-hidden="true"></i> 経済・店</span><span class="ra-src ra-src-export"><i class="ra-ico ra-ico-export" aria-hidden="true"></i>本体の書き出し 2026-11-07</span></p><h1 class="ra-prose-title">ルーレットに必勝パターンはあるのか</h1><p class="ra-prose-lead">Bandit Camp のルーレットにまつわる 7 つの話を、サーバーの処理を読んだ結果から 1 つずつ確かめます。今はパターンはありません。2024 年 5 月より前は、前の当たりから次の当たりが偏っていました。</p><div class="ra-callout">
 <p class="ra-callout-label">結論</p>
-<p class="ra-callout-main">パターンはありません</p>
-<p>当たりのマスは、回し始めの瞬間に 25 マスから等しい確率で 1 つ選ばれます。前の結果も、時刻も、賭けた人や額も使われません。</p>
+<p class="ra-callout-main">今は、パターンはありません</p>
+<p>当たりのマスは、回し始めの瞬間に 25 マスから等しい確率で 1 つ選ばれます。前の結果も、時刻も、賭けた人や額も使われません。ただし 2024 年 5 月より前は作りが違い、前の当たりの位置から次の当たりが偏っていました (「2024 年 5 月より前は」)。</p>
 </div>
 <ul class="ra-facts">
 <li><span class="ra-facts-n">1/25</span><span class="ra-facts-l">どのマスも同じ確率</span></li>
@@ -116,11 +116,25 @@ def payout(bets, segment):
 <li><span class="ra-facts-n">2.5%</span><span class="ra-facts-l">1 が 5 回続く確率 (40 回に 1 回ほど)</span></li>
 </ul>
 <p>確率どおりでも、結果は偏って見えます。3 回に 1 回は「25 回回しても 20 が来ない」のが、確率どおりの姿です。人は連続や偏りに理由を探しますが、ここでは理由はありません。</p>
+<h2 class="ra-section">2024 年 5 月より前は</h2>
+<p>2024-05-02 のアップデートで、公式は「Bandit Camp のルーレットの乱数の扱いを作り直した」と書いています。当時のサーバーの処理を読むと、作り直しの前は当たりの決め方が今と違い、前の当たりから次の当たりが偏っていました。</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">時期</th><th scope="col">回し始めの速さ</th><th scope="col">前の当たりから 3〜14 マス先</th><th scope="col">ほかのマス</th></tr></thead><tbody><tr><td>2021-04〜2023-04</td><td>7〜10 の乱数</td><td>1 マス 5.3%</td><td>1 マス 2.7%</td></tr><tr><td>2023-05〜2024-04</td><td>7〜16 の乱数</td><td>1 マス 4.4%</td><td>1 マス 3.6%</td></tr><tr><td>2024-05〜今</td><td>(当たりを先に決める)</td><td>1 マス 4.0%</td><td>1 マス 4.0%</td></tr></tbody></table></div>
+<p>マスは、ルーレットが回る向きに数えています。2 マス先と 15 マス先は、その間の値です (2023-04 までは 3.3〜3.6%、2023-05 からは 3.8% ほど)。2023-05 に速さの幅が広がったことは、公式の変更点には書かれていません。</p>
+<h3>当時の作り</h3>
+<ul><li><strong>当たりを先に決めていなかった。</strong> 回し始めに、ルーレットに乱数の速さを与えるだけでした。速さはひとりでに落ち、止まった所で針にいちばん近いマスが当たりです。</li><li><strong>前の当たりが、次の出発点だった。</strong> ルーレットは止まった向きのまま、次の回を始めます。1 回で回る角度は「180 × 速さ + 約 213 度」なので、出発点から見た止まる所は、速さの乱数の幅で決まります。</li><li><strong>幅が足りず、半周ぶん偏った。</strong> 速さが 7〜10 なら、回る角度の幅は 540 度 (1.5 周) です。1 周ぶんはどのマスにも同じだけ当たりますが、残りの半周ぶんは、前の当たりから 3〜14 マス先の側にだけ当たります。だから、その 12 マスは 2 倍ほど当たりやすくなっていました。7〜16 では幅が 4.5 周になり、偏りは小さくなりました。</li></ul>
+<h3>当時、1 を賭けたときの平均の戻り</h3>
+<p>前の当たりのマスがいちばん都合のよいときの値です。1 を超えると、続けるほど増えます。</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">数字</th><th scope="col">今 (いつでも)</th><th scope="col">2021-04〜2023-04</th><th scope="col">2023-05〜2024-04</th></tr></thead><tbody><tr><td>1</td><td>0.96</td><td>0.97</td><td>0.96</td></tr><tr><td>3</td><td>0.96</td><td>0.99</td><td>0.97</td></tr><tr><td>5</td><td>0.96</td><td>1.12 (25 マス中 7〜9 マスの後で 1 超え)</td><td>1.01 (5 マスの後で 1 超え)</td></tr><tr><td>10</td><td>0.88</td><td>1.17 (3 マスの後で 1 超え)</td><td>0.98</td></tr><tr><td>20</td><td>0.84</td><td>1.12 (12 マスの後で 1 超え)</td><td>0.93</td></tr></tbody></table></div>
+<p>マスは等間隔に並んでいるとして計算しました。5 のマスの数は、サーバーの 1 コマの長さ (1/30〜1/256 秒) で 7〜9 と変わります。</p>
+<p>2023-04 までは、前の当たりを見て 5・10・20 に賭ければ、平均で増える賭け方がありました。2023-05 からは 5 だけ、最大でも 1.01 です。2024-05 の作り直しで、どちらも無くなりました。</p>
+<h3>作り直しの後の変更</h3>
+<p>2024-05 の作り直しの後、今 (2026-11) まで、当たりの決め方・回り方・針の読み方・倍率は変わっていません。変わったのは、配当のときに賭けの端末が無いかを確かめる処理が足されたことと、処理の呼び出し方の細かな違いだけで、当たりやすさには関わりません。</p>
 <h2 class="ra-section">分からないこと</h2>
-<ul><li><strong>2024 年 5 月より前。</strong> 2024-05-02 のアップデートで、公式が「Bandit Camp のルーレットの乱数の扱いを作り直した」と書いています。それより前の作りにパターンがあったかどうかは、公開されている資料からは分かりません。今後、当時の版のソースを読んで調べる予定です。</li><li><strong>種を外から当てられるか。</strong> 種はサーバーの中の乱数から作られ、プレイヤーには送られていません。外から当てることはできないと見ていますが、これは推定です。</li><li><strong>この記事の対象。</strong> 2026-11-07 の版の PC 版のサーバーです。今後のアップデートで変わることがあります。</li></ul>
+<ul><li><strong>2021 年 4 月より前。</strong> 当時の処理を読めたのは 2021-04-29 の版からです。それより前は分かりません。</li><li><strong>当時のマスの並びと位置。</strong> 戻りの表は、マスの並びが今と同じで、等間隔に並んでいるとして計算しました。当時の並びは確かめていません。今の版のマスの間隔は 13.6〜15.1 度と少し不揃いで、その位置で計算すると 10 の最大が 1.17 から 1.19 に変わります。「3〜14 マス先が当たりやすい」という偏りは、並びには左右されません。</li><li><strong>回る向き。</strong> 今の版の作りから、回ると針の下のマスが番号の小さい方へ進む向きと推定しました。画面の上で時計回りか反時計回りかは確かめていません。</li><li><strong>種を外から当てられるか。</strong> 種はサーバーの中の乱数から作られ、プレイヤーには送られていません。外から当てることはできないと見ていますが、これは推定です。</li><li><strong>この記事の対象。</strong> 2026-11-07 の版の PC 版のサーバーです。今後のアップデートで変わることがあります。</li></ul>
 <h2 class="ra-section">調べ方</h2>
 <p>サーバー本体の処理 (ルーレットのクラスの中間コード) を読み、ルーレットと端末の設定の値をデータのファイルから読みました。サーバーは起動していません。倍率 (1・3・5・10・20)、マスの数、受け付けの 45 秒、回る時間の 13〜18 秒は、どれも読んだ値です。確率と平均の戻りは、そこから計算したものです。</p>
-<p>ゲームの中で実際に回して数えた結果ではありません。処理がそう書かれている、という確認です。記事の中の 10 万回の結果は、同じ動きをする自作のプログラムを回したものです。</p><h2 class="ra-section">出典</h2><ul><li><a class="ra-link" href="https://rust.facepunch.com/changes/6" rel="noopener">公式の変更点 2024-05-02 (ルーレットの乱数の作り直し)</a></li><li><a class="ra-link" href="https://commits.facepunch.com/r/rust_reboot" rel="noopener">開発のコミットの記録</a></li><li><a class="ra-link" href="https://docs.unity3d.com/ScriptReference/Random.html" rel="noopener">Unity の文書 UnityEngine.Random</a></li><li><a class="ra-link" href="https://learn.microsoft.com/en-us/dotnet/api/system.random.next" rel="noopener">.NET の文書 System.Random.Next</a></li><li><a class="ra-link" href="https://learn.microsoft.com/en-us/dotnet/api/system.random.-ctor" rel="noopener">.NET の文書 System.Random のコンストラクター</a></li></ul></article></main>
+<p>2024 年 5 月より前の処理は、MOD の仕組み Oxide が GitHub で公開しているリリースに入っている、当時のサーバーの処理を読みました。Oxide はゲームの処理に自分の呼び出しを差し込んで配っています。今の版で、Oxide のものとゲームのものの、ルーレットの処理が差し込みを除いて同じことを確かめました。2021-04 から 2026-11 までのリリースを読み比べ、変わった時点を絞り込みました。当時の偏りと戻りは、同じ動きをするプログラム (<a class="ra-link" href="wheel-myths.py">wheel-myths.py</a> の <code>old</code>) で、回し始めの速さと止まっていた位置を細かく分けて足し上げた値です。</p>
+<p>ゲームの中で実際に回して数えた結果ではありません。処理がそう書かれている、という確認です。記事の中の 10 万回の結果は、同じ動きをする自作のプログラムを回したものです。</p><h2 class="ra-section">出典</h2><ul><li><a class="ra-link" href="https://rust.facepunch.com/changes/6" rel="noopener">公式の変更点 2024-05-02 (ルーレットの乱数の作り直し)</a></li><li><a class="ra-link" href="https://commits.facepunch.com/r/rust_reboot" rel="noopener">開発のコミットの記録</a></li><li><a class="ra-link" href="https://github.com/OxideMod/Oxide.Rust/releases" rel="noopener">Oxide.Rust のリリース (2021〜2024 年のサーバーの処理を読んだ)</a></li><li><a class="ra-link" href="https://docs.unity3d.com/ScriptReference/Random.html" rel="noopener">Unity の文書 UnityEngine.Random</a></li><li><a class="ra-link" href="https://learn.microsoft.com/en-us/dotnet/api/system.random.next" rel="noopener">.NET の文書 System.Random.Next</a></li><li><a class="ra-link" href="https://learn.microsoft.com/en-us/dotnet/api/system.random.-ctor" rel="noopener">.NET の文書 System.Random のコンストラクター</a></li></ul></article></main>
 <footer class="ra-foot"><p>Facepunch Studios とは関係のない、個人が解析して作った非公式のサイトです。変更点は公式の変更点の一覧を自分の言葉で日本語にしたもので、各回に出典のリンクがあります。アイテムの値はゲームのサーバーのデータから、版の差分はゲームの本体 (クライアント) の各月の版のデータから読んだもので、正しさは保証しません。</p>
 <p>アイコンの一部は <a class="ra-link" href="https://lucide.dev/" rel="noopener">Lucide</a> (ISC License) です。</p></footer>
 </body></html>
