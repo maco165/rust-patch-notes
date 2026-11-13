@@ -1,6 +1,8 @@
-# Rust Analysis (公開ページ)
+**日本語** | [English](README.en.md)
 
-ゲーム Rust (Facepunch Studios) の公式の変更点を日本語にまとめ、アイテムの値を表にした、個人の非公式のサイトです。
+# Rust Analysis
+
+ゲーム Rust (Facepunch Studios) の公式の変更点を日本語にまとめ、アイテムの値と、レイドやクラフトの計算機を置いた、個人の非公式のサイトです。
 
 **https://maco165.github.io/rust-patch-notes/**
 
@@ -9,14 +11,59 @@
 - このリポジトリには、生成したページだけを置いています。ページを作る仕組みとデータは別の非公開のリポジトリにあります。
 - アイコンの一部は [Lucide](https://lucide.dev/) (ISC License。`LICENSE-lucide.txt`) です。ゲームのアイコンや画像は使っていません。
 
+## システム構成
+
+ページは Python のスクリプトがデータから作ります。外部の JS ファイルは無く、各ページの JS は `build_site.py` がページの中に書き込みます。
+
+```mermaid
+flowchart LR
+  subgraph S["Sources"]
+    s1["rust.facepunch.com<br/>official change lists"]
+    s2["RustDedicated<br/>server build"]
+    s3["Rust client<br/>monthly builds"]
+  end
+  subgraph E["Extract (Python) → data/"]
+    e1["fetch_changes.py<br/>data/patches/"]
+    e2["extract_items.py · extract_loot.py · extract_raid.py<br/>data/items/ · loot/ · raid/"]
+    e3["build_diffs.py<br/>data/diffs/"]
+  end
+  subgraph B["Build (Python)"]
+    b1["build_site.py<br/>imports raid_calc.py · loot_odds.py · build_views.py<br/>build_index.py · genres.py · item_icons.py"]
+    b2["content/ · rules/ · design/<br/>digests, columns, *.yml, tokens.json, *.css, item-icons/"]
+  end
+  subgraph W["Site (GitHub Pages)"]
+    w1["index.html · history.html · genres.html · numbers.html"]
+    w2["items.html · spec.html · diffs.html"]
+    w3["columns.html → columns/*.html"]
+    w4["tools.html → tools/raid.html → tools/craft.html"]
+    w5["assets/style.css<br/>used by every page"]
+  end
+  s1 --> e1
+  s2 --> e2
+  s3 --> e3
+  e1 --> b1
+  e2 --> b1
+  e3 --> b1
+  b2 --> b1
+  b1 --> w1
+  b1 --> w2
+  b1 --> w3
+  b1 --> w4
+  b1 --> w5
+```
+
+- どのページも、上のメニューから全部の主なページへ行けます。
+- `tools/raid.html` は、選んだ数を URL (`m`・`o`・`c`・`r`) で `tools/craft.html` に渡します。戻りのリンクは `r` で作ります。
+- `assets/style.css` は、`design/tokens.json` を CSS の変数にしたものに、`components.css`・`site.css`・`item-icons/` のアイコンのマスクを足したものです。
+
 ## 言語 / Languages
 
-サイトとこの README は、いまは日本語だけです。ツール (Raid Planner・Craft Planner) から順に、ほかの言語に対応していきます。変更点の一覧は公式の英語の文章を日本語にしたものなので、英語にはしません。
+サイトは、いまは日本語だけです。ツール (Raid Planner・Craft Planner) とコラムから順に、ほかの言語に対応していきます。変更点の一覧は公式の英語の文章を日本語にしたものなので、英語にはしません。
 
 | 言語 | 状態 |
 |---|---|
 | 日本語 | 対応済み |
-| English | 準備中 — In preparation, starting with the tools. For the change lists, read the official page: https://rust.facepunch.com/changes |
+| English | 準備中 (README は [English](README.en.md) あり) — In preparation, starting with the tools and the articles. For the change lists, read the official page: https://rust.facepunch.com/changes |
 | 简体中文 | 今後対応する予定 — 计划支持。 |
 | 한국어 | 今後対応する予定 — 지원할 예정입니다. |
 | Русский | 今後対応する予定 — Планируется поддержка. |
