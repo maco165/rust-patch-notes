@@ -23,14 +23,14 @@ flowchart LR
     e3["build_diffs.py<br/>data/diffs/"]
   end
   subgraph B["Build (Python)"]
-    b1["build_site.py<br/>imports raid_calc.py · gene_calc.py · loot_odds.py · build_views.py<br/>build_index.py · genres.py · item_icons.py"]
+    b1["build_site.py<br/>imports raid_calc.py · gene_calc.py · consume_calc.py · loot_odds.py<br/>build_views.py · build_index.py · genres.py · item_icons.py"]
     b2["content/ · rules/ · design/<br/>digests, columns, *.yml, tokens.json, *.css, item-icons/"]
   end
   subgraph W["Site (GitHub Pages)"]
     w1["index.html · history.html · genres.html · numbers.html"]
     w2["items.html · spec.html · diffs.html"]
     w3["columns.html → columns/*.html"]
-    w4["tools.html → tools/raid.html → tools/craft.html<br/>tools.html → tools/gene.html"]
+    w4["tools.html → tools/raid.html → tools/craft.html<br/>tools.html → tools/gene.html · tools/buff.html"]
     w5["assets/style.css<br/>used by every page"]
   end
   s1 --> e1
@@ -63,6 +63,7 @@ flowchart LR
 | [tools/raid.html](en/tools/raid.html) (English) | Raid Planner: взрывчатка, сера, материалы и время печей, чтобы разрушить стены, двери и постройки вместе | Данные сервера и правила урона и переплавки из кода сервера |
 | [tools/craft.html](en/tools/craft.html) (English) | Craft Planner: чего не хватает и сколько работают печи — по тому, что вы делаете, что у вас есть и какие печи | Те же данные, что и у Raid Planner |
 | [tools/gene.html](tools/gene.html) (Только японский) | Gene Planner: как посадить ваши саженцы, чтобы получить гены близко к цели вроде GGGYYY, и что дают гены | Данные сервера и правила скрещивания из кода сервера |
+| [tools/buff.html](en/tools/buff.html) (English) | Buff Planner: насколько сильны эффекты чаёв и пирогов и до какого времени, что что заменяет и что укорачивает медвежий пирог | Данные сервера и правила наложения из кода сервера |
 
 ## Языки
 

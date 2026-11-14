@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Buff Planner: Rust のお茶と食べ物の効果の組み合わせ | Rust Analysis</title>
+<meta name="description" content="ゲーム Rust のお茶とパイを口にする順に並べると、鉱石・木・スクラップ・最大体力などの効果がどれだけ、いつまで効くかを計算するツール。同じ種類で入れ替わる物と、熊肉パイで強まって短くなる物も出します。">
+<meta name="theme-color" content="#f2f4f5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15181a" media="(prefers-color-scheme: dark)">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rust Analysis">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:title" content="Buff Planner: Rust のお茶と食べ物の効果の組み合わせ | Rust Analysis">
+<meta property="og:description" content="ゲーム Rust のお茶とパイを口にする順に並べると、鉱石・木・スクラップ・最大体力などの効果がどれだけ、いつまで効くかを計算するツール。同じ種類で入れ替わる物と、熊肉パイで強まって短くなる物も出します。">
+<meta property="og:url" content="https://maco165.github.io/rust-patch-notes/tools/buff.html">
+<meta property="og:image" content="https://maco165.github.io/rust-patch-notes/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://maco165.github.io/rust-patch-notes/tools/buff.html">
+<link rel="alternate" hreflang="ja" href="https://maco165.github.io/rust-patch-notes/tools/buff.html">
+<link rel="alternate" hreflang="en" href="https://maco165.github.io/rust-patch-notes/en/tools/buff.html">
+<link rel="alternate" hreflang="x-default" href="https://maco165.github.io/rust-patch-notes/tools/buff.html">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Buff Planner", "url": "https://maco165.github.io/rust-patch-notes/tools/buff.html", "description": "ゲーム Rust のお茶とパイを口にする順に並べると、鉱石・木・スクラップ・最大体力などの効果がどれだけ、いつまで効くかを計算するツール。同じ種類で入れ替わる物と、熊肉パイで強まって短くなる物も出します。", "applicationCategory": "GameApplication", "operatingSystem": "Any", "inLanguage": "ja", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "isPartOf": {"@type": "WebSite", "name": "Rust Analysis", "url": "https://maco165.github.io/rust-patch-notes/"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Rust Analysis", "item": "https://maco165.github.io/rust-patch-notes/"}, {"@type": "ListItem", "position": 2, "name": "ツール", "item": "https://maco165.github.io/rust-patch-notes/tools.html"}, {"@type": "ListItem", "position": 3, "name": "Buff Planner", "item": "https://maco165.github.io/rust-patch-notes/tools/buff.html"}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+JP:wght@400;600&display=swap">
+<link rel="stylesheet" href="../assets/style.css">
+</head><body>
+<header class="ra-site">
+  <a class="ra-site-name" href="../index.html"><b>Rust</b> Analysis</a>
+  <nav class="ra-nav" aria-label="ページ"><a href="../index.html"><i class="ra-ico ra-ico-month" aria-hidden="true"></i>今月</a><a href="../history.html"><i class="ra-ico ra-ico-history" aria-hidden="true"></i>これまで</a><a href="../genres.html"><i class="ra-ico ra-ico-genres" aria-hidden="true"></i>ジャンル</a><a href="../numbers.html"><i class="ra-ico ra-ico-numbers" aria-hidden="true"></i>数値</a><a href="../diffs.html"><i class="ra-ico ra-ico-diffs" aria-hidden="true"></i>版の差分</a><a href="../items.html"><i class="ra-ico ra-ico-items" aria-hidden="true"></i>アイテム</a><a href="../spec.html"><i class="ra-ico ra-ico-spec" aria-hidden="true"></i>仕様書</a><a href="../columns.html"><i class="ra-ico ra-ico-columns" aria-hidden="true"></i>コラム</a><a href="../tools.html" aria-current="page"><i class="ra-ico ra-ico-tools" aria-hidden="true"></i>ツール</a></nav>
+  <span class="ra-site-meta"><span class="ra-site-meta-w">データ </span>2026-11-05<span class="ra-site-meta-w"> まで</span></span>
+  <span class="ra-site-lang"><a href="../en/tools/buff.html" lang="en" hreflang="en">English</a></span><a class="ra-site-link" href="https://github.com/maco165/rust-patch-notes" rel="noopener"><i class="ra-ico ra-ico-github" aria-hidden="true"></i>GitHub</a>
+</header>
+<script>(()=>{const n=document.querySelector('.ra-nav'),a=n&&n.querySelector('[aria-current]');if(a&&n.scrollWidth>n.clientWidth)n.scrollLeft=a.offsetLeft-(n.clientWidth-a.offsetWidth)/2})()</script>
+<main class="ra-page">
+<div class="ra-block">
+  <p class="ra-patch-meta"><a class="ra-link" href="../tools.html">ツール</a><span class="ra-src ra-src-export"><i class="ra-ico ra-ico-export" aria-hidden="true"></i>本体の書き出し 2026-11-07</span></p>
+  <h1 class="ra-patch-sub" lang="en">Buff Planner</h1>
+  <p class="ra-lead">お茶やパイを口にする順に並べると、どの効果がどれだけ、いつまで効くかを出します。同じ種類で入れ替わる物と、熊肉パイで短くなる物も知らせます。</p>
+</div>
+<section class="ra-block" aria-labelledby="h-pick"><details class="ra-sec" open data-fold="h-pick"><summary><h2 class="ra-section" id="h-pick">口にする物 <small>押すと下の順に足す</small></h2><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i></summary><div class="ra-block">
+  <div class="ra-rd-groups" id="picks"></div>
+</div></details></section>
+<section class="ra-block" aria-labelledby="h-order"><details class="ra-sec" open data-fold="h-order"><summary><h2 class="ra-section" id="h-order">口にする順 <small id="order-sub"></small></h2><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i></summary><div class="ra-block">
+  <div class="bp-order" id="order"></div>
+  <p class="ra-rd-hint">口にする時刻は、最初の 1 品からの分で入れます。同じ分なら上から順に口にします。</p>
+  <div class="ra-rd-controls"><span class="ra-rd-sum" id="sum"></span><button type="button" class="ra-button" id="clear">すべて外す</button></div>
+</div></details></section>
+<section class="ra-block" id="none">
+  <h2 class="ra-section">結果</h2>
+  <p class="ra-lead">上のお茶やパイを押して足すと、ここに効く効果と時間が出ます。</p>
+</section>
+<div id="result" class="ra-rd-result">
+<section class="ra-block" aria-live="polite" aria-labelledby="h-res"><details class="ra-sec" open data-fold="h-res"><summary><h2 class="ra-section" id="h-res">効いている効果 <small id="res-sub"></small></h2><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i></summary><div class="ra-block">
+  <div class="bp-stats" id="stats"></div>
+  <div id="alerts"></div>
+  <div class="bp-tl" id="tl"></div>
+  <div class="bp-legend" aria-hidden="true"><span><i class="bp-k-boost"></i>熊肉パイで強まっている</span><span><i class="bp-k-on"></i>効いている</span><span><i class="bp-k-gone"></i>入れ替わって消えた分</span></div>
+  <table class="bp-tbl"><thead><tr><th>効果</th><th>出どころ</th><th class="bp-num">値</th><th class="bp-num">切れる</th></tr></thead><tbody id="rows"></tbody></table>
+  <p class="ra-more" id="now"></p>
+  <div class="ra-rd-share bp-share"><span class="ra-rd-label">いまの結果を渡す</span>
+    <div class="ra-rd-share-row"><button type="button" class="ra-rd-share-go" id="sh-link"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>リンクをコピー</button>
+      <div class="ra-rd-img" role="group" aria-label="結果の画像"><span><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>画像</span><button type="button" id="sh-send" aria-label="画像を共有" hidden><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><path d="m8.59 13.51 6.83 3.98"></path><path d="m15.41 6.51-6.82 3.98"></path></svg>共有</button><button type="button" id="sh-copy" aria-label="画像をコピー" hidden><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>コピー</button><button type="button" id="sh-save" aria-label="画像を保存"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="m7 10 5 5 5-5"></path><path d="M12 15V3"></path></svg>保存</button></div></div>
+    <span class="ra-rd-share-msg" id="sh-msg" role="status"></span></div>
+</div></details></section>
+</div>
+<section class="ra-block" aria-labelledby="h-notes"><details class="ra-sec" open data-fold="h-notes"><summary><h2 class="ra-section" id="h-notes">計算の前提</h2><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i></summary><div class="ra-block">
+  <p class="ra-rd-hint">結果はゲームのサーバーの処理とデータから計算したもので、ゲームの中で飲んで確かめたものではありません。決まりの根拠は調査の記録「お茶と食べ物の効果の重なり方」にあります。</p>
+  <details class="ra-rd-notes"><summary><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i>重なり方の決まり <span class="ra-num">5 件</span></summary><ul>
+    <li>同じ種類の効果は 1 つまでで、後から口にした方に入れ替わります。強さも残り時間も比べないので、強いお茶の後に弱いお茶を飲むと弱くなります。パイもお茶と同じ扱いです。</li>
+    <li>種類が違う効果は、いくつでも同時に効きます。</li>
+    <li>熊肉パイは、鉱石・木・スクラップ・採集の 4 種類の値を 1.5 倍 (リッチは 1.75 倍) にし、その 4 種類の残り時間を 2 倍の速さで減らします。熊肉パイが切れると、残りは普通の速さに戻ります。</li>
+    <li>パンなどの「時間をかけて戻る体力」は 1 秒に 1 ずつ戻り、豚肉パイがあると 1 秒に 1 + 値 になります。体力が満タンになると残りは捨てられます。</li>
+    <li>死ぬと、生き返るときに効果が全部消えます (サーバーの設定 keepteaondeath が有効なら残ります)。</li>
+  </ul></details>
+  <details class="ra-rd-notes"><summary><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i>値の読み方 <span class="ra-num">4 件</span></summary><ul>
+    <li>鉱石・木・スクラップ・採集 (動物と魚) は、採った量や箱のスクラップ、魚をさばいて出る数に 1 + 値 を掛けた分だけ増えます (+40% は 1.4 倍)。</li>
+    <li>最大体力は 100 × (1 + 値)、放射線のダメージは 1 − 値 倍、空腹の上限は 1 + 値 倍です。</li>
+    <li>寒さ・暑さは体温の調整に足される値で、ゲームの説明の「温度」と同じ数字です。体温の上限・下限もゲームの説明の数字のまま出します (使われ方は確かめていません)。クラフト品質は、作った防具の装備の枠の数を決める 0〜1 の値です。</li>
+    <li>視界・動物よけなど、値が 1 の効果は「効く」と出します。</li>
+  </ul></details>
+  <details class="ra-rd-notes"><summary><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i>計算の仕方 <span class="ra-num">3 件</span></summary><ul>
+    <li>サーバーは効果の時間を一定の間隔で減らすので、切れる時刻は数秒ずれることがあります。</li>
+    <li>リンゴやパンに付く馬の効果は、プレイヤーには付かないので出していません。</li>
+    <li>すぐ効く分 (カロリー・水分・体力) は、1 つを丸ごと食べ、品の状態が満タンのときの量です。</li>
+  </ul></details>
+</div></details></section>
+</main>
+<footer class="ra-foot"><p>Facepunch Studios とは関係のない、個人が解析して作った非公式のサイトです。変更点は公式の変更点の一覧を自分の言葉で日本語にしたもので、各回に出典のリンクがあります。アイテムの値はゲームのサーバーのデータから、版の差分はゲームの本体 (クライアント) の各月の版のデータから読んだもので、正しさは保証しません。</p>
+<p>アイコンの一部は <a class="ra-link" href="https://lucide.dev/" rel="noopener">Lucide</a> (ISC License) です。</p></footer>
+<script>
+const R={"version":"2026-11-07","items":[{"id":"oretea","name":"鉱石ティー","pie":false,"fam":"Ore_Yield","tier":"普通","mods":[["Ore_Yield",0.2,1800,"Tea"]],"eff":{"Hydration":30}},{"id":"oretea.advanced","name":"上級 鉱石ティー","pie":false,"fam":"Ore_Yield","tier":"上級","mods":[["Ore_Yield",0.3,1800,"Tea"]],"eff":{"Hydration":30}},{"id":"oretea.pure","name":"純粋 鉱石ティー","pie":false,"fam":"Ore_Yield","tier":"純粋","mods":[["Ore_Yield",0.4,1800,"Tea"]],"eff":{"Hydration":30}},{"id":"oretea.pure.creamy","name":"クリーム入り 純粋 鉱石ティー","pie":false,"fam":"Ore_Yield","tier":"クリーム入り","mods":[["Ore_Yield",0.5,1440,"Tea"]],"eff":{"Hydration":30,"Health":5,"Calories":45}},{"id":"oretea.pure.milky","name":"ミルク入り 純粋 鉱石ティー","pie":false,"fam":"Ore_Yield","tier":"ミルク入り","mods":[["Ore_Yield",0.4,2700,"Tea"]],"eff":{"Hydration":45,"Calories":90}},{"id":"woodtea","name":"木材ティー","pie":false,"fam":"Wood_Yield","tier":"普通","mods":[["Wood_Yield",0.5,1800,"Tea"]],"eff":{"Hydration":30}},{"id":"woodtea.advanced","name":"上級 木材ティー","pie":false,"fam":"Wood_Yield","tier":"上級","mods":[["Wood_Yield",1,1800,"Tea"]],"eff":{"Hydration":30}},{"id":"woodtea.pure","name":"純粋 木材ティー","pie":false,"fam":"Wood_Yield","tier":"純粋","mods":[["Wood_Yield",1.5,1800,"Tea"]],"eff":{"Hydration":30}},{"id":"woodtea.pure.creamy","name":"クリーム入り 純粋 木材ティー","pie":false,"fam":"Wood_Yield","tier":"クリーム入り","mods":[["Wood_Yield",2,1440,"Tea"]],"eff":{"Hydration":30,"Health":5,"Calories":45}},{"id":"woodtea.pure.milky","name":"ミルク入り 純粋 木材ティー","pie":false,"fam":"Wood_Yield","tier":"ミルク入り","mods":[["Wood_Yield",1.5,2700,"Tea"]],"eff":{"Hydration":45,"Calories":90}},{"id":"scraptea","name":"スクラップティー","pie":false,"fam":"Scrap_Yield","tier":"普通","mods":[["Scrap_Yield",1,1800,"Tea"]],"eff":{"Hydration":30}},{"id":"scraptea.advanced","name":"上級 スクラップティー","pie":false,"fam":"Scrap_Yield","tier":"上級","mods":[["Scrap_Yield",2,2700,"Tea"]],"eff":{"Hydration":30}},{"id":"scraptea.pure","name":"純粋 スクラップティー","pie":false,"fam":"Scrap_Yield","tier":"純粋","mods":[["Scrap_Yield",3,3600,"Tea"]],"eff":{"Hydration":30}},{"id":"scraptea.pure.creamy","name":"クリーム入り 純粋 スクラップティー","pie":false,"fam":"Scrap_Yield","tier":"クリーム入り","mods":[["Scrap_Yield",4,2880,"Tea"]],"eff":{"Hydration":30,"Health":5,"Calories":45}},{"id":"scraptea.pure.milky","name":"ミルク入り 純粋 スクラップティー","pie":false,"fam":"Scrap_Yield","tier":"ミルク入り","mods":[["Scrap_Yield",3,5400,"Tea"]],"eff":{"Hydration":45,"Calories":90}},{"id":"harvestingtea","name":"収穫ティー","pie":false,"fam":"Harvesting","tier":"普通","mods":[["Harvesting",0.35,1200,"Tea"]],"eff":{"Hydration":30}},{"id":"advanceharvestingtea","name":"上級 収穫ティー","pie":false,"fam":"Harvesting","tier":"上級","mods":[["Harvesting",0.45,1200,"Tea"]],"eff":{"Hydration":30}},{"id":"pureharvestingtea","name":"純粋 収穫ティー","pie":false,"fam":"Harvesting","tier":"純粋","mods":[["Harvesting",0.55,1200,"Tea"]],"eff":{"Hydration":30}},{"id":"pureharvestingtea.creamy","name":"クリーム入り 純粋 収穫ティー","pie":false,"fam":"Harvesting","tier":"クリーム入り","mods":[["Harvesting",0.65,960,"Tea"]],"eff":{"Hydration":30,"Health":5,"Calories":45}},{"id":"pureharvestingtea.milky","name":"ミルク入り 純粋 収穫ティー","pie":false,"fam":"Harvesting","tier":"ミルク入り","mods":[["Harvesting",0.55,1800,"Tea"]],"eff":{"Hydration":45,"Calories":90}},{"id":"maxhealthtea","name":"最大体力ティー","pie":false,"fam":"Max_Health","tier":"普通","mods":[["Max_Health",0.05,1200,"Tea"]],"eff":{"Hydration":30}},{"id":"maxhealthtea.advanced","name":"上級 最大体力ティー","pie":false,"fam":"Max_Health","tier":"上級","mods":[["Max_Health",0.1,1200,"Tea"]],"eff":{"Hydration":30}},{"id":"maxhealthtea.pure","name":"純粋 最大体力ティー","pie":false,"fam":"Max_Health","tier":"純粋","mods":[["Max_Health",0.15,1200,"Tea"]],"eff":{"Hydration":30}},{"id":"maxhealthtea.pure.creamy","name":"クリーム入り 純粋 最大体力ティー","pie":false,"fam":"Max_Health","tier":"クリーム入り","mods":[["Max_Health",0.2,960,"Tea"]],"eff":{"Hydration":30,"Health":5,"Calories":45}},{"id":"maxhealthtea.pure.milky","name":"ミルク入り 純粋 最大体力ティー","pie":false,"fam":"Max_Health","tier":"ミルク入り","mods":[["Max_Health",0.15,1800,"Tea"]],"eff":{"Hydration":45,"Calories":90}},{"id":"radiationresisttea","name":"放射線耐性ティー","pie":false,"fam":"Radiation_Resistance","tier":"普通","mods":[["Radiation_Resistance",0.15,1800,"Tea"]],"eff":{"Hydration":30}},{"id":"radiationresisttea.advanced","name":"上級 放射線耐性ティー","pie":false,"fam":"Radiation_Resistance","tier":"上級","mods":[["Radiation_Resistance",0.25,1800,"Tea"]],"eff":{"Hydration":30}},{"id":"radiationresisttea.pure","name":"純粋 放射線耐性ティー","pie":false,"fam":"Radiation_Resistance","tier":"純粋","mods":[["Radiation_Resistance",0.35,1800,"Tea"]],"eff":{"Hydration":30}},{"id":"radiationresisttea.pure.creamy","name":"クリーム入り 純粋 放射線耐性ティー","pie":false,"fam":"Radiation_Resistance","tier":"クリーム入り","mods":[["Radiation_Resistance",0.45,1440,"Tea"]],"eff":{"Hydration":30,"Health":5,"Calories":45}},{"id":"radiationresisttea.pure.milky","name":"ミルク入り 純粋 放射線耐性ティー","pie":false,"fam":"Radiation_Resistance","tier":"ミルク入り","mods":[["Radiation_Resistance",0.35,2700,"Tea"]],"eff":{"Hydration":45,"Calories":90}},{"id":"coolingtea","name":"冷却ティー","pie":false,"fam":"Cooling","tier":"普通","mods":[["Cooling",10,1200,"Tea"],["CoreTemperatureMaxAdjustment",40,1200,"Tea"]],"eff":{"Hydration":30}},{"id":"advancedcoolingtea","name":"上級 冷却ティー","pie":false,"fam":"Cooling","tier":"上級","mods":[["Cooling",14,2700,"Tea"],["CoreTemperatureMaxAdjustment",40,2700,"Tea"]],"eff":{"Hydration":30}},{"id":"purecoolingtea","name":"純粋 冷却ティー","pie":false,"fam":"Cooling","tier":"純粋","mods":[["Cooling",18,3600,"Tea"],["CoreTemperatureMaxAdjustment",40,3600,"Tea"]],"eff":{"Hydration":30}},{"id":"purecoolingtea.creamy","name":"クリーム入り 純粋 冷却ティー","pie":false,"fam":"Cooling","tier":"クリーム入り","mods":[["Cooling",22,2880,"Tea"],["CoreTemperatureMaxAdjustment",40,2880,"Tea"]],"eff":{"Hydration":30,"Health":5,"Calories":45}},{"id":"purecoolingtea.milky","name":"ミルク入り 純粋 冷却ティー","pie":false,"fam":"Cooling","tier":"ミルク入り","mods":[["Cooling",18,5400,"Tea"],["CoreTemperatureMaxAdjustment",40,5400,"Tea"]],"eff":{"Hydration":45,"Calories":90}},{"id":"warmingtea","name":"保温ティー","pie":false,"fam":"Warming","tier":"普通","mods":[["Warming",5,1200,"Tea"],["CoreTemperatureMinAdjustment",-15,1200,"Tea"]],"eff":{"Hydration":30}},{"id":"advancedwarmingtea","name":"上級 保温ティー","pie":false,"fam":"Warming","tier":"上級","mods":[["Warming",9,2700,"Tea"],["CoreTemperatureMinAdjustment",-8,2700,"Tea"]],"eff":{"Hydration":30}},{"id":"purewarmingtea","name":"純粋 保温ティー","pie":false,"fam":"Warming","tier":"純粋","mods":[["Warming",13,3600,"Tea"],["CoreTemperatureMinAdjustment",0,3600,"Tea"]],"eff":{"Hydration":30}},{"id":"purewarmingtea.creamy","name":"クリーム入り 純粋 保温ティー","pie":false,"fam":"Warming","tier":"クリーム入り","mods":[["Warming",17,2880,"Tea"],["CoreTemperatureMinAdjustment",0,2880,"Tea"]],"eff":{"Hydration":30,"Health":5,"Calories":45}},{"id":"purewarmingtea.milky","name":"ミルク入り 純粋 保温ティー","pie":false,"fam":"Warming","tier":"ミルク入り","mods":[["Warming",13,5400,"Tea"],["CoreTemperatureMinAdjustment",0,5400,"Tea"]],"eff":{"Hydration":45,"Calories":90}},{"id":"craftingtea_quality","name":"クラフト品質ティー","pie":false,"fam":"Crafting_Quality","tier":"普通","mods":[["Crafting_Quality",0.5,200,"Tea"]],"eff":{"Hydration":30}},{"id":"advancedcraftingtea_quality","name":"上級 クラフト品質ティー","pie":false,"fam":"Crafting_Quality","tier":"上級","mods":[["Crafting_Quality",0.75,300,"Tea"]],"eff":{"Hydration":30}},{"id":"purecraftingtea_quality","name":"純粋 クラフト品質ティー","pie":false,"fam":"Crafting_Quality","tier":"純粋","mods":[["Crafting_Quality",0.85,400,"Tea"]],"eff":{"Hydration":30}},{"id":"supertea","name":"スーパー血清","pie":false,"fam":"supertea","tier":"普通","mods":[["Wood_Yield",5,3600,"Tea"],["Ore_Yield",4,3600,"Tea"],["Scrap_Yield",5,3600,"Tea"]],"eff":{"Hydration":500,"Calories":500}},{"id":"pie.apple","name":"りんごパイ","pie":true,"fam":"pie.apple","tier":"普通","mods":[["VisionCare",1,900,"Tea"]],"eff":{"Calories":80,"Hydration":15,"Health":2}},{"id":"pie.apple.rich","name":"リッチ りんごパイ","pie":true,"fam":"pie.apple","tier":"リッチ","mods":[["VisionCare",1,1200,"Tea"]],"eff":{"Calories":100,"Hydration":19,"Health":3}},{"id":"pie.bear","name":"熊肉パイ","pie":true,"fam":"pie.bear","tier":"普通","mods":[["DigestionBoost",1.5,900,"Tea"],["DigestionBoostTimeMod",2,900,"Tea"]],"eff":{"Calories":80,"Hydration":15,"Health":2}},{"id":"pie.bear.rich","name":"リッチ 熊肉パイ","pie":true,"fam":"pie.bear","tier":"リッチ","mods":[["DigestionBoost",1.75,900,"Tea"],["DigestionBoostTimeMod",2,900,"Tea"]],"eff":{"Calories":100,"Hydration":19,"Health":3}},{"id":"pie.beef","name":"牛肉パイ","pie":true,"fam":"pie.beef","tier":"普通","mods":[["Hunger_Capacity",0.75,7200,"Tea"]],"eff":{"Calories":80,"Hydration":15,"Health":2}},{"id":"pie.beef.rich","name":"リッチ 牛肉パイ","pie":true,"fam":"pie.beef","tier":"リッチ","mods":[["Hunger_Capacity",1,7200,"Tea"]],"eff":{"Calories":100,"Hydration":19,"Health":3}},{"id":"pie.bigcat","name":"大型ネコ肉パイ","pie":true,"fam":"pie.bigcat","tier":"普通","mods":[["HunterVision",1,1800,"Tea"]],"eff":{"Calories":80,"Hydration":15,"Health":2}},{"id":"pie.bigcat.rich","name":"リッチ 大型ネコ肉パイ","pie":true,"fam":"pie.bigcat","tier":"リッチ","mods":[["HunterVision",1,2400,"Tea"]],"eff":{"Calories":100,"Hydration":19,"Health":3}},{"id":"pie.chicken","name":"鶏肉パイ","pie":true,"fam":"pie.chicken","tier":"普通","mods":[["Farming_BetterGenes",0.52,600,"Tea"]],"eff":{"Calories":80,"Hydration":15,"Health":2}},{"id":"pie.chicken.rich","name":"リッチ 鶏肉パイ","pie":true,"fam":"pie.chicken","tier":"リッチ","mods":[["Farming_BetterGenes",0.65,600,"Tea"]],"eff":{"Calories":100,"Hydration":19,"Health":3}},{"id":"pie.crocodile","name":"ワニ肉パイ","pie":true,"fam":"pie.crocodile","tier":"普通","mods":[["AnimalRepellent",1,1800,"Tea"]],"eff":{"Calories":80,"Hydration":15,"Health":2}},{"id":"pie.crocodile.rich","name":"リッチ ワニ肉パイ","pie":true,"fam":"pie.crocodile","tier":"リッチ","mods":[["AnimalRepellent",1,2400,"Tea"]],"eff":{"Calories":100,"Hydration":19,"Health":3}},{"id":"pie.fish","name":"魚パイ","pie":true,"fam":"pie.fish","tier":"普通","mods":[["Comfort",1,1200,"Tea"]],"eff":{"Calories":80,"Hydration":15,"Health":2}},{"id":"pie.fish.rich","name":"リッチ 魚パイ","pie":true,"fam":"pie.fish","tier":"リッチ","mods":[["Comfort",1,1500,"Tea"]],"eff":{"Calories":100,"Hydration":19,"Health":3}},{"id":"pie.hunters","name":"ハンターズパイ","pie":true,"fam":"pie.hunters","tier":"普通","mods":[["Clotting",0.9,1800,"Tea"]],"eff":{"Calories":80,"Hydration":15,"Health":2}},{"id":"pie.hunters.rich","name":"リッチ ハンターズパイ","pie":true,"fam":"pie.hunters","tier":"リッチ","mods":[["Clotting",1,1800,"Tea"]],"eff":{"Calories":100,"Hydration":19,"Health":3}},{"id":"pie.mutton","name":"シェパーズパイ","pie":true,"fam":"pie.mutton","tier":"普通","mods":[["LivestockHandling",1,900,"Tea"]],"eff":{"Calories":80,"Hydration":15,"Health":2}},{"id":"pie.mutton.rich","name":"リッチ シェパーズパイ","pie":true,"fam":"pie.mutton","tier":"リッチ","mods":[["LivestockHandling",1.5,900,"Tea"]],"eff":{"Calories":100,"Hydration":19,"Health":3}},{"id":"pie.pork","name":"豚肉パイ","pie":true,"fam":"pie.pork","tier":"普通","mods":[["MetabolismBooster",2,1800,"Tea"]],"eff":{"Calories":80,"Hydration":15,"Health":2}},{"id":"pie.pork.rich","name":"リッチ 豚肉パイ","pie":true,"fam":"pie.pork","tier":"リッチ","mods":[["MetabolismBooster",2.5,1800,"Tea"]],"eff":{"Calories":100,"Hydration":19,"Health":3}},{"id":"pie.pumpkin","name":"かぼちゃパイ","pie":true,"fam":"pie.pumpkin","tier":"普通","mods":[["Max_Health",0.1,600,"Tea"]],"eff":{"Calories":80,"Hydration":15,"Health":2}},{"id":"pie.pumpkin.rich","name":"リッチ かぼちゃパイ","pie":true,"fam":"pie.pumpkin","tier":"リッチ","mods":[["Max_Health",0.15,600,"Tea"]],"eff":{"Calories":100,"Hydration":19,"Health":3}},{"id":"pie.survivors","name":"サバイバーズパイ","pie":true,"fam":"pie.survivors","tier":"普通","mods":[["Harvesting",1.5,300,"Tea"]],"eff":{"Calories":80,"Hydration":15,"Health":2}}],"fams":[{"id":"Ore_Yield","name":"鉱石","pie":false},{"id":"Wood_Yield","name":"木材","pie":false},{"id":"Scrap_Yield","name":"スクラップ","pie":false},{"id":"Harvesting","name":"収穫","pie":false},{"id":"Max_Health","name":"最大体力","pie":false},{"id":"Radiation_Resistance","name":"放射線耐性","pie":false},{"id":"Cooling","name":"冷却","pie":false},{"id":"Warming","name":"保温","pie":false},{"id":"Crafting_Quality","name":"クラフト品質","pie":false},{"id":"supertea","name":"スーパー血清","pie":false},{"id":"pie.apple","name":"りんごパイ","pie":true},{"id":"pie.bear","name":"熊肉パイ","pie":true},{"id":"pie.beef","name":"牛肉パイ","pie":true},{"id":"pie.bigcat","name":"大型ネコ肉パイ","pie":true},{"id":"pie.chicken","name":"鶏肉パイ","pie":true},{"id":"pie.crocodile","name":"ワニ肉パイ","pie":true},{"id":"pie.fish","name":"魚パイ","pie":true},{"id":"pie.hunters","name":"ハンターズパイ","pie":true},{"id":"pie.mutton","name":"シェパーズパイ","pie":true},{"id":"pie.pork","name":"豚肉パイ","pie":true},{"id":"pie.pumpkin","name":"かぼちゃパイ","pie":true},{"id":"pie.survivors","name":"サバイバーズパイ","pie":true}],"types":{"Ore_Yield":{"name":"鉱石","fmt":"pct"},"Wood_Yield":{"name":"木","fmt":"pct"},"Scrap_Yield":{"name":"スクラップ","fmt":"pct"},"Harvesting":{"name":"採集 (動物と魚)","fmt":"pct"},"Max_Health":{"name":"最大体力","fmt":"hp"},"Radiation_Resistance":{"name":"放射線のダメージ","fmt":"res"},"Cooling":{"name":"暑さに強く","fmt":"temp"},"CoreTemperatureMaxAdjustment":{"name":"体温の上限","fmt":"temp"},"Warming":{"name":"寒さに強く","fmt":"temp"},"CoreTemperatureMinAdjustment":{"name":"体温の下限","fmt":"temp"},"Crafting_Quality":{"name":"クラフト品質","fmt":"quality"},"DigestionBoost":{"name":"熊肉パイ (消化)","fmt":"mult"},"DigestionBoostTimeMod":{"name":"熊肉パイ (時間)","fmt":"speed"},"MetabolismBooster":{"name":"体力の戻り","fmt":"heal"},"Hunger_Capacity":{"name":"空腹の上限","fmt":"cap"},"VisionCare":{"name":"視界","fmt":"raw"},"HunterVision":{"name":"狩りの視界","fmt":"raw"},"Farming_BetterGenes":{"name":"作物の遺伝子","fmt":"raw"},"AnimalRepellent":{"name":"動物よけ","fmt":"raw"},"Comfort":{"name":"快適さ","fmt":"raw"},"Clotting":{"name":"止血","fmt":"raw"},"LivestockHandling":{"name":"家畜の扱い","fmt":"raw"}},"dig":["Harvesting","Ore_Yield","Scrap_Yield","Wood_Yield"],"one":["Tea"],"hp":100.0,"msg":{"min":"{m} 分","minsec":"{m} 分 {s} 秒","ends":"{t}で切れる","gone_at":"{t}で消える","by":"{by} に入れ替わる","fast":"熊肉パイの間は 2 倍の速さで減る","aria_min":"{n} を口にする分","aria_del":"{n} を外す","count":"{n} 品","sum":"{n} 品 (効く効果 {k} 種類)","nothing":"まだ選んでいません","kinds":"{k} 種類","span":"{a}〜{b}","span_pie":"{a}〜{b} (熊肉パイ込み)","more":"、ほか {n} 回","with_pie":"× 熊肉パイ","gone":"<b>入れ替わります:<\/b> {t}に口にする {by} が、{item} の「{type}」を置き換えます。同じ種類の効果は 1 つまでで、強さは比べません。","short":"<b>短くなります:<\/b> 熊肉パイで「{type}」は {v0} → {v1} に強まる代わりに、{t0} → {t1}で切れます。値 × 時間の合計は {s0} → {s1} (分) です。","now":"すぐ効く分: カロリー {c}、水分 {w}、体力 {h}。","hot":" 時間をかけて戻る体力 {p} (1 秒に {r})。","speed":"×{v} の速さ","heal":"1 秒に {v}","on":"効く","value":"値 {v}","card":"Buff Planner ／ お茶と食べ物","card_eff":"効いている効果","card_order":"口にする順","summary":"お茶と食べ物: {list}","file":"rust-buff"},"icons":{}};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const num=n=>Number(n).toLocaleString('en-US',{maximumFractionDigits:1});
+const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,parseInt(v,10)||lo));
+// The sections fold at their headings; which ones are folded is remembered on this device, per page.
+const FOLD='ra-fold-'+location.pathname.split('/').pop(),folds=()=>[...document.querySelectorAll('details[data-fold]')];
+try{const st=JSON.parse(localStorage.getItem(FOLD)||'{}');for(const d of folds())if(d.dataset.fold in st)d.open=!!st[d.dataset.fold]}catch(_){}
+document.addEventListener('toggle',ev=>{if(ev.target.dataset&&ev.target.dataset.fold)try{localStorage.setItem(FOLD,JSON.stringify(Object.fromEntries(folds().map(d=>[d.dataset.fold,d.open]))))}catch(_){}},true);
+// The share image: a 1200x675 card (drawn at 2x) in the page's own colours and fonts, with the site's name and `title` on
+// top and the page's address below. paint(h) draws the rest with the helpers h; icons are the names it draws with h.pic.
+const css=k=>getComputedStyle(document.documentElement).getPropertyValue(k).trim();
+async function drawCard(title,icons,paint){
+  const W=1200,H=675,K=2,L=48,HALF=(W-L*2-24)/2,cv=document.createElement('canvas');cv.width=W*K;cv.height=H*K;
+  const x=cv.getContext('2d');x.scale(K,K);
+  const C={bg:css('--plate'),up:css('--plate-raised'),sunk:css('--plate-sunken'),line:css('--line'),strong:css('--line-strong'),ink:css('--ink'),mute:css('--ink-muted'),rust:css('--rust')};
+  const F={sans:css('--font-sans'),mono:css('--font-mono'),disp:css('--font-display')},f=(w,px,fam)=>`${w} ${px}px ${F[fam]}`;
+  const used=[],pics={};
+  const pic=(k,px,py,sz)=>{if(pics[k])x.drawImage(pics[k],px,py,sz,sz)};
+  const M=(s,font)=>{x.font=font;return x.measureText(s).width};
+  // T draws text and returns the x where it ended (where it began, when right-aligned)
+  const T=(s,px,py,font,col,right)=>{used.push([font,s]);x.font=font;x.fillStyle=col;x.textAlign=right?'right':'left';x.fillText(s,px,py);
+    const w=x.measureText(s).width;return right?px-w:px+w};
+  const fit=(s,font,max)=>{if(M(s,font)<=max)return s;while(s.length>1&&M(s+'…',font)>max)s=s.slice(0,-1);return s+'…'};
+  const box=(col,a,b,w,h)=>{x.fillStyle=col;x.fillRect(a,b,w,h)};
+  const rule=(col,a,b,w,h,lw)=>{x.strokeStyle=col;x.lineWidth=lw;x.strokeRect(a+lw/2,b+lw/2,w-lw,h-lw)};
+  const h={x,W,H,L,HALF,C,f,T,M,fit,box,rule,pic};
+  const all=()=>{box(C.bg,0,0,W,H);const e=T('Rust Analysis',L,60,f(700,26,'disp'),C.ink);T(title,e+16,60,f(600,17,'sans'),C.mute);
+    T(`本体の書き出し ${R.version}`,W-L,60,f(400,14,'mono'),C.mute,1);box(C.ink,L,78,W-L*2,2);paint(h);
+    box(C.line,L,642,W-L*2,1);T('maco165.github.io/rust-patch-notes/tools/buff.html',L,662,f(400,13,'mono'),C.mute);T('ゲームのデータからの計算値 ／ 非公式',W-L,662,f(400,13,'sans'),C.mute,1)};
+  // the first pass lists the text of each font, so the web fonts (split by unicode range) load before the pass that counts
+  all();try{await Promise.all(used.map(([font,s])=>document.fonts.load(font,s)))}catch(_){}
+  // the icons, as SVG images stroked in the ink colour; one that fails to load is left out
+  await Promise.all([...new Set(icons.filter(Boolean))].map(async k=>{try{const im=new Image();
+    im.src='data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 24 24" fill="none" stroke="${C.ink}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${R.icons[k]}</svg>`);
+    await im.decode();pics[k]=im}catch(_){}}));
+  used.length=0;all();return cv}
+// The buttons under "いまの結果を渡す": the link, and the image made by card() shared, copied or saved as name().
+let say=()=>{};
+function shareUI(card,name,summary,hint){
+  const png=async()=>{const cv=await card();return new Promise((ok,ng)=>cv.toBlob(b=>b?ok(b):ng(new Error('toBlob')),'image/png'))};
+  say=m=>{$('#sh-msg').textContent=m||hint};say();document.addEventListener('change',()=>say());
+  const clip=navigator.clipboard;
+  $('#sh-link').addEventListener('click',async()=>{try{await clip.writeText(location.href);say('リンクをコピーしました。')}
+    catch(_){say('コピーできませんでした。アドレス欄の URL をそのまま使えます。')}});
+  $('#sh-save').addEventListener('click',async()=>{try{const a=document.createElement('a');a.href=URL.createObjectURL(await png());a.download=name();
+    document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),10000);say(`画像を保存しました (${name()})。`)}
+    catch(_){say('画像を作れませんでした。')}});
+  if(clip&&clip.write&&window.ClipboardItem){$('#sh-copy').hidden=false;
+    $('#sh-copy').addEventListener('click',async()=>{try{await clip.write([new ClipboardItem({'image/png':png()})]);say('画像をコピーしました。貼り付けて送れます。')}
+      catch(_){say('画像をコピーできませんでした。「保存」を使ってください。')}})}
+  const probe=()=>{try{return navigator.canShare&&navigator.canShare({files:[new File([''],'a.png',{type:'image/png'})]})}catch(_){return false}};
+  if(probe()){$('#sh-send').hidden=false;
+    $('#sh-send').addEventListener('click',async()=>{try{const file=new File([await png()],name(),{type:'image/png'});
+        await navigator.share({files:[file],text:`${summary()}\n${location.href}`});say('')}
+      catch(e){if(e.name!=='AbortError')say('共有できませんでした。「保存」を使ってください。')}})}}
+
+// What teas and pies do together, as the server does it (content/research/farming/consumable-effects.md, the same
+// rules as scripts/consume_calc.py): a source in R.one keeps one modifier per type, a new one taking the place of the
+// one with the least time left; the bear pie (DigestionBoost, DigestionBoostTimeMod) multiplies the value of the types
+// in R.dig and the speed their time runs out; health over time waits in a pool that heals 1 x (1 + MetabolismBooster)
+// a second. Reads R.items, R.dig, R.one and R.hp only.
+const ITEM=Object.fromEntries(R.items.map(x=>[x.id,x])),DIG=new Set(R.dig),ONE=new Set(R.one);
+const newPlayer=()=>({mods:[],now:0,pool:0,ends:{},rowEnds:{},gone:[],segs:{}});
+function total(p,type,def=0){const boost=DIG.has(type)?total(p,'DigestionBoost',1):1;
+  const got=p.mods.filter(m=>m.type===type);return(got.length?got.reduce((a,m)=>a+m.value,0):def)*boost}
+const rate=(p,m)=>DIG.has(m.type)?total(p,'DigestionBoostTimeMod',1):1;
+const healRate=p=>1+total(p,'MetabolismBooster');
+const maxHealth=p=>R.hp*(1+total(p,'Max_Health'));
+// row: which of the things eaten (in the order entered) it is; the same item can come twice
+function eat(p,id,row=-1){const it=ITEM[id];if(!it)return;
+  if(it.eff.HealthOverTime)p.pool+=it.eff.HealthOverTime;
+  for(const[type,value,dur,source]of it.mods){
+    const same=p.mods.filter(m=>m.type===type&&m.source===source);
+    if(ONE.has(source)&&same.length){const old=same.reduce((a,m)=>m.left<a.left?m:a);
+      p.mods.splice(p.mods.indexOf(old),1);p.gone.push({type,item:old.item,row:old.row,at:p.now,by:id,byRow:row,left:old.left})}
+    p.mods.push({type,source,value,left:dur,item:id,row})}}
+// the value of every type over [now, now+step], merged into the last piece when nothing changed
+function record(p,step){
+  for(const type of new Set(p.mods.map(m=>m.type))){
+    const v=total(p,type),items=p.mods.filter(m=>m.type===type).map(m=>m.item).join(','),boost=DIG.has(type)&&total(p,'DigestionBoost',1)!==1;
+    const segs=p.segs[type]||(p.segs[type]=[]),last=segs[segs.length-1];
+    if(last&&Math.abs(last.b-p.now)<1e-6&&Math.abs(last.v-v)<1e-9&&last.items===items)last.b=p.now+step;
+    else segs.push({a:p.now,b:p.now+step,v,items,boost})}}
+function run(p,until){
+  while(p.now<until&&p.mods.length){
+    let step=until-p.now;for(const m of p.mods)step=Math.min(step,m.left/rate(p,m));
+    record(p,step);const r=p.mods.map(m=>rate(p,m));p.mods.forEach((m,i)=>{m.left-=step*r[i]});p.now+=step;
+    for(const m of p.mods.filter(m=>m.left<=1e-9)){p.mods.splice(p.mods.indexOf(m),1);p.ends[m.item]=p.now;p.rowEnds[m.row]=p.now}}
+  p.now=Math.max(p.now,until)}
+// eats: [[item, second], ...]. Everything the page shows, from second 0 until every effect has run out.
+function simulate(eats){
+  const p=newPlayer(),order=eats.map((e,i)=>[e[0],e[1],i]).sort((x,y)=>x[1]-y[1]||x[2]-y[2]),hot=[];
+  const sum={Calories:0,Hydration:0,Health:0,HealthOverTime:0};
+  for(const[id,t,row]of order){run(p,t);eat(p,id,row);
+    for(const k in sum)sum[k]+=ITEM[id]?.eff[k]||0;
+    if(ITEM[id]?.eff.HealthOverTime)hot.push({at:t,amount:ITEM[id].eff.HealthOverTime,rate:healRate(p)})}
+  run(p,1e7);
+  return{segs:p.segs,gone:p.gone,ends:p.ends,rowEnds:p.rowEnds,sum,hot,end:Math.max(0,...Object.values(p.ends))}}
+// the same as consume_calc.work: eat up to `look`, read the values there, then the rest until every effect ends
+function work(eats,look){
+  const p=newPlayer(),order=eats.map((e,i)=>[e[1],e[0],i]).sort((x,y)=>x[0]-y[0]||x[2]-y[2]);
+  for(const[t,id]of order.filter(e=>e[0]<=look)){run(p,t);eat(p,id)}
+  run(p,look);
+  const types=new Set(order.flatMap(([,id])=>(ITEM[id]?.mods||[]).map(m=>m[0])));
+  const values=Object.fromEntries([...types].map(k=>[k,total(p,k)]));
+  const extra={heal_rate:healRate(p),pool:p.pool,max_health:maxHealth(p)};
+  for(const[t,id]of order.filter(e=>e[0]>look)){run(p,t);eat(p,id)}
+  run(p,1e7);return{values,ends:p.ends,extra}}
+
+const TYPE_ORDER=Object.keys(R.types),FAM=Object.fromEntries(R.fams.map(f=>[f.id,f]));
+const nm=id=>ITEM[id]?.name||id,tn=t=>R.types[t].name;
+const r2=v=>Math.round(v*100)/100;
+const M=(k,o={})=>R.msg[k].replace(/\{(\w+)\}/g,(_,n)=>o[n]);
+const mins=s=>{const m=s/60;return Math.abs(m-Math.round(m))<0.05?M('min',{m:Math.round(m)}):M('minsec',{m:Math.floor(m),s:Math.round(s%60)})};
+const pctOf=v=>`${Math.round(v*1000)/10}`;
+function fmt(t,v){switch(R.types[t].fmt){
+  case'pct':return`+${pctOf(v)}%`;
+  case'hp':return`+${pctOf(v)}% (${Math.round(R.hp*(1+v))})`;
+  case'res':return`−${pctOf(Math.min(1,Math.max(0,v)))}%`;
+  case'temp':return`${r2(v)}`;
+  case'mult':return`×${r2(v)}`;
+  case'speed':return M('speed',{v:r2(v)});
+  case'heal':return M('heal',{v:r2(1+v)});
+  case'cap':return`×${r2(1+v)}`;
+  case'quality':return`${r2(v)}`;
+  default:return v===1?M('on'):M('value',{v:r2(v)})}}
+// the first modifier of an item, short, for its button
+const short=it=>{const[t,v,d]=it.mods[0];return`${fmt(t,v)}・${M('min',{m:Math.round(d/60)})}`};
+const P=new URLSearchParams(location.search);
+const parse=s=>String(s||'').split(',').map(x=>x.split(':')).filter(([id])=>ITEM[id]).map(([id,m])=>[id,clamp(m,0,600)]).slice(0,20);
+const S={e:P.has('e')?parse(P.get('e')):[['oretea.pure',0],['scraptea.pure',0],['pie.bear',0],['maxhealthtea.pure',0],['pie.pumpkin',5]].filter(([id])=>ITEM[id])};
+// the buttons: one row per family, the tiers in order
+$('#picks').innerHTML=R.fams.map(f=>{const its=R.items.filter(x=>x.fam===f.id);if(!its.length)return'';
+  return`<div class="ra-rd-group"><span class="ra-rd-kind">${esc(f.name)}</span><div class="bp-chips">${its.map(x=>
+    `<button type="button" class="bp-chip" data-add="${esc(x.id)}" title="${esc(x.name)}"><b>${esc(f.pie&&!x.id.endsWith('.rich')?f.name:x.tier)}</b><small>${esc(short(x))}</small></button>`).join('')}</div></div>`}).join('');
+let V=null;
+function render(){
+  const eats=S.e.map(([id,m])=>[id,m*60]),sim=simulate(eats);
+  const q=new URLSearchParams();if(S.e.length)q.set('e',S.e.map(([id,m])=>`${id}:${m}`).join(','));
+  history.replaceState(null,'',S.e.length?'?'+q.toString():location.pathname);
+  for(const b of document.querySelectorAll('[data-add]'))b.classList.toggle('is-on',S.e.some(([id])=>id===b.dataset.add));
+  // the order, sorted as it is eaten
+  const order=S.e.map((e,i)=>[...e,i]).sort((a,b)=>a[1]-b[1]||a[2]-b[2]);
+  $('#order').innerHTML=order.map(([id,m,i],k)=>{const g=sim.gone.filter(x=>x.row===i);const end=sim.rowEnds[i];
+    const note=g.length?M('by',{by:esc(nm(g[0].by))}):(ITEM[id].mods.some(x=>R.dig.includes(x[0]))&&sim.segs[ITEM[id].mods[0][0]]?.some(s=>s.boost))?M('fast'):'';
+    const gone=g.length&&end===undefined;
+    return`<div class="bp-ord${gone?' is-gone':''}"><span class="bp-n">${k+1}</span><span><b>${esc(nm(id))}</b>${note?`<small>${note}</small>`:''}</span>
+      <label class="bp-time"><input type="number" min="0" max="600" inputmode="numeric" value="${m}" data-i="${i}" aria-label="${esc(M('aria_min',{n:nm(id)}))}"><span>分後</span></label>
+      <span class="bp-end">${gone?M('gone_at',{t:mins(g[0].at)}):end!==undefined?M('ends',{t:mins(end)}):''}</span>
+      <button type="button" class="bp-x" data-del="${i}" aria-label="${esc(M('aria_del',{n:nm(id)}))}">×</button></div>`}).join('');
+  $('#order-sub').textContent=S.e.length?M('count',{n:S.e.length}):'';
+  // the bear pie's speed goes with its value (one row, DigestionBoost); the notes say what it does to time
+  const types=TYPE_ORDER.filter(t=>sim.segs[t]&&t!=='DigestionBoostTimeMod');
+  $('#sum').textContent=S.e.length?M('sum',{n:S.e.length,k:types.length}):M('nothing');
+  $('#none').hidden=!!types.length;$('#result').hidden=!types.length;
+  if(!types.length){V=null;return}
+  // blocks: the pieces joined where one ends as the next begins; a type can stop and start again
+  const blocks=sg=>sg.reduce((bs,s)=>{const l=bs[bs.length-1];if(l&&Math.abs(l.b-s.a)<1e-6)l.b=s.b;else bs.push({a:s.a,b:s.b});return bs},[]);
+  const info=types.map(t=>{const sg=sim.segs[t],bl=blocks(sg);return{t,sg,bl,peak:sg.reduce((a,s)=>Math.abs(s.v)>Math.abs(a)?s.v:a,0),a:bl[0].a,b:sg[sg.length-1].b,boost:sg.some(s=>s.boost)}});
+  V={sim,info,types};
+  $('#res-sub').textContent=M('kinds',{k:types.length});
+  const first=info.reduce((a,x)=>x.b<a.b?x:a);
+  $('#stats').innerHTML=info.filter(x=>!x.t.startsWith('Digestion')).slice(0,3).map(x=>`<div class="ra-rd-stat"><span class="ra-rd-label">${esc(tn(x.t))}</span>
+      <span class="ra-rd-big${x.boost?' ra-rd-sulfur':''}">${esc(fmt(x.t,x.peak))}</span><span class="ra-rd-sub">${M(x.boost?'span_pie':'span',{a:mins(x.bl[0].a),b:mins(x.bl[0].b)})}${x.bl.length>1?M('more',{n:x.bl.length-1}):''}</span></div>`).join('')
+    +`<div class="ra-rd-stat"><span class="ra-rd-label">いちばん早く切れる</span><span class="ra-rd-big">${esc(mins(first.b))}</span><span class="ra-rd-sub">${esc(tn(first.t))}</span></div>`;
+  // what the reader may not expect: a later item takes a type's place; the bear pie makes an effect stronger but shorter
+  const al=[];
+  for(const g of sim.gone)al.push(M('gone',{t:mins(g.at),by:esc(nm(g.by)),item:esc(nm(g.item)),type:esc(tn(g.type))}));
+  if(S.e.some(([id])=>ITEM[id].mods.some(m=>m[0]==='DigestionBoost'))){
+    const plain=simulate(eats.filter(([id])=>!ITEM[id].mods.some(m=>m[0]==='DigestionBoost')));
+    for(const x of info.filter(x=>x.boost)){const p=plain.segs[x.t];if(!p)continue;const pv=p.reduce((a,s)=>a+s.v*(s.b-s.a),0),bv=x.sg.reduce((a,s)=>a+s.v*(s.b-s.a),0);
+      al.push(M('short',{type:esc(tn(x.t)),v0:esc(fmt(x.t,p[0].v)),v1:esc(fmt(x.t,x.peak)),t0:mins(p[p.length-1].b),t1:mins(x.b),s0:num(r2(pv/60)),s1:num(r2(bv/60))}))}}
+  $('#alerts').innerHTML=al.map(a=>`<div class="bp-alert">${a}</div>`).join('');
+  // the time bands, up to the last end rounded up to 15 minutes
+  const span=Math.max(15,Math.ceil(sim.end/60/15)*15)*60,pc=s=>`${(s/span*100).toFixed(2)}%`;
+  const stepM=span<=3600?15:span<=7200?30:60,ticks=[];for(let m=0;m<=span/60;m+=stepM)ticks.push(m);
+  // what a replaced effect would still have had: when it ends with the item that replaced it left out
+  const lost=g=>{const alt=simulate(eats.map((e,j)=>j===g.byRow?['',e[1]]:e));
+    return alt.rowEnds[g.row]??alt.gone.find(x=>x.row===g.row&&x.type===g.type)?.at??g.at};
+  $('#tl').innerHTML=info.map(x=>{const ghosts=sim.gone.filter(g=>g.type===x.t).map(g=>({a:g.at,b:Math.min(lost(g),span)})).filter(g=>g.b>g.a);
+    return`<div class="bp-tl-row"><span class="bp-tl-name">${esc(tn(x.t))}<small>${esc([...new Set(x.sg.flatMap(s=>s.items.split(',')))].map(nm).join(' → '))}</small></span><div><div class="bp-tl-track">`
+      +x.sg.map(s=>`<span class="bp-seg${s.boost?' is-boost':''}" style="left:${pc(s.a)};width:${pc(s.b-s.a)}">${esc(fmt(x.t,s.v))}</span>`).join('')+'</div>'
+      +(ghosts.length?`<div class="bp-lost">${ghosts.map(g=>`<span class="bp-seg is-gone" style="left:${pc(g.a)};width:${pc(g.b-g.a)}"></span>`).join('')}</div>`:'')+'</div></div>'}).join('')
+    +`<div class="bp-axis"><i></i><div>${ticks.map(m=>`<span style="left:${(m*60/span*100).toFixed(2)}%;transform:translateX(${m===0?0:m*60>=span?-100:-50}%)">${M('min',{m})}</span>`).join('')}</div></div>`;
+  $('#rows').innerHTML=info.map(x=>{const vals=[...new Set(x.sg.map(s=>fmt(x.t,s.v)))];
+    return`<tr${x.boost?' class="is-boost"':''}><td>${esc(tn(x.t))}</td><td>${esc([...new Set(x.sg.flatMap(s=>s.items.split(',')))].map(nm).join(' → '))}${x.boost?` <small>${M('with_pie')}</small>`:''}</td>
+      <td class="bp-num">${esc(vals.join(' → '))}</td><td class="bp-num">${mins(x.b)}</td></tr>`}).join('');
+  const s=sim.sum,hot=sim.hot.length?M('hot',{p:num(s.HealthOverTime),r:num(r2(sim.hot[sim.hot.length-1].rate))}):'';
+  $('#now').textContent=M('now',{c:num(s.Calories),w:num(s.Hydration),h:num(s.Health)})+hot;
+  say()}
+document.addEventListener('click',ev=>{const a=ev.target.closest('[data-add]'),d=ev.target.closest('[data-del]');
+  if(a){if(S.e.length>=20)return;const last=S.e.length?Math.max(...S.e.map(e=>e[1])):0;S.e.push([a.dataset.add,last]);render()}
+  else if(d){S.e.splice(+d.dataset.del,1);render()}});
+document.addEventListener('change',ev=>{const t=ev.target;if(t.dataset&&t.dataset.i!==undefined){S.e[+t.dataset.i][1]=clamp(t.value,0,600);render()}});
+$('#clear').addEventListener('click',()=>{S.e=[];render()});
+render();
+// The share image: each effect with its value and when it runs out, and what is eaten when.
+const card=()=>drawCard(M('card'),[],h=>{const{L:LX,HALF,C,f,T,fit,box}=h;
+  T(M('card_eff'),LX,122,f(400,14,'sans'),C.mute);
+  V.info.slice(0,8).forEach((x,k)=>{const yy=150+k*44;T(fit(tn(x.t),f(600,18,'sans'),200),LX,yy+20,f(600,18,'sans'),C.ink);
+    T(fmt(x.t,x.peak),LX+330,yy+20,f(600,22,'mono'),x.boost?C.rust:C.ink,1);T(M('ends',{t:mins(x.b)}),LX+350,yy+20,f(400,14,'sans'),C.mute);box(C.line,LX,yy+34,HALF,1)});
+  const RX=LX+HALF+24;T(M('card_order'),RX,122,f(400,14,'sans'),C.mute);
+  [...S.e].map((e,i)=>[...e,i]).sort((a,b)=>a[1]-b[1]||a[2]-b[2]).slice(0,10).forEach(([id,m],k)=>{const yy=150+k*40;
+    T(M('min',{m}),RX+56,yy+20,f(400,16,'mono'),C.mute,1);T(fit(nm(id),f(600,17,'sans'),HALF-80),RX+72,yy+20,f(600,17,'sans'),C.ink)})});
+shareUI(card,()=>`${M('file')}-${S.e.length}.png`,()=>M('summary',{list:V.info.map(x=>`${tn(x.t)} ${fmt(x.t,x.peak)}`).join(', ')}),
+  'リンクを開くと、同じ組み合わせのまま計算機が開きます。画像は、効く効果と口にする順を 1 枚にまとめたものです。');
+</script>
+</body></html>

@@ -23,14 +23,14 @@ flowchart LR
     e3["build_diffs.py<br/>data/diffs/"]
   end
   subgraph B["Build (Python)"]
-    b1["build_site.py<br/>imports raid_calc.py · gene_calc.py · loot_odds.py · build_views.py<br/>build_index.py · genres.py · item_icons.py"]
+    b1["build_site.py<br/>imports raid_calc.py · gene_calc.py · consume_calc.py · loot_odds.py<br/>build_views.py · build_index.py · genres.py · item_icons.py"]
     b2["content/ · rules/ · design/<br/>digests, columns, *.yml, tokens.json, *.css, item-icons/"]
   end
   subgraph W["Site (GitHub Pages)"]
     w1["index.html · history.html · genres.html · numbers.html"]
     w2["items.html · spec.html · diffs.html"]
     w3["columns.html → columns/*.html"]
-    w4["tools.html → tools/raid.html → tools/craft.html<br/>tools.html → tools/gene.html"]
+    w4["tools.html → tools/raid.html → tools/craft.html<br/>tools.html → tools/gene.html · tools/buff.html"]
     w5["assets/style.css<br/>used by every page"]
   end
   s1 --> e1
@@ -63,6 +63,7 @@ flowchart LR
 | [tools/raid.html](en/tools/raid.html) | Raid Planner: explosives, sulfur, materials and furnace time to break walls, doors and deployables together | Server data, and the damage and smelting rules read from the server's code |
 | [tools/craft.html](en/tools/craft.html) | Craft Planner: what is still missing and how long the furnaces take, from what you make, what you hold and your furnaces | The same data as the Raid Planner |
 | [tools/gene.html](tools/gene.html) (Japanese only) | Gene Planner: how to plant your saplings to get genes close to a target such as GGGYYY, and what the genes do | Server data, and the crossbreeding rules read from the server's code |
+| [tools/buff.html](en/tools/buff.html) | Buff Planner: how strong the effects of teas and pies are and until when, what replaces what, and what the Bear Pie makes shorter | Server data, and the stacking rules read from the server's code |
 
 ## Languages
 
