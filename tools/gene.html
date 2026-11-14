@@ -47,9 +47,11 @@
   </div>
   <p class="ra-rd-hint" id="g-msg" role="status">G・Y・H・W・X の 6 文字で入れます。1 株ずつ足し、同じ遺伝子の苗は 2 株あれば 2 回足します。</p>
   <div class="gp-read">
-    <button type="button" class="ra-button" disabled>画像から読む<small>準備中</small></button>
+    <button type="button" class="ra-button" id="read-img">画像から読む<small>選ぶ・貼り付け (Ctrl+V)・ドラッグ</small></button>
+    <input type="file" id="read-file" accept="image/*" hidden>
     <button type="button" class="ra-button" disabled>画面から読む<small>準備中</small></button>
   </div>
+  <div class="gp-found" id="found" aria-live="polite" hidden></div>
   <div class="gp-stock" id="stock"></div>
   <div class="ra-rd-controls"><span class="ra-rd-sum" id="stock-sum"></span><button type="button" class="ra-button" id="g-clear">すべて外す</button></div>
 </div></details></section>
@@ -106,6 +108,11 @@
     <li>まわりとみなすのは、同じ植木鉢・同じ種類の、生きている苗で、1.5 m 以内のものです。大きい植木鉢の真ん中は 8 枠、小さい植木鉢の真ん中は 2 枠、三角の植木鉢はどの枠も 3 枠が隣です。</li>
     <li>真ん中の苗が「配合」に入る前に、まわりの苗が先に配合すると、まわりの苗の遺伝子が変わってしまいます。真ん中の苗を先に植えて先に育ててください。</li>
     <li>サーバーを再起動すると、数える順が植えた順と変わるかもしれません (未確認)。</li>
+  </ul></details>
+  <details class="ra-rd-notes"><summary><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i>画像から読む <span class="ra-num">3 件</span></summary><ul>
+    <li>画像はこのブラウザの中だけで読み、どこにも送りません。</li>
+    <li>緑と赤の丸に白い文字が 6 つ並んだ表示 (苗の説明と、植わった株の表示) を読みます。丸の色で良い遺伝子 (G・Y・H) か悪い遺伝子 (W・X) かを分け、文字の形で決めます。丸が無く文字に色が付いた古い表示は読めません。</li>
+    <li>文字の形の見本は、公開されているゲームの画面写真から作りました。画像の端で丸が切れているときや、形が紛らわしいときは「?」にするので、直してから足してください。</li>
   </ul></details>
   <details class="ra-rd-notes"><summary><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i>探し方と効き目 <span class="ra-num">4 件</span></summary><ul>
     <li>手持ちの苗のどれか 1 株を真ん中に、残りから植木鉢の隣の枠の数までをまわりに置く組み合わせを、すべて試しています。1 回の配合だけで、配合した苗をまた使う手順は出しません。</li>
@@ -238,6 +245,83 @@ function searchPlans(stock,t,k){
     p.ci=take(p.c);p.oi=p.order.map(take);return p};
   return[...best.values()].sort((a,b)=>a.d-b.d||a.bad-b.bad||a.n-b.n||(a.res<b.res?-1:1)).slice(0,8).map(label)}
 
+// A gene is a white letter on a green (G, Y, H) or red (W, X) circle; six of them make a row, evenly spaced, in the
+// item tooltip and on the plant's panel. The colour splits good from bad, the letter's shape on a 5x6 grid picks one
+// of 2 or 3 letters. The shapes (TEMPLATES) are averaged from public screenshots (RustBreeder's scanner frames,
+// Facepunch's farming update of 2020, Corrosion Hour 2023, gameplay.tips 2021); each was read right when left out of
+// the average. Older tooltips with coloured letters and no circles are not read.
+const MAX_CIRCLES=400,UNSURE=0.4,TEMPLATES={"G":[0.35,0.92,0.97,0.85,0.33,0.91,0.7,0.13,0.88,0.75,1,0.45,0.18,0.4,0.28,1,0.43,0.62,1,1,0.78,0.88,0.46,0.95,1,0.2,0.93,1,0.97,0.35],"Y":[0.8,0.6,0.19,0.93,0.77,0.63,0.95,0.76,0.95,0.27,0.23,1,1,0.65,0.05,0.03,0.8,0.97,0.23,0,0,0.7,0.85,0.1,0,0,0.5,0.8,0,0],"X":[0.86,0.79,0.44,0.94,0.78,0.62,1,0.95,1,0.2,0.17,1,1,0.64,0.03,0.27,1,1,0.81,0.02,0.69,0.98,0.87,1,0.44,0.78,0.72,0.19,0.97,0.61],"W":[0.81,0.42,0.91,0.32,0.9,0.89,0.76,1,0.81,0.83,0.67,0.97,1,0.97,0.72,0.64,1,0.94,1,0.57,0.43,0.96,0.62,1,0.31,0.22,0.83,0.31,0.97,0.18],"H":[0.89,0.38,0.06,0.71,0.88,1,0.5,0.13,0.81,1,0.92,0.88,0.69,0.94,1,0.92,0.9,0.79,0.96,0.88,0.92,0.63,0.13,0.88,0.88,0.79,0.44,0,0.81,0.81]},GW=5,GH=6;
+const hsvOf=(r,g,b)=>{const mx=Math.max(r,g,b),mn=Math.min(r,g,b),d=mx-mn;let h=0;
+  if(d){h=mx===r?((g-b)/d)%6:mx===g?(b-r)/d+2:(r-g)/d+4;h*=60;if(h<0)h+=360}return[h,mx?d/mx:0,mx/255]};
+// each pixel: 1 green, 2 red, 0 other
+function geneColours(img){const{width:W,height:H,data:D}=img,c=new Uint8Array(W*H);
+  for(let i=0;i<W*H;i++){const[h,s,v]=hsvOf(D[i*4],D[i*4+1],D[i*4+2]);
+    if(s>0.32&&v>0.25&&h>=60&&h<=150)c[i]=1;else if(s>0.38&&v>0.3&&(h<=22||h>=335))c[i]=2}
+  return c}
+// the masks with thin lines erased (the dashes that join the circles): a pixel stays if a 3x3 square of its colour covers it
+function thinOut(W,H,c){const keep=new Uint8Array(W*H);
+  for(let y=1;y<H-1;y++)for(let x=1;x<W-1;x++){const k=c[y*W+x];if(!k)continue;let all=true;
+    for(let dy=-1;dy<=1&&all;dy++)for(let dx=-1;dx<=1;dx++)if(c[(y+dy)*W+x+dx]!==k){all=false;break}
+    if(all)for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++)keep[(y+dy)*W+x+dx]=1}
+  const o=new Uint8Array(c);for(let i=0;i<W*H;i++)if(c[i]&&!keep[i])o[i]=0;return o}
+function blobsOf(W,H,c){const seen=new Uint8Array(W*H),out=[],st=[];
+  for(let i=0;i<W*H;i++){const k=c[i];if(!k||seen[i])continue;let x0=W,y0=H,x1=-1,y1=-1,n=0;st.push(i);seen[i]=1;
+    while(st.length){const j=st.pop(),x=j%W,y=(j-x)/W;n++;if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y;
+      for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const xx=x+dx,yy=y+dy;if(xx<0||yy<0||xx>=W||yy>=H)continue;
+        const q=yy*W+xx;if(!seen[q]&&c[q]===k){seen[q]=1;st.push(q)}}}
+    out.push({k,x0,y0,x1,y1,w:x1-x0+1,h:y1-y0+1,n})}
+  return out}
+// circles: blobs of about a letter's size with bright pixels of another colour inside (the letter), from the plain masks
+// and, where those found none, from the masks with the dashes erased
+function circlesOf(img){const{width:W,height:H,data:D}=img,c=geneColours(img);
+  const ok=b=>b.n>=12&&b.w>=4&&b.h>=5&&b.h<=240&&b.w/b.h>0.45&&b.w/b.h<1.8;
+  const over=(a,b)=>a.x0<=b.x1&&b.x0<=a.x1&&a.y0<=b.y1&&b.y0<=a.y1;
+  // a circle: its colour and a bright letter fill 75% of its ellipse
+  const circle=b=>{const cx=(b.x0+b.x1)/2,cy=(b.y0+b.y1)/2,rx=b.w*0.4,ry=b.h*0.4,letter=[];
+    for(let y=b.y0;y<=b.y1;y++)for(let x=b.x0;x<=b.x1;x++){const dx=(x-cx)/rx,dy=(y-cy)/ry;if(dx*dx+dy*dy>1)continue;
+      const i=y*W+x;if(c[i]===b.k)continue;if(Math.max(D[i*4],D[i*4+1],D[i*4+2])>127.5)letter.push([x,y])}
+    const fill=(b.n+letter.length)/(Math.PI/4*b.w*b.h);
+    if(!(letter.length>0.05*b.w*b.h&&letter.length<0.6*b.w*b.h&&fill>0.75))return null;
+    // a circle cut at the left edge (the first of a row): its centre from its height (a circle is as wide as it is high)
+    const mid=b.x0===0&&b.w<b.h?b.x1-b.h/2:cx;
+    return{...b,cx:mid,cy,letter}};
+  const plain=blobsOf(W,H,c).filter(ok).map(circle).filter(Boolean);
+  if(plain.length>MAX_CIRCLES)return null;
+  // the dashes that join circles make one long blob: the masks with thin lines erased split it
+  const thin=blobsOf(W,H,thinOut(W,H,c)).filter(b=>ok(b)&&!plain.some(p=>over(p,b))).map(circle).filter(Boolean);
+  const all=[...plain,...thin];return all.length>MAX_CIRCLES?null:all}
+// the letter's shape: how much of each cell of a 5x6 grid over the letter's box is filled
+function shapeOf(px){if(px.length<4)return null;let x0=1e9,y0=1e9,x1=-1,y1=-1;
+  for(const[x,y]of px){if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}
+  const w=x1-x0+1,h=y1-y0+1,cell=(x,y)=>Math.min(GH-1,Math.floor((y-y0)/h*GH))*GW+Math.min(GW-1,Math.floor((x-x0)/w*GW));
+  const fill=new Array(GW*GH).fill(0),all=new Array(GW*GH).fill(0);
+  for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++)all[cell(x,y)]++;for(const[x,y]of px)fill[cell(x,y)]++;
+  return fill.map((v,i)=>all[i]?v/all[i]:0)}
+// rows: six circles of about the same height (within 45%: JPEG can wear a ring down), evenly spaced (gaps within 30% of the first), 1.05 to 3.6
+// heights apart, within 1.7 heights up or down (the new gene of a crossbred column sits lower)
+function rowsOf(cs){const out=[],used=new Set(),sorted=[...cs].sort((a,b)=>a.cx-b.cx);
+  for(const a of sorted){if(used.has(a))continue;
+    const pool=sorted.filter(b=>!used.has(b)&&b.cx>=a.cx&&Math.abs(b.h-a.h)<=0.45*Math.max(a.h,b.h)&&Math.abs(b.cy-a.cy)<=1.7*a.h);
+    for(let j=1;j<pool.length;j++){const gap=pool[j].cx-a.cx;if(gap<1.05*a.h||gap>3.6*a.h)continue;
+      const row=[a,pool[j]];let last=pool[j];
+      while(row.length<6){const nx=pool.find(b=>b.cx>last.cx&&Math.abs(b.cx-last.cx-gap)<=0.3*gap);if(!nx)break;row.push(nx);last=nx}
+      if(row.length===6){out.push(row);row.forEach(m=>used.add(m));break}}}
+  return out}
+// The rows of genes in the picture, top to bottom: {rows: [{genes (6 letters, '?' where unsure), y}], dim: the rows
+// found but left out because only 1 or 2 letters were sure (too small or blurred to read; rows of '?' only are left
+// out silently, as noise gives them)}, or null when the picture
+// holds more than MAX_CIRCLES circle-like marks (a fine pattern: reading it would take long and find rows that are not
+// there). A letter is unsure when its circle is narrower than three quarters of the row's middle width (cut at the
+// picture's edge, or worn down: a squashed H read as Y) or when the next letter's shape is nearly as close (the ratio of
+// the distances above UNSURE: scaled and JPEG'd screenshots read wrong letters at 0.5).
+function readGenes(img){const cs=circlesOf(img);if(!cs)return null;
+  const all=rowsOf(cs).map(row=>{const mw=row.map(m=>m.w).sort((a,b)=>a-b)[3];
+    const genes=row.map(m=>{const sh=shapeOf(m.letter);if(!sh||m.w<0.75*mw)return'?';
+      const d=(m.k===1?'GYH':'WX').split('').map(L=>[L,sh.reduce((s,v,i)=>s+(v-TEMPLATES[L][i])**2,0)]).sort((a,b)=>a[1]-b[1]);
+      return d[0][1]<=UNSURE*d[1][1]?d[0][0]:'?'}).join('');
+    return{genes,y:Math.min(...row.map(m=>m.y0))}}).sort((a,b)=>a.y-b.y);
+  const sure=r=>r.genes.replace(/\?/g,'').length;return{rows:all.filter(r=>sure(r)>=3),dim:all.filter(r=>sure(r)>=1&&sure(r)<3).length}}
+
 // sapling names leave out the gene letters. 10 saplings keep the search within 0.6 s at most (node on NucBox5, Celeron
 // N5105, random saplings, the large planter, target GGGYYY, 20 tries); 12 took up to 2.1 s
 const LET='ABCDEFJKLM',MAX=10;
@@ -336,10 +420,39 @@ function render(){
   const li=(name,v)=>`<div class="ra-rd-li"><span class="ra-rd-name">${name}</span><span class="ra-rd-n">${v}</span></div>`;
   $('#eff-grow').innerHTML=li(`育つ速さ (G ${e.n.G})`,x2(e.growth))+li(`実の量 (Y ${e.n.Y})`,x2(e.yield))+li(`クローン (基本 ${e.base} + Y ÷ 2)`,`${e.clones}<small>本</small>`);
   $('#eff-env').innerHTML=li(`吸う水 (W ${e.n.W})`,x2(e.water))+li(`温度の条件 (H ${e.n.H})`,`+ ${e.temp.toFixed(2)}`)}
-const addGenes=()=>{const v=$('#g-in').value.toUpperCase().replace(/\s/g,'');
-  if(!ok6(v)){$('#g-msg').textContent='G・Y・H・W・X の 6 文字で入れてください。';return}
-  if(S.g.length>=MAX){$('#g-msg').textContent=`苗は ${MAX} 株までです。使わない苗を外してください。`;return}
-  S.g.push(v);$('#g-in').value='';$('#g-msg').textContent=`${L(S.g.length-1)} として ${v} を足しました。`;save();render()};
+// add the genes v (from the box or a row read from a picture); false when they cannot be added
+const addGenes=(v=$('#g-in').value,fromBox=true)=>{v=String(v).toUpperCase().replace(/\s/g,'');
+  if(!ok6(v)){$('#g-msg').textContent=v.includes('?')?'「?」は読めなかった文字です。G・Y・H・W・X のどれかに直してください。':'G・Y・H・W・X の 6 文字で入れてください。';return false}
+  if(S.g.length>=MAX){$('#g-msg').textContent=`苗は ${MAX} 株までです。使わない苗を外してください。`;return false}
+  S.g.push(v);if(fromBox)$('#g-in').value='';$('#g-msg').textContent=`${L(S.g.length-1)} として ${v} を足しました。`;save();render();return true};
+// Reading a picture: it stays in this browser. The rows found are shown to check (and fix '?') before adding.
+const showFound=(rows,dim)=>{const box=$('#found');box.hidden=false;
+  box.innerHTML=rows.length?`<p class="ra-rd-hint">${rows.length} 列の遺伝子が見つかりました。確かめて (「?」は読めなかった文字) から足してください。</p>`+
+    rows.map((r,i)=>`<div class="gp-found-row">${chips(r.genes.replace(/\?/g,'X'),'gp-found-chips')}<input class="gp-in" value="${esc(r.genes)}" maxlength="6" aria-label="読んだ遺伝子 ${i+1}" data-found><button type="button" class="ra-button" data-take>足す</button></div>`).join(''):
+    dim?'<p class="ra-rd-hint">遺伝子の並びらしい所は見つかりましたが、文字が小さいかぼやけていて読めませんでした。縮めずに撮った画像 (PNG がよい) を使うか、遺伝子の所を拡大して切り取ってください。</p>':
+    '<p class="ra-rd-hint">遺伝子の並び (緑と赤の丸に白い文字が 6 つ) が見つかりませんでした。苗の説明か、植わった株の表示が写った画像を使ってください。丸が無く文字に色が付いた古い表示は読めません。</p>';
+  // the chips show '?' too
+  box.querySelectorAll('.gp-found-row').forEach((row,i)=>{const g=rows[i].genes;row.querySelectorAll('.gp-g').forEach((el,k)=>{if(g[k]==='?'){el.textContent='?';el.className='gp-g gp-unsure'}})})};
+const readPicture=async file=>{if(!file||!/^image\//.test(file.type))return;
+  $('#g-msg').textContent='画像を読んでいます…';
+  try{const bmp=await createImageBitmap(file),k=Math.min(1,2600/bmp.width,Math.sqrt(4e6/(bmp.width*bmp.height))),w=Math.max(1,Math.round(bmp.width*k)),h=Math.max(1,Math.round(bmp.height*k));
+    const cv=document.createElement('canvas');cv.width=w;cv.height=h;const x=cv.getContext('2d',{willReadFrequently:true});x.drawImage(bmp,0,0,w,h);
+    const rows=readGenes(x.getImageData(0,0,w,h));$('#g-msg').textContent=HINT;   // {rows, dim} or null
+    if(rows)showFound(rows.rows,rows.dim);else{$('#found').hidden=false;$('#found').innerHTML='<p class="ra-rd-hint">細かい色の模様が多く、読むのをやめました。遺伝子の所だけを切り取った画像を使ってください。</p>'}}
+  catch(_){$('#g-msg').textContent='画像を開けませんでした。PNG か JPEG のスクリーンショットを使ってください。'}};
+$('#read-img').addEventListener('click',()=>$('#read-file').click());
+$('#read-file').addEventListener('change',ev=>{readPicture(ev.target.files[0]);ev.target.value=''});
+// a picture pasted anywhere is read, unless text is being pasted into a box
+document.addEventListener('paste',ev=>{const cd=ev.clipboardData;if(!cd)return;
+  if(/^(INPUT|TEXTAREA)$/.test((ev.target||{}).tagName||'')&&[...cd.types].includes('text/plain'))return;
+  const it=[...cd.items].find(i=>i.kind==='file'&&/^image\//.test(i.type));if(it){ev.preventDefault();readPicture(it.getAsFile())}});
+const stockSec=$('#h-stock-g').closest('section');
+stockSec.addEventListener('dragover',ev=>{if([...ev.dataTransfer.items].some(i=>i.kind==='file')){ev.preventDefault();stockSec.classList.add('gp-drop')}});
+stockSec.addEventListener('dragleave',()=>stockSec.classList.remove('gp-drop'));
+stockSec.addEventListener('drop',ev=>{stockSec.classList.remove('gp-drop');const fs=[...ev.dataTransfer.files];if(!fs.length)return;
+  ev.preventDefault();const f=fs.find(f=>/^image\//.test(f.type));if(f)readPicture(f);else $('#g-msg').textContent='画像のファイル (PNG・JPEG) を落としてください。'});
+$('#found').addEventListener('click',ev=>{const b=ev.target.closest('[data-take]');if(!b)return;const row=b.closest('.gp-found-row');
+  if(addGenes(row.querySelector('[data-found]').value,false)){row.remove();if(!$('#found').querySelector('.gp-found-row'))$('#found').hidden=true}});
 $('#g-add').addEventListener('click',addGenes);
 $('#g-in').addEventListener('keydown',ev=>{if(ev.key==='Enter')addGenes()});
 const dropped=()=>{$('#g-msg').textContent=extra?`保存してあった ${MAX + 1} 株目から後ろの ${extra} 株も、保存から消えました。`:HINT;extra=0};

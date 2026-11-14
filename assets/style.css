@@ -617,6 +617,11 @@ span.ra-tools-hp { font-family: var(--font-mono); font-size: 14px; letter-spacin
 .gp-in { width: 9.5em; height: var(--control-h); padding: 0 var(--space-3); font: 500 16px var(--font-mono); letter-spacing: .25em; text-transform: uppercase; color: var(--ink); background: var(--plate-raised); border: var(--rule) solid var(--line-strong); border-radius: var(--radius-xs); }
 .gp-read { display: flex; flex-wrap: wrap; gap: var(--space-2); margin: var(--space-3) 0; }
 .gp-read .ra-button small { margin-left: 6px; font-weight: 400; color: var(--ink-muted); }
+.gp-found { display: grid; gap: var(--space-2); margin-bottom: var(--space-3); padding: var(--space-3); background: var(--plate-raised); border: var(--rule) solid var(--line-strong); }
+.gp-found .ra-rd-hint { margin: 0; }
+.gp-found-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); }
+.gp-unsure { background: var(--plate-sunken); color: var(--ink); outline: 1px dashed var(--line-strong); }
+section.gp-drop { outline: 2px dashed var(--blueprint); outline-offset: 4px; }
 .gp-stock { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--space-2); }
 .gp-sap { display: flex; align-items: center; gap: var(--space-3); min-height: var(--control-h); padding: 0 var(--space-3); background: var(--plate-raised); border: var(--rule) solid var(--line); }
 .gp-sap b { width: 14px; font: 500 14px var(--font-mono); }
