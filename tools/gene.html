@@ -49,8 +49,9 @@
   <div class="gp-read">
     <button type="button" class="ra-button" id="read-img">画像から読む<small>選ぶ・貼り付け (Ctrl+V)・ドラッグ</small></button>
     <input type="file" id="read-file" accept="image/*" hidden>
-    <button type="button" class="ra-button" disabled>画面から読む<small>準備中</small></button>
+    <button type="button" class="ra-button" id="read-screen" hidden>画面から読む<small>パソコンの画面共有</small></button>
   </div>
+  <div class="gp-found" id="live" aria-live="polite" hidden></div>
   <div class="gp-found" id="found" aria-live="polite" hidden></div>
   <div class="gp-stock" id="stock"></div>
   <div class="ra-rd-controls"><span class="ra-rd-sum" id="stock-sum"></span><button type="button" class="ra-button" id="g-clear">すべて外す</button></div>
@@ -109,10 +110,12 @@
     <li>真ん中の苗が「配合」に入る前に、まわりの苗が先に配合すると、まわりの苗の遺伝子が変わってしまいます。真ん中の苗を先に植えて先に育ててください。</li>
     <li>サーバーを再起動すると、数える順が植えた順と変わるかもしれません (未確認)。</li>
   </ul></details>
-  <details class="ra-rd-notes"><summary><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i>画像から読む <span class="ra-num">3 件</span></summary><ul>
+  <details class="ra-rd-notes"><summary><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i>画像と画面から読む <span class="ra-num">5 件</span></summary><ul>
     <li>画像はこのブラウザの中だけで読み、どこにも送りません。</li>
     <li>緑と赤の丸に白い文字が 6 つ並んだ表示 (苗の説明と、植わった株の表示) を読みます。丸の色で良い遺伝子 (G・Y・H) か悪い遺伝子 (W・X) かを分け、文字の形で決めます。丸が無く文字に色が付いた古い表示は読めません。</li>
     <li>文字の形の見本は、公開されているゲームの画面写真から作りました。画像の端で丸が切れているときや、形が紛らわしいときは「?」にするので、直してから足してください。</li>
+    <li>画面から読むときは、共有した画面を 0.5 秒ごとに読み、6 文字がそろって 2 回続けて同じに読めた苗を足します。表示が出たままの間は、同じ苗を二重に足しません。表示を 1 秒以上閉じてから同じ苗をもう一度出すと、もう 1 株として足すので、要らなければ外してください。</li>
+    <li>画面共有はパソコンのブラウザ (Chrome・Edge など) で使えます。共有した画面は録画も送信もしません。ブラウザが裏に回っても読み続けますが、止まるときはブラウザを別の画面に出しておいてください。</li>
   </ul></details>
   <details class="ra-rd-notes"><summary><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i>探し方と効き目 <span class="ra-num">4 件</span></summary><ul>
     <li>手持ちの苗のどれか 1 株を真ん中に、残りから植木鉢の隣の枠の数までをまわりに置く組み合わせを、すべて試しています。1 回の配合だけで、配合した苗をまた使う手順は出しません。</li>
@@ -321,6 +324,18 @@ function readGenes(img){const cs=circlesOf(img);if(!cs)return null;
       return d[0][1]<=UNSURE*d[1][1]?d[0][0]:'?'}).join('');
     return{genes,y:Math.min(...row.map(m=>m.y0))}}).sort((a,b)=>a.y-b.y);
   const sure=r=>r.genes.replace(/\?/g,'').length;return{rows:all.filter(r=>sure(r)>=3),dim:all.filter(r=>sure(r)>=1&&sure(r)<3).length}}
+// Reading a shared screen: one step per frame. `rows` are readGenes' rows of the frame: [] when none, null when the
+// reader gave up on the frame (a fine pattern), which changes nothing. A row read whole (6 sure letters; the top one
+// not added yet) is added once it reads the same in 2 frames running. The rows added are remembered until 2 frames
+// running show no row (the tooltip closed for 1 s), so a tooltip that stays open, flickers or shows two rows is not
+// added twice. state: {cand, n, added, empty}.
+function liveStep(state,rows){const st=state||{cand:null,n:0,added:[],empty:2};
+  if(rows===null)return{state:st,add:null};
+  if(!rows.length){const empty=st.empty+1;return{state:{cand:null,n:0,added:empty>=2?[]:st.added,empty},add:null}}
+  const whole=rows.find(r=>!r.genes.includes('?')&&!st.added.includes(r.genes));
+  if(!whole)return{state:{...st,cand:null,n:0,empty:0},add:null};
+  const n=st.cand===whole.genes?st.n+1:1,add=n===2?whole.genes:null;
+  return{state:{cand:whole.genes,n,added:add?[...st.added,add]:st.added,empty:0},add}}
 
 // sapling names leave out the gene letters. 10 saplings keep the search within 0.6 s at most (node on NucBox5, Celeron
 // N5105, random saplings, the large planter, target GGGYYY, 20 tries); 12 took up to 2.1 s
@@ -440,6 +455,41 @@ const readPicture=async file=>{if(!file||!/^image\//.test(file.type))return;
     const rows=readGenes(x.getImageData(0,0,w,h));$('#g-msg').textContent=HINT;   // {rows, dim} or null
     if(rows)showFound(rows.rows,rows.dim);else{$('#found').hidden=false;$('#found').innerHTML='<p class="ra-rd-hint">細かい色の模様が多く、読むのをやめました。遺伝子の所だけを切り取った画像を使ってください。</p>'}}
   catch(_){$('#g-msg').textContent='画像を開けませんでした。PNG か JPEG のスクリーンショットを使ってください。'}};
+// Reading the shared screen: a Worker ticks every 0.5 s (its timers keep going while the page is behind the game),
+// each tick reads one frame; liveStep decides what to add. A short tone marks each sapling added.
+const canShare=!!(navigator.mediaDevices&&navigator.mediaDevices.getDisplayMedia);
+let live=null;
+const tone=()=>{try{const a=live.audio||(live.audio=new AudioContext()),o=a.createOscillator(),g=a.createGain();
+  o.frequency.value=880;g.gain.value=0.08;o.connect(g).connect(a.destination);o.start();o.stop(a.currentTime+0.12)}catch(_){}};
+const liveShow=(text,genes)=>{const box=$('#live');box.hidden=false;
+  box.innerHTML=`<p class="ra-rd-hint">${esc(text)}</p>`+(genes?`<div class="gp-found-row">${chips(genes.replace(/\?/g,'X'),'gp-found-chips')}</div>`:'');
+  if(genes)box.querySelectorAll('.gp-g').forEach((el,k)=>{if(genes[k]==='?'){el.textContent='?';el.className='gp-g gp-unsure'}})};
+const stopScreen=()=>{if(!live||live.starting)return;live.worker.terminate();live.stream.getTracks().forEach(t=>t.stop());
+  if(live.audio)live.audio.close().catch(()=>{});
+  $('#read-screen').firstChild.textContent='画面から読む';$('#live').hidden=true;live=null};
+// one read per tick; the Worker is asked for the next tick only when this one is done, so ticks never pile up
+const screenTick=()=>{const v=live&&live.video;if(!v||live.starting)return;if(!v.videoWidth){live.worker.postMessage(0);return}
+  try{const k=Math.min(1,Math.sqrt(4e6/(v.videoWidth*v.videoHeight))),w=Math.round(v.videoWidth*k),h=Math.round(v.videoHeight*k);
+    if(live.cv.width!==w||live.cv.height!==h){live.cv.width=w;live.cv.height=h}
+    live.x.drawImage(v,0,0,w,h);const r=readGenes(live.x.getImageData(0,0,w,h)),rows=r&&r.rows;
+    const step=liveStep(live.state,rows);live.state=step.state;
+    if(step.add){if(addGenes(step.add,false)){live.added++;tone()}}
+    const seen=rows&&rows.length?rows[0].genes:null;
+    liveShow(r===null?'細かい模様が多く、この画面は読めませんでした。':seen?`読んでいます: ${live.added} 株を足しました。`:
+      `画面を読んでいます (${live.added} 株を足しました)。ゲームで苗の説明か、植わった株の表示を出してください。`,seen)}
+  finally{if(live)live.worker.postMessage(0)}};
+const startScreen=async()=>{if(live){stopScreen();return}
+  live={starting:true};$('#read-screen').disabled=true;   // a second press while the share is being chosen does nothing
+  let stream;try{stream=await navigator.mediaDevices.getDisplayMedia({video:{frameRate:{max:5}},audio:false})}
+  catch(_){live=null;$('#read-screen').disabled=false;$('#g-msg').textContent='画面共有が始まりませんでした。ブラウザの許可を確かめてください。';return}
+  const video=document.createElement('video');video.muted=true;video.playsInline=true;video.srcObject=stream;await video.play().catch(()=>{});
+  // the Worker's timer keeps going while the page is behind the game: each message back is one tick, 0.5 s after asked
+  const src=URL.createObjectURL(new Blob(['onmessage=()=>setTimeout(()=>postMessage(0),500)'],{type:'text/javascript'}));
+  const cv=document.createElement('canvas'),worker=new Worker(src);URL.revokeObjectURL(src);
+  live={stream,video,cv,x:cv.getContext('2d',{willReadFrequently:true}),worker,state:null,added:0};$('#read-screen').disabled=false;
+  worker.onmessage=screenTick;stream.getVideoTracks()[0].addEventListener('ended',stopScreen);worker.postMessage(0);
+  $('#read-screen').firstChild.textContent='画面の読み取りを止める';liveShow('画面を読んでいます。ゲームで苗の説明か、植わった株の表示を出してください。',null)};
+if(canShare){$('#read-screen').hidden=false;$('#read-screen').addEventListener('click',startScreen)}
 $('#read-img').addEventListener('click',()=>$('#read-file').click());
 $('#read-file').addEventListener('change',ev=>{readPicture(ev.target.files[0]);ev.target.value=''});
 // a picture pasted anywhere is read, unless text is being pasted into a box
