@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Buff Planner: Rust teas and pies, how their effects stack</title>
+<meta name="description" content="Rust teas and pies calculator: how strong ore, wood, scrap, max health and other effects are and until when, what gets replaced, and what the Bear Pie shortens.">
+<meta name="theme-color" content="#f2f4f5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15181a" media="(prefers-color-scheme: dark)">
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+<link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rust Analysis">
+<meta property="og:locale" content="en_US">
+<meta property="og:title" content="Buff Planner: Rust teas and pies, how their effects stack">
+<meta property="og:description" content="Rust teas and pies calculator: how strong ore, wood, scrap, max health and other effects are and until when, what gets replaced, and what the Bear Pie shortens.">
+<meta property="og:url" content="https://maco165.github.io/rust-patch-notes/en/tools/buff.html">
+<meta property="og:image" content="https://maco165.github.io/rust-patch-notes/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://maco165.github.io/rust-patch-notes/en/tools/buff.html">
+<link rel="alternate" hreflang="ja" href="https://maco165.github.io/rust-patch-notes/tools/buff.html">
+<link rel="alternate" hreflang="en" href="https://maco165.github.io/rust-patch-notes/en/tools/buff.html">
+<link rel="alternate" hreflang="x-default" href="https://maco165.github.io/rust-patch-notes/tools/buff.html">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Buff Planner", "url": "https://maco165.github.io/rust-patch-notes/en/tools/buff.html", "description": "Rust teas and pies calculator: how strong ore, wood, scrap, max health and other effects are and until when, what gets replaced, and what the Bear Pie shortens.", "applicationCategory": "GameApplication", "operatingSystem": "Any", "inLanguage": "en", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "isPartOf": {"@type": "WebSite", "name": "Rust Analysis", "url": "https://maco165.github.io/rust-patch-notes/"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Rust Analysis", "item": "https://maco165.github.io/rust-patch-notes/en/tools.html"}, {"@type": "ListItem", "position": 2, "name": "Tools", "item": "https://maco165.github.io/rust-patch-notes/en/tools.html"}, {"@type": "ListItem", "position": 3, "name": "Buff Planner", "item": "https://maco165.github.io/rust-patch-notes/en/tools/buff.html"}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+JP:wght@400;600&display=swap">
+<link rel="stylesheet" href="../../assets/style.css">
+</head><body>
+<header class="ra-site">
+  <a class="ra-site-name" href="../tools.html"><b>Rust</b> Analysis</a>
+  <nav class="ra-nav" aria-label="Pages"><a href="../columns.html"><i class="ra-ico ra-ico-columns" aria-hidden="true"></i>Articles</a><a href="../tools.html" aria-current="page"><i class="ra-ico ra-ico-tools" aria-hidden="true"></i>Tools</a></nav>
+  <span class="ra-site-meta">2026-11-05</span>
+  <span class="ra-site-lang"><a href="../../tools/buff.html" lang="ja" hreflang="ja">Japanese</a></span><a class="ra-site-link" href="https://github.com/maco165/rust-patch-notes" rel="noopener"><i class="ra-ico ra-ico-github" aria-hidden="true"></i>GitHub</a>
+</header>
+<script>(()=>{const n=document.querySelector('.ra-nav'),a=n&&n.querySelector('[aria-current]');if(a&&n.scrollWidth>n.clientWidth)n.scrollLeft=a.offsetLeft-(n.clientWidth-a.offsetWidth)/2})()</script>
+<main class="ra-page">
+<div class="ra-block">
+  <p class="ra-patch-meta"><a class="ra-link" href="../tools.html">Tools</a><span class="ra-src ra-src-export"><i class="ra-ico ra-ico-export" aria-hidden="true"></i>Game build 2026-11-07</span></p>
+  <h1 class="ra-patch-sub" lang="en">Buff Planner</h1>
+  <p class="ra-lead">Put teas and pies in the order you have them, and it shows each effect, how strong it is and until when. It also tells you what gets replaced by an effect of the same kind, and what the Bear Pie makes shorter.</p>
+</div>
+<section class="ra-block" aria-labelledby="h-pick"><details class="ra-sec" open data-fold="h-pick"><summary><h2 class="ra-section" id="h-pick">Teas and pies <small>Tap to add to the order below</small></h2><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i></summary><div class="ra-block">
+  <div class="ra-rd-groups" id="picks"></div>
+</div></details></section>
+<section class="ra-block" aria-labelledby="h-order"><details class="ra-sec" open data-fold="h-order"><summary><h2 class="ra-section" id="h-order">Order <small id="order-sub"></small></h2><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i></summary><div class="ra-block">
+  <div class="bp-order" id="order"></div>
+  <p class="ra-rd-hint">Enter when you have each, in minutes from the first. Items at the same minute are had from the top down.</p>
+  <div class="ra-rd-controls"><span class="ra-rd-sum" id="sum"></span><button type="button" class="ra-button" id="clear">Remove all</button></div>
+</div></details></section>
+<section class="ra-block" id="none">
+  <h2 class="ra-section">Result</h2>
+  <p class="ra-lead">Add teas and pies above, and their effects and times appear here.</p>
+</section>
+<div id="result" class="ra-rd-result">
+<section class="ra-block" aria-live="polite" aria-labelledby="h-res"><details class="ra-sec" open data-fold="h-res"><summary><h2 class="ra-section" id="h-res">Effects <small id="res-sub"></small></h2><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i></summary><div class="ra-block">
+  <div class="bp-stats" id="stats"></div>
+  <div id="alerts"></div>
+  <div class="bp-tl" id="tl"></div>
+  <div class="bp-legend" aria-hidden="true"><span><i class="bp-k-boost"></i>Boosted by the Bear Pie</span><span><i class="bp-k-on"></i>Active</span><span><i class="bp-k-gone"></i>Lost to a replacement</span></div>
+  <table class="bp-tbl"><thead><tr><th>Effect</th><th>From</th><th class="bp-num">Value</th><th class="bp-num">Ends</th></tr></thead><tbody id="rows"></tbody></table>
+  <p class="ra-more" id="now"></p>
+  <div class="ra-rd-share bp-share"><span class="ra-rd-label">Share this result</span>
+    <div class="ra-rd-share-row"><button type="button" class="ra-rd-share-go" id="sh-link"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>Copy link</button>
+      <div class="ra-rd-img" role="group" aria-label="Image of the result"><span><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>Image</span><button type="button" id="sh-send" aria-label="Share the image" hidden><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><path d="m8.59 13.51 6.83 3.98"></path><path d="m15.41 6.51-6.82 3.98"></path></svg>Share</button><button type="button" id="sh-copy" aria-label="Copy the image" hidden><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>Copy</button><button type="button" id="sh-save" aria-label="Save the image"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="m7 10 5 5 5-5"></path><path d="M12 15V3"></path></svg>Save</button></div></div>
+    <span class="ra-rd-share-msg" id="sh-msg" role="status"></span></div>
+</div></details></section>
+</div>
+<section class="ra-block" aria-labelledby="h-notes"><details class="ra-sec" open data-fold="h-notes"><summary><h2 class="ra-section" id="h-notes">How it is counted</h2><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i></summary><div class="ra-block">
+  <p class="ra-rd-hint">The results are worked out from the game server’s code and data, not tried in the game. The rules come from the research note “How tea and food effects stack” (in Japanese).</p>
+  <details class="ra-rd-notes"><summary><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i>How effects stack <span class="ra-num">5 notes</span></summary><ul>
+    <li>A player keeps one effect of a kind; a later one takes its place. Strength and time left are not compared, so a weaker tea after a stronger one makes it weaker. Pies count the same as teas.</li>
+    <li>Effects of different kinds all work at the same time.</li>
+    <li>The Bear Pie multiplies ore, wood, scrap and harvesting by 1.5 (rich 1.75), and their time runs out twice as fast. When the pie ends, the rest runs at the normal speed.</li>
+    <li>Health over time (bread and the like) heals 1 a second, and 1 + value a second with the Pork Pie. What is left when your health is full is lost.</li>
+    <li>When you die, every effect is gone on respawn (unless the server sets keepteaondeath).</li>
+  </ul></details>
+  <details class="ra-rd-notes"><summary><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i>Reading the values <span class="ra-num">4 notes</span></summary><ul>
+    <li>Ore, wood, scrap and harvesting (animals and fish) multiply what you gather, the scrap of a crate, or what gutting a fish gives, by 1 + value (+40% is 1.4 times).</li>
+    <li>Max health is 100 × (1 + value), radiation damage is multiplied by 1 − value, and the calorie cap by 1 + value.</li>
+    <li>Warming and cooling are added to the body temperature; they are the numbers of the game’s own description. The body temperature limits are shown as the game describes them (how they are used is not checked). Crafting quality, 0 to 1, sets how many slots crafted armour gets.</li>
+    <li>Effects with a value of 1, such as vision and animal repellent, show as “on”.</li>
+  </ul></details>
+  <details class="ra-rd-notes"><summary><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i>How it is worked out <span class="ra-num">3 notes</span></summary><ul>
+    <li>The server counts down the effects in steps, so an end can be off by a few seconds.</li>
+    <li>The horse effects of apples and bread are not shown; they never reach a player.</li>
+    <li>What you get at once (calories, water, health) is for eating a whole one in full condition.</li>
+  </ul></details>
+</div></details></section>
+</main>
+<footer class="ra-foot"><p>An unofficial site made by one person, not affiliated with Facepunch Studios. The values are read from the game server’s data and code; there is no guarantee that they are right.</p>
+<p>Some icons are from <a class="ra-link" href="https://lucide.dev/" rel="noopener">Lucide</a> (ISC License).</p></footer>
+<script>
+const R={"version":"2026-11-07","items":[{"id":"oretea","name":"Basic Ore Tea","pie":false,"fam":"Ore_Yield","tier":"Basic","mods":[["Ore_Yield",0.2,1800,"Tea"]],"eff":{"Hydration":30}},{"id":"oretea.advanced","name":"Advanced Ore Tea","pie":false,"fam":"Ore_Yield","tier":"Advanced","mods":[["Ore_Yield",0.3,1800,"Tea"]],"eff":{"Hydration":30}},{"id":"oretea.pure","name":"Pure Ore Tea","pie":false,"fam":"Ore_Yield","tier":"Pure","mods":[["Ore_Yield",0.4,1800,"Tea"]],"eff":{"Hydration":30}},{"id":"oretea.pure.creamy","name":"Creamy Pure Ore Tea","pie":false,"fam":"Ore_Yield","tier":"Creamy","mods":[["Ore_Yield",0.5,1440,"Tea"]],"eff":{"Hydration":30,"Health":5,"Calories":45}},{"id":"oretea.pure.milky","name":"Milky Pure Ore Tea","pie":false,"fam":"Ore_Yield","tier":"Milky","mods":[["Ore_Yield",0.4,2700,"Tea"]],"eff":{"Hydration":45,"Calories":90}},{"id":"woodtea","name":"Basic Wood Tea","pie":false,"fam":"Wood_Yield","tier":"Basic","mods":[["Wood_Yield",0.5,1800,"Tea"]],"eff":{"Hydration":30}},{"id":"woodtea.advanced","name":"Advanced Wood Tea","pie":false,"fam":"Wood_Yield","tier":"Advanced","mods":[["Wood_Yield",1,1800,"Tea"]],"eff":{"Hydration":30}},{"id":"woodtea.pure","name":"Pure Wood Tea","pie":false,"fam":"Wood_Yield","tier":"Pure","mods":[["Wood_Yield",1.5,1800,"Tea"]],"eff":{"Hydration":30}},{"id":"woodtea.pure.creamy","name":"Creamy Pure Wood Tea","pie":false,"fam":"Wood_Yield","tier":"Creamy","mods":[["Wood_Yield",2,1440,"Tea"]],"eff":{"Hydration":30,"Health":5,"Calories":45}},{"id":"woodtea.pure.milky","name":"Milky Pure Wood Tea","pie":false,"fam":"Wood_Yield","tier":"Milky","mods":[["Wood_Yield",1.5,2700,"Tea"]],"eff":{"Hydration":45,"Calories":90}},{"id":"scraptea","name":"Basic Scrap Tea","pie":false,"fam":"Scrap_Yield","tier":"Basic","mods":[["Scrap_Yield",1,1800,"Tea"]],"eff":{"Hydration":30}},{"id":"scraptea.advanced","name":"Advanced Scrap Tea","pie":false,"fam":"Scrap_Yield","tier":"Advanced","mods":[["Scrap_Yield",2,2700,"Tea"]],"eff":{"Hydration":30}},{"id":"scraptea.pure","name":"Pure Scrap Tea","pie":false,"fam":"Scrap_Yield","tier":"Pure","mods":[["Scrap_Yield",3,3600,"Tea"]],"eff":{"Hydration":30}},{"id":"scraptea.pure.creamy","name":"Creamy Pure Scrap Tea","pie":false,"fam":"Scrap_Yield","tier":"Creamy","mods":[["Scrap_Yield",4,2880,"Tea"]],"eff":{"Hydration":30,"Health":5,"Calories":45}},{"id":"scraptea.pure.milky","name":"Milky Pure Scrap Tea","pie":false,"fam":"Scrap_Yield","tier":"Milky","mods":[["Scrap_Yield",3,5400,"Tea"]],"eff":{"Hydration":45,"Calories":90}},{"id":"harvestingtea","name":"Basic Harvesting Tea","pie":false,"fam":"Harvesting","tier":"Basic","mods":[["Harvesting",0.35,1200,"Tea"]],"eff":{"Hydration":30}},{"id":"advanceharvestingtea","name":"Advanced Harvesting Tea","pie":false,"fam":"Harvesting","tier":"Advanced","mods":[["Harvesting",0.45,1200,"Tea"]],"eff":{"Hydration":30}},{"id":"pureharvestingtea","name":"Pure Harvesting Tea","pie":false,"fam":"Harvesting","tier":"Pure","mods":[["Harvesting",0.55,1200,"Tea"]],"eff":{"Hydration":30}},{"id":"pureharvestingtea.creamy","name":"Creamy Pure Harvesting Tea","pie":false,"fam":"Harvesting","tier":"Creamy","mods":[["Harvesting",0.65,960,"Tea"]],"eff":{"Hydration":30,"Health":5,"Calories":45}},{"id":"pureharvestingtea.milky","name":"Milky Pure Harvesting Tea","pie":false,"fam":"Harvesting","tier":"Milky","mods":[["Harvesting",0.55,1800,"Tea"]],"eff":{"Hydration":45,"Calories":90}},{"id":"maxhealthtea","name":"Basic Max Health Tea","pie":false,"fam":"Max_Health","tier":"Basic","mods":[["Max_Health",0.05,1200,"Tea"]],"eff":{"Hydration":30}},{"id":"maxhealthtea.advanced","name":"Advanced Max Health Tea","pie":false,"fam":"Max_Health","tier":"Advanced","mods":[["Max_Health",0.1,1200,"Tea"]],"eff":{"Hydration":30}},{"id":"maxhealthtea.pure","name":"Pure Max Health Tea","pie":false,"fam":"Max_Health","tier":"Pure","mods":[["Max_Health",0.15,1200,"Tea"]],"eff":{"Hydration":30}},{"id":"maxhealthtea.pure.creamy","name":"Creamy Pure Max Health Tea","pie":false,"fam":"Max_Health","tier":"Creamy","mods":[["Max_Health",0.2,960,"Tea"]],"eff":{"Hydration":30,"Health":5,"Calories":45}},{"id":"maxhealthtea.pure.milky","name":"Milky Pure Max Health Tea","pie":false,"fam":"Max_Health","tier":"Milky","mods":[["Max_Health",0.15,1800,"Tea"]],"eff":{"Hydration":45,"Calories":90}},{"id":"radiationresisttea","name":"Basic Anti-Rad Tea","pie":false,"fam":"Radiation_Resistance","tier":"Basic","mods":[["Radiation_Resistance",0.15,1800,"Tea"]],"eff":{"Hydration":30}},{"id":"radiationresisttea.advanced","name":"Advanced Anti-Rad Tea","pie":false,"fam":"Radiation_Resistance","tier":"Advanced","mods":[["Radiation_Resistance",0.25,1800,"Tea"]],"eff":{"Hydration":30}},{"id":"radiationresisttea.pure","name":"Pure Anti-Rad Tea","pie":false,"fam":"Radiation_Resistance","tier":"Pure","mods":[["Radiation_Resistance",0.35,1800,"Tea"]],"eff":{"Hydration":30}},{"id":"radiationresisttea.pure.creamy","name":"Creamy Pure Anti-Rad Tea","pie":false,"fam":"Radiation_Resistance","tier":"Creamy","mods":[["Radiation_Resistance",0.45,1440,"Tea"]],"eff":{"Hydration":30,"Health":5,"Calories":45}},{"id":"radiationresisttea.pure.milky","name":"Milky Pure Anti-Rad Tea","pie":false,"fam":"Radiation_Resistance","tier":"Milky","mods":[["Radiation_Resistance",0.35,2700,"Tea"]],"eff":{"Hydration":45,"Calories":90}},{"id":"coolingtea","name":"Basic Cooling Tea","pie":false,"fam":"Cooling","tier":"Basic","mods":[["Cooling",10,1200,"Tea"],["CoreTemperatureMaxAdjustment",40,1200,"Tea"]],"eff":{"Hydration":30}},{"id":"advancedcoolingtea","name":"Advanced Cooling Tea","pie":false,"fam":"Cooling","tier":"Advanced","mods":[["Cooling",14,2700,"Tea"],["CoreTemperatureMaxAdjustment",40,2700,"Tea"]],"eff":{"Hydration":30}},{"id":"purecoolingtea","name":"Pure Cooling Tea","pie":false,"fam":"Cooling","tier":"Pure","mods":[["Cooling",18,3600,"Tea"],["CoreTemperatureMaxAdjustment",40,3600,"Tea"]],"eff":{"Hydration":30}},{"id":"purecoolingtea.creamy","name":"Creamy Pure Cooling Tea","pie":false,"fam":"Cooling","tier":"Creamy","mods":[["Cooling",22,2880,"Tea"],["CoreTemperatureMaxAdjustment",40,2880,"Tea"]],"eff":{"Hydration":30,"Health":5,"Calories":45}},{"id":"purecoolingtea.milky","name":"Milky Pure Cooling Tea","pie":false,"fam":"Cooling","tier":"Milky","mods":[["Cooling",18,5400,"Tea"],["CoreTemperatureMaxAdjustment",40,5400,"Tea"]],"eff":{"Hydration":45,"Calories":90}},{"id":"warmingtea","name":"Basic Warming Tea","pie":false,"fam":"Warming","tier":"Basic","mods":[["Warming",5,1200,"Tea"],["CoreTemperatureMinAdjustment",-15,1200,"Tea"]],"eff":{"Hydration":30}},{"id":"advancedwarmingtea","name":"Advanced Warming Tea","pie":false,"fam":"Warming","tier":"Advanced","mods":[["Warming",9,2700,"Tea"],["CoreTemperatureMinAdjustment",-8,2700,"Tea"]],"eff":{"Hydration":30}},{"id":"purewarmingtea","name":"Pure Warming Tea","pie":false,"fam":"Warming","tier":"Pure","mods":[["Warming",13,3600,"Tea"],["CoreTemperatureMinAdjustment",0,3600,"Tea"]],"eff":{"Hydration":30}},{"id":"purewarmingtea.creamy","name":"Creamy Pure Warming Tea","pie":false,"fam":"Warming","tier":"Creamy","mods":[["Warming",17,2880,"Tea"],["CoreTemperatureMinAdjustment",0,2880,"Tea"]],"eff":{"Hydration":30,"Health":5,"Calories":45}},{"id":"purewarmingtea.milky","name":"Milky Pure Warming Tea","pie":false,"fam":"Warming","tier":"Milky","mods":[["Warming",13,5400,"Tea"],["CoreTemperatureMinAdjustment",0,5400,"Tea"]],"eff":{"Hydration":45,"Calories":90}},{"id":"craftingtea_quality","name":"Basic Crafting Quality Tea","pie":false,"fam":"Crafting_Quality","tier":"Basic","mods":[["Crafting_Quality",0.5,200,"Tea"]],"eff":{"Hydration":30}},{"id":"advancedcraftingtea_quality","name":"Advanced Crafting Quality Tea","pie":false,"fam":"Crafting_Quality","tier":"Advanced","mods":[["Crafting_Quality",0.75,300,"Tea"]],"eff":{"Hydration":30}},{"id":"purecraftingtea_quality","name":"Pure Crafting Quality Tea","pie":false,"fam":"Crafting_Quality","tier":"Pure","mods":[["Crafting_Quality",0.85,400,"Tea"]],"eff":{"Hydration":30}},{"id":"supertea","name":"Super Serum","pie":false,"fam":"supertea","tier":"Basic","mods":[["Wood_Yield",5,3600,"Tea"],["Ore_Yield",4,3600,"Tea"],["Scrap_Yield",5,3600,"Tea"]],"eff":{"Hydration":500,"Calories":500}},{"id":"pie.apple","name":"Apple Pie","pie":true,"fam":"pie.apple","tier":"Basic","mods":[["VisionCare",1,900,"Tea"]],"eff":{"Calories":80,"Hydration":15,"Health":2}},{"id":"pie.apple.rich","name":"Rich Apple Pie","pie":true,"fam":"pie.apple","tier":"Rich","mods":[["VisionCare",1,1200,"Tea"]],"eff":{"Calories":100,"Hydration":19,"Health":3}},{"id":"pie.bear","name":"Bear Pie","pie":true,"fam":"pie.bear","tier":"Basic","mods":[["DigestionBoost",1.5,900,"Tea"],["DigestionBoostTimeMod",2,900,"Tea"]],"eff":{"Calories":80,"Hydration":15,"Health":2}},{"id":"pie.bear.rich","name":"Rich Bear Pie","pie":true,"fam":"pie.bear","tier":"Rich","mods":[["DigestionBoost",1.75,900,"Tea"],["DigestionBoostTimeMod",2,900,"Tea"]],"eff":{"Calories":100,"Hydration":19,"Health":3}},{"id":"pie.beef","name":"Beef Pie","pie":true,"fam":"pie.beef","tier":"Basic","mods":[["Hunger_Capacity",0.75,7200,"Tea"]],"eff":{"Calories":80,"Hydration":15,"Health":2}},{"id":"pie.beef.rich","name":"Rich Beef Pie","pie":true,"fam":"pie.beef","tier":"Rich","mods":[["Hunger_Capacity",1,7200,"Tea"]],"eff":{"Calories":100,"Hydration":19,"Health":3}},{"id":"pie.bigcat","name":"Big Cat Pie","pie":true,"fam":"pie.bigcat","tier":"Basic","mods":[["HunterVision",1,1800,"Tea"]],"eff":{"Calories":80,"Hydration":15,"Health":2}},{"id":"pie.bigcat.rich","name":"Rich Big Cat Pie","pie":true,"fam":"pie.bigcat","tier":"Rich","mods":[["HunterVision",1,2400,"Tea"]],"eff":{"Calories":100,"Hydration":19,"Health":3}},{"id":"pie.chicken","name":"Chicken Pie","pie":true,"fam":"pie.chicken","tier":"Basic","mods":[["Farming_BetterGenes",0.52,600,"Tea"]],"eff":{"Calories":80,"Hydration":15,"Health":2}},{"id":"pie.chicken.rich","name":"Rich Chicken Pie","pie":true,"fam":"pie.chicken","tier":"Rich","mods":[["Farming_BetterGenes",0.65,600,"Tea"]],"eff":{"Calories":100,"Hydration":19,"Health":3}},{"id":"pie.crocodile","name":"Crocodile Pie","pie":true,"fam":"pie.crocodile","tier":"Basic","mods":[["AnimalRepellent",1,1800,"Tea"]],"eff":{"Calories":80,"Hydration":15,"Health":2}},{"id":"pie.crocodile.rich","name":"Rich Crocodile Pie","pie":true,"fam":"pie.crocodile","tier":"Rich","mods":[["AnimalRepellent",1,2400,"Tea"]],"eff":{"Calories":100,"Hydration":19,"Health":3}},{"id":"pie.fish","name":"Fish Pie","pie":true,"fam":"pie.fish","tier":"Basic","mods":[["Comfort",1,1200,"Tea"]],"eff":{"Calories":80,"Hydration":15,"Health":2}},{"id":"pie.fish.rich","name":"Rich Fish Pie","pie":true,"fam":"pie.fish","tier":"Rich","mods":[["Comfort",1,1500,"Tea"]],"eff":{"Calories":100,"Hydration":19,"Health":3}},{"id":"pie.hunters","name":"Hunters Pie","pie":true,"fam":"pie.hunters","tier":"Basic","mods":[["Clotting",0.9,1800,"Tea"]],"eff":{"Calories":80,"Hydration":15,"Health":2}},{"id":"pie.hunters.rich","name":"Rich Hunters Pie","pie":true,"fam":"pie.hunters","tier":"Rich","mods":[["Clotting",1,1800,"Tea"]],"eff":{"Calories":100,"Hydration":19,"Health":3}},{"id":"pie.mutton","name":"Shepherds Pie","pie":true,"fam":"pie.mutton","tier":"Basic","mods":[["LivestockHandling",1,900,"Tea"]],"eff":{"Calories":80,"Hydration":15,"Health":2}},{"id":"pie.mutton.rich","name":"Rich Shepherds Pie","pie":true,"fam":"pie.mutton","tier":"Rich","mods":[["LivestockHandling",1.5,900,"Tea"]],"eff":{"Calories":100,"Hydration":19,"Health":3}},{"id":"pie.pork","name":"Pork Pie","pie":true,"fam":"pie.pork","tier":"Basic","mods":[["MetabolismBooster",2,1800,"Tea"]],"eff":{"Calories":80,"Hydration":15,"Health":2}},{"id":"pie.pork.rich","name":"Rich Pork Pie","pie":true,"fam":"pie.pork","tier":"Rich","mods":[["MetabolismBooster",2.5,1800,"Tea"]],"eff":{"Calories":100,"Hydration":19,"Health":3}},{"id":"pie.pumpkin","name":"Pumpkin Pie","pie":true,"fam":"pie.pumpkin","tier":"Basic","mods":[["Max_Health",0.1,600,"Tea"]],"eff":{"Calories":80,"Hydration":15,"Health":2}},{"id":"pie.pumpkin.rich","name":"Rich Pumpkin Pie","pie":true,"fam":"pie.pumpkin","tier":"Rich","mods":[["Max_Health",0.15,600,"Tea"]],"eff":{"Calories":100,"Hydration":19,"Health":3}},{"id":"pie.survivors","name":"Survivor's Pie","pie":true,"fam":"pie.survivors","tier":"Basic","mods":[["Harvesting",1.5,300,"Tea"]],"eff":{"Calories":80,"Hydration":15,"Health":2}}],"fams":[{"id":"Ore_Yield","name":"Ore","pie":false},{"id":"Wood_Yield","name":"Wood","pie":false},{"id":"Scrap_Yield","name":"Scrap","pie":false},{"id":"Harvesting","name":"Harvesting","pie":false},{"id":"Max_Health","name":"Max health","pie":false},{"id":"Radiation_Resistance","name":"Anti-rad","pie":false},{"id":"Cooling","name":"Cooling","pie":false},{"id":"Warming","name":"Warming","pie":false},{"id":"Crafting_Quality","name":"Crafting quality","pie":false},{"id":"supertea","name":"Super Serum","pie":false},{"id":"pie.apple","name":"Apple Pie","pie":true},{"id":"pie.bear","name":"Bear Pie","pie":true},{"id":"pie.beef","name":"Beef Pie","pie":true},{"id":"pie.bigcat","name":"Big Cat Pie","pie":true},{"id":"pie.chicken","name":"Chicken Pie","pie":true},{"id":"pie.crocodile","name":"Crocodile Pie","pie":true},{"id":"pie.fish","name":"Fish Pie","pie":true},{"id":"pie.hunters","name":"Hunters Pie","pie":true},{"id":"pie.mutton","name":"Shepherds Pie","pie":true},{"id":"pie.pork","name":"Pork Pie","pie":true},{"id":"pie.pumpkin","name":"Pumpkin Pie","pie":true},{"id":"pie.survivors","name":"Survivor's Pie","pie":true}],"types":{"Ore_Yield":{"name":"Ore","fmt":"pct"},"Wood_Yield":{"name":"Wood","fmt":"pct"},"Scrap_Yield":{"name":"Scrap","fmt":"pct"},"Harvesting":{"name":"Harvesting (animals, fish)","fmt":"pct"},"Max_Health":{"name":"Max health","fmt":"hp"},"Radiation_Resistance":{"name":"Radiation damage","fmt":"res"},"Cooling":{"name":"Cooling","fmt":"temp"},"CoreTemperatureMaxAdjustment":{"name":"Max body temperature","fmt":"temp"},"Warming":{"name":"Warming","fmt":"temp"},"CoreTemperatureMinAdjustment":{"name":"Min body temperature","fmt":"temp"},"Crafting_Quality":{"name":"Crafting quality","fmt":"quality"},"DigestionBoost":{"name":"Bear Pie (digestion)","fmt":"mult"},"DigestionBoostTimeMod":{"name":"Bear Pie (time)","fmt":"speed"},"MetabolismBooster":{"name":"Healing speed","fmt":"heal"},"Hunger_Capacity":{"name":"Calorie capacity","fmt":"cap"},"VisionCare":{"name":"Vision","fmt":"raw"},"HunterVision":{"name":"Hunter vision","fmt":"raw"},"Farming_BetterGenes":{"name":"Better genes","fmt":"raw"},"AnimalRepellent":{"name":"Animal repellent","fmt":"raw"},"Comfort":{"name":"Comfort","fmt":"raw"},"Clotting":{"name":"Clotting","fmt":"raw"},"LivestockHandling":{"name":"Livestock handling","fmt":"raw"}},"dig":["Harvesting","Ore_Yield","Scrap_Yield","Wood_Yield"],"one":["Tea"],"hp":100.0,"msg":{"min":"{m} min","minsec":"{m} min {s} s","ends":"ends at {t}","gone_at":"gone at {t}","by":"replaced by {by}","fast":"runs out twice as fast while the Bear Pie lasts","aria_min":"minute to have {n}","aria_del":"remove {n}","count":"{n} items","sum":"{n} items ({k} effects)","nothing":"Nothing picked yet","kinds":"{k} effects","span":"{a} to {b}","span_pie":"{a} to {b} (with the Bear Pie)","more":", and {n} more","with_pie":"× Bear Pie","gone":"<b>Replaced:<\/b> {by}, had at {t}, takes the place of the {type} effect of {item}. A player keeps one effect of a kind, whatever its strength.","short":"<b>Shorter:<\/b> the Bear Pie makes {type} stronger, {v0} → {v1}, but it ends at {t1} instead of {t0}. Value × time goes from {s0} to {s1} (minutes).","now":"At once: {c} calories, {w} water, {h} health.","hot":" Health over time {p} ({r} a second).","speed":"×{v} speed","heal":"{v} a second","on":"on","value":"value {v}","card":"Buff Planner / teas and food","card_eff":"Effects","card_order":"Order eaten","summary":"Teas and food: {list}","file":"rust-buff"},"icons":{}};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const num=n=>Number(n).toLocaleString('en-US',{maximumFractionDigits:1});
+const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,parseInt(v,10)||lo));
+// The sections fold at their headings; which ones are folded is remembered on this device, per page.
+const FOLD='ra-fold-'+location.pathname.split('/').pop(),folds=()=>[...document.querySelectorAll('details[data-fold]')];
+try{const st=JSON.parse(localStorage.getItem(FOLD)||'{}');for(const d of folds())if(d.dataset.fold in st)d.open=!!st[d.dataset.fold]}catch(_){}
+document.addEventListener('toggle',ev=>{if(ev.target.dataset&&ev.target.dataset.fold)try{localStorage.setItem(FOLD,JSON.stringify(Object.fromEntries(folds().map(d=>[d.dataset.fold,d.open]))))}catch(_){}},true);
+// The share image: a 1200x675 card (drawn at 2x) in the page's own colours and fonts, with the site's name and `title` on
+// top and the page's address below. paint(h) draws the rest with the helpers h; icons are the names it draws with h.pic.
+const css=k=>getComputedStyle(document.documentElement).getPropertyValue(k).trim();
+async function drawCard(title,icons,paint){
+  const W=1200,H=675,K=2,L=48,HALF=(W-L*2-24)/2,cv=document.createElement('canvas');cv.width=W*K;cv.height=H*K;
+  const x=cv.getContext('2d');x.scale(K,K);
+  const C={bg:css('--plate'),up:css('--plate-raised'),sunk:css('--plate-sunken'),line:css('--line'),strong:css('--line-strong'),ink:css('--ink'),mute:css('--ink-muted'),rust:css('--rust')};
+  const F={sans:css('--font-sans'),mono:css('--font-mono'),disp:css('--font-display')},f=(w,px,fam)=>`${w} ${px}px ${F[fam]}`;
+  const used=[],pics={};
+  const pic=(k,px,py,sz)=>{if(pics[k])x.drawImage(pics[k],px,py,sz,sz)};
+  const M=(s,font)=>{x.font=font;return x.measureText(s).width};
+  // T draws text and returns the x where it ended (where it began, when right-aligned)
+  const T=(s,px,py,font,col,right)=>{used.push([font,s]);x.font=font;x.fillStyle=col;x.textAlign=right?'right':'left';x.fillText(s,px,py);
+    const w=x.measureText(s).width;return right?px-w:px+w};
+  const fit=(s,font,max)=>{if(M(s,font)<=max)return s;while(s.length>1&&M(s+'…',font)>max)s=s.slice(0,-1);return s+'…'};
+  const box=(col,a,b,w,h)=>{x.fillStyle=col;x.fillRect(a,b,w,h)};
+  const rule=(col,a,b,w,h,lw)=>{x.strokeStyle=col;x.lineWidth=lw;x.strokeRect(a+lw/2,b+lw/2,w-lw,h-lw)};
+  const h={x,W,H,L,HALF,C,f,T,M,fit,box,rule,pic};
+  const all=()=>{box(C.bg,0,0,W,H);const e=T('Rust Analysis',L,60,f(700,26,'disp'),C.ink);T(title,e+16,60,f(600,17,'sans'),C.mute);
+    T(`Game build ${R.version}`,W-L,60,f(400,14,'mono'),C.mute,1);box(C.ink,L,78,W-L*2,2);paint(h);
+    box(C.line,L,642,W-L*2,1);T('maco165.github.io/rust-patch-notes/en/tools/buff.html',L,662,f(400,13,'mono'),C.mute);T('Worked out from game data / unofficial',W-L,662,f(400,13,'sans'),C.mute,1)};
+  // the first pass lists the text of each font, so the web fonts (split by unicode range) load before the pass that counts
+  all();try{await Promise.all(used.map(([font,s])=>document.fonts.load(font,s)))}catch(_){}
+  // the icons, as SVG images stroked in the ink colour; one that fails to load is left out
+  await Promise.all([...new Set(icons.filter(Boolean))].map(async k=>{try{const im=new Image();
+    im.src='data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 24 24" fill="none" stroke="${C.ink}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${R.icons[k]}</svg>`);
+    await im.decode();pics[k]=im}catch(_){}}));
+  used.length=0;all();return cv}
+// The buttons under "Share this result": the link, and the image made by card() shared, copied or saved as name().
+let say=()=>{};
+function shareUI(card,name,summary,hint){
+  const png=async()=>{const cv=await card();return new Promise((ok,ng)=>cv.toBlob(b=>b?ok(b):ng(new Error('toBlob')),'image/png'))};
+  say=m=>{$('#sh-msg').textContent=m||hint};say();document.addEventListener('change',()=>say());
+  const clip=navigator.clipboard;
+  $('#sh-link').addEventListener('click',async()=>{try{await clip.writeText(location.href);say('Link copied.')}
+    catch(_){say('Could not copy. Use the URL in the address bar.')}});
+  $('#sh-save').addEventListener('click',async()=>{try{const a=document.createElement('a');a.href=URL.createObjectURL(await png());a.download=name();
+    document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),10000);say(`Image saved (${name()}).`)}
+    catch(_){say('Could not make the image.')}});
+  if(clip&&clip.write&&window.ClipboardItem){$('#sh-copy').hidden=false;
+    $('#sh-copy').addEventListener('click',async()=>{try{await clip.write([new ClipboardItem({'image/png':png()})]);say('Image copied. Paste it to send.')}
+      catch(_){say('Could not copy the image. Use “Save”.')}})}
+  const probe=()=>{try{return navigator.canShare&&navigator.canShare({files:[new File([''],'a.png',{type:'image/png'})]})}catch(_){return false}};
+  if(probe()){$('#sh-send').hidden=false;
+    $('#sh-send').addEventListener('click',async()=>{try{const file=new File([await png()],name(),{type:'image/png'});
+        await navigator.share({files:[file],text:`${summary()}\n${location.href}`});say('')}
+      catch(e){if(e.name!=='AbortError')say('Could not share. Use “Save”.')}})}}
+
+// What teas and pies do together, as the server does it (content/research/farming/consumable-effects.md, the same
+// rules as scripts/consume_calc.py): a source in R.one keeps one modifier per type, a new one taking the place of the
+// one with the least time left; the bear pie (DigestionBoost, DigestionBoostTimeMod) multiplies the value of the types
+// in R.dig and the speed their time runs out; health over time waits in a pool that heals 1 x (1 + MetabolismBooster)
+// a second. Reads R.items, R.dig, R.one and R.hp only.
+const ITEM=Object.fromEntries(R.items.map(x=>[x.id,x])),DIG=new Set(R.dig),ONE=new Set(R.one);
+const newPlayer=()=>({mods:[],now:0,pool:0,ends:{},rowEnds:{},gone:[],segs:{}});
+function total(p,type,def=0){const boost=DIG.has(type)?total(p,'DigestionBoost',1):1;
+  const got=p.mods.filter(m=>m.type===type);return(got.length?got.reduce((a,m)=>a+m.value,0):def)*boost}
+const rate=(p,m)=>DIG.has(m.type)?total(p,'DigestionBoostTimeMod',1):1;
+const healRate=p=>1+total(p,'MetabolismBooster');
+const maxHealth=p=>R.hp*(1+total(p,'Max_Health'));
+// row: which of the things eaten (in the order entered) it is; the same item can come twice
+function eat(p,id,row=-1){const it=ITEM[id];if(!it)return;
+  if(it.eff.HealthOverTime)p.pool+=it.eff.HealthOverTime;
+  for(const[type,value,dur,source]of it.mods){
+    const same=p.mods.filter(m=>m.type===type&&m.source===source);
+    if(ONE.has(source)&&same.length){const old=same.reduce((a,m)=>m.left<a.left?m:a);
+      p.mods.splice(p.mods.indexOf(old),1);p.gone.push({type,item:old.item,row:old.row,at:p.now,by:id,byRow:row,left:old.left})}
+    p.mods.push({type,source,value,left:dur,item:id,row})}}
+// the value of every type over [now, now+step], merged into the last piece when nothing changed
+function record(p,step){
+  for(const type of new Set(p.mods.map(m=>m.type))){
+    const v=total(p,type),items=p.mods.filter(m=>m.type===type).map(m=>m.item).join(','),boost=DIG.has(type)&&total(p,'DigestionBoost',1)!==1;
+    const segs=p.segs[type]||(p.segs[type]=[]),last=segs[segs.length-1];
+    if(last&&Math.abs(last.b-p.now)<1e-6&&Math.abs(last.v-v)<1e-9&&last.items===items)last.b=p.now+step;
+    else segs.push({a:p.now,b:p.now+step,v,items,boost})}}
+function run(p,until){
+  while(p.now<until&&p.mods.length){
+    let step=until-p.now;for(const m of p.mods)step=Math.min(step,m.left/rate(p,m));
+    record(p,step);const r=p.mods.map(m=>rate(p,m));p.mods.forEach((m,i)=>{m.left-=step*r[i]});p.now+=step;
+    for(const m of p.mods.filter(m=>m.left<=1e-9)){p.mods.splice(p.mods.indexOf(m),1);p.ends[m.item]=p.now;p.rowEnds[m.row]=p.now}}
+  p.now=Math.max(p.now,until)}
+// eats: [[item, second], ...]. Everything the page shows, from second 0 until every effect has run out.
+function simulate(eats){
+  const p=newPlayer(),order=eats.map((e,i)=>[e[0],e[1],i]).sort((x,y)=>x[1]-y[1]||x[2]-y[2]),hot=[];
+  const sum={Calories:0,Hydration:0,Health:0,HealthOverTime:0};
+  for(const[id,t,row]of order){run(p,t);eat(p,id,row);
+    for(const k in sum)sum[k]+=ITEM[id]?.eff[k]||0;
+    if(ITEM[id]?.eff.HealthOverTime)hot.push({at:t,amount:ITEM[id].eff.HealthOverTime,rate:healRate(p)})}
+  run(p,1e7);
+  return{segs:p.segs,gone:p.gone,ends:p.ends,rowEnds:p.rowEnds,sum,hot,end:Math.max(0,...Object.values(p.ends))}}
+// the same as consume_calc.work: eat up to `look`, read the values there, then the rest until every effect ends
+function work(eats,look){
+  const p=newPlayer(),order=eats.map((e,i)=>[e[1],e[0],i]).sort((x,y)=>x[0]-y[0]||x[2]-y[2]);
+  for(const[t,id]of order.filter(e=>e[0]<=look)){run(p,t);eat(p,id)}
+  run(p,look);
+  const types=new Set(order.flatMap(([,id])=>(ITEM[id]?.mods||[]).map(m=>m[0])));
+  const values=Object.fromEntries([...types].map(k=>[k,total(p,k)]));
+  const extra={heal_rate:healRate(p),pool:p.pool,max_health:maxHealth(p)};
+  for(const[t,id]of order.filter(e=>e[0]>look)){run(p,t);eat(p,id)}
+  run(p,1e7);return{values,ends:p.ends,extra}}
+
+const TYPE_ORDER=Object.keys(R.types),FAM=Object.fromEntries(R.fams.map(f=>[f.id,f]));
+const nm=id=>ITEM[id]?.name||id,tn=t=>R.types[t].name;
+const r2=v=>Math.round(v*100)/100;
+const M=(k,o={})=>R.msg[k].replace(/\{(\w+)\}/g,(_,n)=>o[n]);
+const mins=s=>{const m=s/60;return Math.abs(m-Math.round(m))<0.05?M('min',{m:Math.round(m)}):M('minsec',{m:Math.floor(m),s:Math.round(s%60)})};
+const pctOf=v=>`${Math.round(v*1000)/10}`;
+function fmt(t,v){switch(R.types[t].fmt){
+  case'pct':return`+${pctOf(v)}%`;
+  case'hp':return`+${pctOf(v)}% (${Math.round(R.hp*(1+v))})`;
+  case'res':return`−${pctOf(Math.min(1,Math.max(0,v)))}%`;
+  case'temp':return`${r2(v)}`;
+  case'mult':return`×${r2(v)}`;
+  case'speed':return M('speed',{v:r2(v)});
+  case'heal':return M('heal',{v:r2(1+v)});
+  case'cap':return`×${r2(1+v)}`;
+  case'quality':return`${r2(v)}`;
+  default:return v===1?M('on'):M('value',{v:r2(v)})}}
+// the first modifier of an item, short, for its button
+const short=it=>{const[t,v,d]=it.mods[0];return`${fmt(t,v)} · ${M('min',{m:Math.round(d/60)})}`};
+const P=new URLSearchParams(location.search);
+const parse=s=>String(s||'').split(',').map(x=>x.split(':')).filter(([id])=>ITEM[id]).map(([id,m])=>[id,clamp(m,0,600)]).slice(0,20);
+const S={e:P.has('e')?parse(P.get('e')):[['oretea.pure',0],['scraptea.pure',0],['pie.bear',0],['maxhealthtea.pure',0],['pie.pumpkin',5]].filter(([id])=>ITEM[id])};
+// the buttons: one row per family, the tiers in order
+$('#picks').innerHTML=R.fams.map(f=>{const its=R.items.filter(x=>x.fam===f.id);if(!its.length)return'';
+  return`<div class="ra-rd-group"><span class="ra-rd-kind">${esc(f.name)}</span><div class="bp-chips">${its.map(x=>
+    `<button type="button" class="bp-chip" data-add="${esc(x.id)}" title="${esc(x.name)}"><b>${esc(f.pie&&!x.id.endsWith('.rich')?f.name:x.tier)}</b><small>${esc(short(x))}</small></button>`).join('')}</div></div>`}).join('');
+let V=null;
+function render(){
+  const eats=S.e.map(([id,m])=>[id,m*60]),sim=simulate(eats);
+  const q=new URLSearchParams();if(S.e.length)q.set('e',S.e.map(([id,m])=>`${id}:${m}`).join(','));
+  history.replaceState(null,'',S.e.length?'?'+q.toString():location.pathname);
+  for(const b of document.querySelectorAll('[data-add]'))b.classList.toggle('is-on',S.e.some(([id])=>id===b.dataset.add));
+  // the order, sorted as it is eaten
+  const order=S.e.map((e,i)=>[...e,i]).sort((a,b)=>a[1]-b[1]||a[2]-b[2]);
+  $('#order').innerHTML=order.map(([id,m,i],k)=>{const g=sim.gone.filter(x=>x.row===i);const end=sim.rowEnds[i];
+    const note=g.length?M('by',{by:esc(nm(g[0].by))}):(ITEM[id].mods.some(x=>R.dig.includes(x[0]))&&sim.segs[ITEM[id].mods[0][0]]?.some(s=>s.boost))?M('fast'):'';
+    const gone=g.length&&end===undefined;
+    return`<div class="bp-ord${gone?' is-gone':''}"><span class="bp-n">${k+1}</span><span><b>${esc(nm(id))}</b>${note?`<small>${note}</small>`:''}</span>
+      <label class="bp-time"><input type="number" min="0" max="600" inputmode="numeric" value="${m}" data-i="${i}" aria-label="${esc(M('aria_min',{n:nm(id)}))}"><span>min</span></label>
+      <span class="bp-end">${gone?M('gone_at',{t:mins(g[0].at)}):end!==undefined?M('ends',{t:mins(end)}):''}</span>
+      <button type="button" class="bp-x" data-del="${i}" aria-label="${esc(M('aria_del',{n:nm(id)}))}">×</button></div>`}).join('');
+  $('#order-sub').textContent=S.e.length?M('count',{n:S.e.length}):'';
+  // the bear pie's speed goes with its value (one row, DigestionBoost); the notes say what it does to time
+  const types=TYPE_ORDER.filter(t=>sim.segs[t]&&t!=='DigestionBoostTimeMod');
+  $('#sum').textContent=S.e.length?M('sum',{n:S.e.length,k:types.length}):M('nothing');
+  $('#none').hidden=!!types.length;$('#result').hidden=!types.length;
+  if(!types.length){V=null;return}
+  // blocks: the pieces joined where one ends as the next begins; a type can stop and start again
+  const blocks=sg=>sg.reduce((bs,s)=>{const l=bs[bs.length-1];if(l&&Math.abs(l.b-s.a)<1e-6)l.b=s.b;else bs.push({a:s.a,b:s.b});return bs},[]);
+  const info=types.map(t=>{const sg=sim.segs[t],bl=blocks(sg);return{t,sg,bl,peak:sg.reduce((a,s)=>Math.abs(s.v)>Math.abs(a)?s.v:a,0),a:bl[0].a,b:sg[sg.length-1].b,boost:sg.some(s=>s.boost)}});
+  V={sim,info,types};
+  $('#res-sub').textContent=M('kinds',{k:types.length});
+  const first=info.reduce((a,x)=>x.b<a.b?x:a);
+  $('#stats').innerHTML=info.filter(x=>!x.t.startsWith('Digestion')).slice(0,3).map(x=>`<div class="ra-rd-stat"><span class="ra-rd-label">${esc(tn(x.t))}</span>
+      <span class="ra-rd-big${x.boost?' ra-rd-sulfur':''}">${esc(fmt(x.t,x.peak))}</span><span class="ra-rd-sub">${M(x.boost?'span_pie':'span',{a:mins(x.bl[0].a),b:mins(x.bl[0].b)})}${x.bl.length>1?M('more',{n:x.bl.length-1}):''}</span></div>`).join('')
+    +`<div class="ra-rd-stat"><span class="ra-rd-label">Ends first</span><span class="ra-rd-big">${esc(mins(first.b))}</span><span class="ra-rd-sub">${esc(tn(first.t))}</span></div>`;
+  // what the reader may not expect: a later item takes a type's place; the bear pie makes an effect stronger but shorter
+  const al=[];
+  for(const g of sim.gone)al.push(M('gone',{t:mins(g.at),by:esc(nm(g.by)),item:esc(nm(g.item)),type:esc(tn(g.type))}));
+  if(S.e.some(([id])=>ITEM[id].mods.some(m=>m[0]==='DigestionBoost'))){
+    const plain=simulate(eats.filter(([id])=>!ITEM[id].mods.some(m=>m[0]==='DigestionBoost')));
+    for(const x of info.filter(x=>x.boost)){const p=plain.segs[x.t];if(!p)continue;const pv=p.reduce((a,s)=>a+s.v*(s.b-s.a),0),bv=x.sg.reduce((a,s)=>a+s.v*(s.b-s.a),0);
+      al.push(M('short',{type:esc(tn(x.t)),v0:esc(fmt(x.t,p[0].v)),v1:esc(fmt(x.t,x.peak)),t0:mins(p[p.length-1].b),t1:mins(x.b),s0:num(r2(pv/60)),s1:num(r2(bv/60))}))}}
+  $('#alerts').innerHTML=al.map(a=>`<div class="bp-alert">${a}</div>`).join('');
+  // the time bands, up to the last end rounded up to 15 minutes
+  const span=Math.max(15,Math.ceil(sim.end/60/15)*15)*60,pc=s=>`${(s/span*100).toFixed(2)}%`;
+  const stepM=span<=3600?15:span<=7200?30:60,ticks=[];for(let m=0;m<=span/60;m+=stepM)ticks.push(m);
+  // what a replaced effect would still have had: when it ends with the item that replaced it left out
+  const lost=g=>{const alt=simulate(eats.map((e,j)=>j===g.byRow?['',e[1]]:e));
+    return alt.rowEnds[g.row]??alt.gone.find(x=>x.row===g.row&&x.type===g.type)?.at??g.at};
+  $('#tl').innerHTML=info.map(x=>{const ghosts=sim.gone.filter(g=>g.type===x.t).map(g=>({a:g.at,b:Math.min(lost(g),span)})).filter(g=>g.b>g.a);
+    return`<div class="bp-tl-row"><span class="bp-tl-name">${esc(tn(x.t))}<small>${esc([...new Set(x.sg.flatMap(s=>s.items.split(',')))].map(nm).join(' → '))}</small></span><div><div class="bp-tl-track">`
+      +x.sg.map(s=>`<span class="bp-seg${s.boost?' is-boost':''}" style="left:${pc(s.a)};width:${pc(s.b-s.a)}">${esc(fmt(x.t,s.v))}</span>`).join('')+'</div>'
+      +(ghosts.length?`<div class="bp-lost">${ghosts.map(g=>`<span class="bp-seg is-gone" style="left:${pc(g.a)};width:${pc(g.b-g.a)}"></span>`).join('')}</div>`:'')+'</div></div>'}).join('')
+    +`<div class="bp-axis"><i></i><div>${ticks.map(m=>`<span style="left:${(m*60/span*100).toFixed(2)}%;transform:translateX(${m===0?0:m*60>=span?-100:-50}%)">${M('min',{m})}</span>`).join('')}</div></div>`;
+  $('#rows').innerHTML=info.map(x=>{const vals=[...new Set(x.sg.map(s=>fmt(x.t,s.v)))];
+    return`<tr${x.boost?' class="is-boost"':''}><td>${esc(tn(x.t))}</td><td>${esc([...new Set(x.sg.flatMap(s=>s.items.split(',')))].map(nm).join(' → '))}${x.boost?` <small>${M('with_pie')}</small>`:''}</td>
+      <td class="bp-num">${esc(vals.join(' → '))}</td><td class="bp-num">${mins(x.b)}</td></tr>`}).join('');
+  const s=sim.sum,hot=sim.hot.length?M('hot',{p:num(s.HealthOverTime),r:num(r2(sim.hot[sim.hot.length-1].rate))}):'';
+  $('#now').textContent=M('now',{c:num(s.Calories),w:num(s.Hydration),h:num(s.Health)})+hot;
+  say()}
+document.addEventListener('click',ev=>{const a=ev.target.closest('[data-add]'),d=ev.target.closest('[data-del]');
+  if(a){if(S.e.length>=20)return;const last=S.e.length?Math.max(...S.e.map(e=>e[1])):0;S.e.push([a.dataset.add,last]);render()}
+  else if(d){S.e.splice(+d.dataset.del,1);render()}});
+document.addEventListener('change',ev=>{const t=ev.target;if(t.dataset&&t.dataset.i!==undefined){S.e[+t.dataset.i][1]=clamp(t.value,0,600);render()}});
+$('#clear').addEventListener('click',()=>{S.e=[];render()});
+render();
+// The share image: each effect with its value and when it runs out, and what is eaten when.
+const card=()=>drawCard(M('card'),[],h=>{const{L:LX,HALF,C,f,T,fit,box}=h;
+  T(M('card_eff'),LX,122,f(400,14,'sans'),C.mute);
+  V.info.slice(0,8).forEach((x,k)=>{const yy=150+k*44;T(fit(tn(x.t),f(600,18,'sans'),200),LX,yy+20,f(600,18,'sans'),C.ink);
+    T(fmt(x.t,x.peak),LX+330,yy+20,f(600,22,'mono'),x.boost?C.rust:C.ink,1);T(M('ends',{t:mins(x.b)}),LX+350,yy+20,f(400,14,'sans'),C.mute);box(C.line,LX,yy+34,HALF,1)});
+  const RX=LX+HALF+24;T(M('card_order'),RX,122,f(400,14,'sans'),C.mute);
+  [...S.e].map((e,i)=>[...e,i]).sort((a,b)=>a[1]-b[1]||a[2]-b[2]).slice(0,10).forEach(([id,m],k)=>{const yy=150+k*40;
+    T(M('min',{m}),RX+56,yy+20,f(400,16,'mono'),C.mute,1);T(fit(nm(id),f(600,17,'sans'),HALF-80),RX+72,yy+20,f(600,17,'sans'),C.ink)})});
+shareUI(card,()=>`${M('file')}-${S.e.length}.png`,()=>M('summary',{list:V.info.map(x=>`${tn(x.t)} ${fmt(x.t,x.peak)}`).join(', ')}),
+  'The link opens the calculator with the same teas and pies. The image puts the effects and the order on one card.');
+</script>
+</body></html>
