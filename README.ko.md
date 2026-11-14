@@ -19,18 +19,18 @@ flowchart LR
   end
   subgraph E["Extract (Python) → data/"]
     e1["fetch_changes.py<br/>data/patches/"]
-    e2["extract_items.py · extract_loot.py · extract_raid.py<br/>data/items/ · loot/ · raid/"]
+    e2["extract_items.py · extract_loot.py · extract_raid.py · extract_genetics.py<br/>data/items/ · loot/ · raid/ · genetics/"]
     e3["build_diffs.py<br/>data/diffs/"]
   end
   subgraph B["Build (Python)"]
-    b1["build_site.py<br/>imports raid_calc.py · loot_odds.py · build_views.py<br/>build_index.py · genres.py · item_icons.py"]
+    b1["build_site.py<br/>imports raid_calc.py · gene_calc.py · loot_odds.py · build_views.py<br/>build_index.py · genres.py · item_icons.py"]
     b2["content/ · rules/ · design/<br/>digests, columns, *.yml, tokens.json, *.css, item-icons/"]
   end
   subgraph W["Site (GitHub Pages)"]
     w1["index.html · history.html · genres.html · numbers.html"]
     w2["items.html · spec.html · diffs.html"]
     w3["columns.html → columns/*.html"]
-    w4["tools.html → tools/raid.html → tools/craft.html"]
+    w4["tools.html → tools/raid.html → tools/craft.html<br/>tools.html → tools/gene.html"]
     w5["assets/style.css<br/>used by every page"]
   end
   s1 --> e1
@@ -62,6 +62,7 @@ flowchart LR
 | [columns.html](en/columns.html) (English) | 플레이어들의 말을 서버 코드와 데이터로 확인하는 글 | 서버의 코드 (IL)와 데이터; 출처는 각 글의 끝 |
 | [tools/raid.html](en/tools/raid.html) (English) | Raid Planner: 벽·문·설치물을 함께 부수는 데 필요한 폭발물, 유황, 재료와 화로 시간 | 서버 데이터와, 서버 코드에서 읽은 피해·제련 규칙 |
 | [tools/craft.html](en/tools/craft.html) (English) | Craft Planner: 만들 것, 가진 자원, 화로로부터 부족한 것과 화로 시간 | Raid Planner와 같은 데이터 |
+| [tools/gene.html](tools/gene.html) (일본어만) | Gene Planner: 가진 모종으로 GGGYYY 같은 목표에 가까운 유전자를 얻는 심는 법과 유전자의 효과 | 서버 데이터와, 서버 코드에서 읽은 교배 규칙 |
 
 ## 언어
 

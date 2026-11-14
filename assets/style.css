@@ -604,6 +604,37 @@ span.ra-tools-hp { font-family: var(--font-mono); font-size: 14px; letter-spacin
   .ra-tools-best { grid-column: 1 / -1; grid-row: 2; }
   .ra-tools-s { grid-column: 2; grid-row: 1; }
 }
+/* GenePlanner: tools/gene.html. A gene is a small tile: green for the positive genes (G, Y, H), red for W and X. The
+   planter is drawn from above in wood colours, the middle slot marked like a highlight. */
+.gp-genes { display: inline-flex; gap: 2px; vertical-align: middle; }
+.gp-g { width: 22px; height: 24px; display: inline-flex; align-items: center; justify-content: center; font: 500 13px/1 var(--font-mono); font-style: normal; color: #fff; border-radius: var(--radius-xs); }
+.gp-good { background: var(--added); }
+.gp-bad { background: var(--removed); }
+.gp-big .gp-g { width: 34px; height: 38px; font-size: 19px; }
+.gp-sm { gap: 1px; }
+.gp-sm .gp-g { width: 12px; height: 15px; font-size: 9px; }
+.gp-in { width: 9.5em; height: var(--control-h); padding: 0 var(--space-3); font: 500 16px var(--font-mono); letter-spacing: .25em; text-transform: uppercase; color: var(--ink); background: var(--plate-raised); border: var(--rule) solid var(--line-strong); border-radius: var(--radius-xs); }
+.gp-read { display: flex; flex-wrap: wrap; gap: var(--space-2); margin: var(--space-3) 0; }
+.gp-read .ra-button small { margin-left: 6px; font-weight: 400; color: var(--ink-muted); }
+.gp-stock { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--space-2); }
+.gp-sap { display: flex; align-items: center; gap: var(--space-3); min-height: var(--control-h); padding: 0 var(--space-3); background: var(--plate-raised); border: var(--rule) solid var(--line); }
+.gp-sap b { width: 14px; font: 500 14px var(--font-mono); }
+.gp-sap.is-used { border: var(--rule-heavy) solid var(--ink); }
+.gp-x { margin-left: auto; padding: 0 var(--space-2); font-size: 18px; color: var(--ink-muted); background: none; border: 0; cursor: pointer; }
+.gp-plan { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: var(--space-8); align-items: start; }
+.gp-steps { margin: 0; padding-left: 1.4em; line-height: 2; }
+.gp-steps b { font-family: var(--font-mono); }
+.gp-why { margin-top: var(--space-6); }
+.gp-box { display: grid; gap: 5px; padding: 8px; background: #5b4330; border-radius: var(--radius-xs); }
+.gp-slot { position: relative; aspect-ratio: 1; min-width: 0; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; background: #3b2b1d; }
+.gp-slot b { font: 500 15px var(--font-mono); color: var(--ink); }
+.gp-slot.is-center { background: var(--plate-raised); outline: 3px solid var(--mark); outline-offset: -3px; }
+.gp-slot.is-nb { background: #efe6db; }
+.gp-slot.gp-none { background: transparent; }
+.gp-ord { position: absolute; top: 4px; left: 6px; font: 500 13px var(--font-mono); color: var(--rust); }
+.gp-cap { margin: var(--space-2) 0 0; font-size: 13px; color: var(--ink-muted); }
+@media (max-width: 720px) { .gp-plan { grid-template-columns: minmax(0, 1fr); } .gp-plan .gp-box { max-width: 320px; } }
+
 /* ColumnsList: columns.html (the answer on the left, the title and the summary in the middle, the genre and the date on the right) */
 .ra-col-row { display: grid; grid-template-columns: 200px minmax(0, 1fr) 220px; gap: var(--space-2) var(--space-8); align-items: start; padding: var(--space-6) 0; border-bottom: var(--rule) solid var(--line); }
 .ra-col-answer, .ra-col-meta { display: flex; flex-direction: column; gap: var(--space-1); }
