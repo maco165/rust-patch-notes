@@ -19,18 +19,18 @@ flowchart LR
   end
   subgraph E["Extract (Python) → data/"]
     e1["fetch_changes.py<br/>data/patches/"]
-    e2["extract_items.py · extract_loot.py · extract_raid.py<br/>data/items/ · loot/ · raid/"]
+    e2["extract_items.py · extract_loot.py · extract_raid.py · extract_genetics.py<br/>data/items/ · loot/ · raid/ · genetics/"]
     e3["build_diffs.py<br/>data/diffs/"]
   end
   subgraph B["Build (Python)"]
-    b1["build_site.py<br/>imports raid_calc.py · loot_odds.py · build_views.py<br/>build_index.py · genres.py · item_icons.py"]
+    b1["build_site.py<br/>imports raid_calc.py · gene_calc.py · loot_odds.py · build_views.py<br/>build_index.py · genres.py · item_icons.py"]
     b2["content/ · rules/ · design/<br/>digests, columns, *.yml, tokens.json, *.css, item-icons/"]
   end
   subgraph W["Site (GitHub Pages)"]
     w1["index.html · history.html · genres.html · numbers.html"]
     w2["items.html · spec.html · diffs.html"]
     w3["columns.html → columns/*.html"]
-    w4["tools.html → tools/raid.html → tools/craft.html"]
+    w4["tools.html → tools/raid.html → tools/craft.html<br/>tools.html → tools/gene.html"]
     w5["assets/style.css<br/>used by every page"]
   end
   s1 --> e1
@@ -62,6 +62,7 @@ flowchart LR
 | [columns.html](en/columns.html) (English) | 根据服务器代码和数据验证玩家说法的文章 | 服务器的代码 (IL) 与数据；出处在每篇文章末尾 |
 | [tools/raid.html](en/tools/raid.html) (English) | Raid Planner：同时摧毁墙、门和设施所需的炸药、硫磺、材料和熔炉时间 | 服务器数据，以及从服务器代码读出的伤害与冶炼规则 |
 | [tools/craft.html](en/tools/craft.html) (English) | Craft Planner：根据要制作的东西、持有的物资和熔炉，算出还缺什么、熔炉要多久 | 与 Raid Planner 相同的数据 |
+| [tools/gene.html](tools/gene.html) (仅日语) | Gene Planner：用手上的幼苗种出接近 GGGYYY 等目标基因的种法，以及基因的效果 | 服务器数据，以及从服务器代码读出的杂交规则 |
 
 ## 语言
 

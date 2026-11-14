@@ -125,21 +125,7 @@ const R={"version":"2026-11-07","targets":[{"id":"wall.stone","name":"石壁","i
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const num=n=>Number(n).toLocaleString('en-US',{maximumFractionDigits:1});
-const dur=s=>{s=Math.round(s);const h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return h?`${h} 時間 ${m} 分`:m?`${m} 分${x?` ${x} 秒`:''}`:`${x} 秒`};
 const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,parseInt(v,10)||lo));
-const unit=e=>e.id.startsWith('ammo.')?'発':'個';
-const ii=k=>`<i class="ra-ico ra-ii-${esc(k)}" aria-hidden="true"></i>`;
-const EX=Object.fromEntries(R.explosives.map(e=>[e.id,e]));
-const fuelOven=R.ovens.find(o=>o.burn);
-// sulphur Su and charcoal C on c ovens of the kind o: seconds for the ore, wood for the charcoal and its seconds
-const smelt=(Su,C,o,c)=>{const burner=o.burn?o:fuelOven,ts=Su*o.sulfur/c,wood=C/burner.charcoal,tc=wood*burner.burn/c,both=Math.max(ts,tc);
-  return{ts,tc,wood,both,bothWood:o.burn?both*c/o.burn:null}};
-const showSmelt=(m,Su,o,c)=>{$('#s-time').textContent=dur(m.ts);$('#s-ore').textContent=`硫黄鉱石 ${num(Math.ceil(Su*o.ore))} 個`;
-  $('#c-time').textContent=dur(m.tc);$('#c-wood').textContent=`木 ${num(Math.ceil(m.wood))} 個`;
-  $('#b-time').textContent=o.burn?dur(m.both):'';
-  $('#b-wood').textContent=o.burn?`木 ${num(Math.ceil(m.bothWood))} 個`:'電気炉は木を燃やせません。木炭は燃料の炉で作るとして、左の時間を数えています。';
-  $('#b-wood').classList.toggle('ra-rd-plain',!o.burn)};
-const matOrder=mats=>Object.keys(mats).sort((a,b)=>(b==='sulfur')-(a==='sulfur')||mats[b]-mats[a]);
 // The sections fold at their headings; which ones are folded is remembered on this device, per page.
 const FOLD='ra-fold-'+location.pathname.split('/').pop(),folds=()=>[...document.querySelectorAll('details[data-fold]')];
 try{const st=JSON.parse(localStorage.getItem(FOLD)||'{}');for(const d of folds())if(d.dataset.fold in st)d.open=!!st[d.dataset.fold]}catch(_){}
@@ -172,11 +158,6 @@ async function drawCard(title,icons,paint){
     im.src='data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 24 24" fill="none" stroke="${C.ink}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${R.icons[k]}</svg>`);
     await im.decode();pics[k]=im}catch(_){}}));
   used.length=0;all();return cv}
-// The three stats of the smelting, at the left edge sx and the top sy of a half-width column.
-const cardSmelt=(h,sx,sy,m,Su,o,c)=>{const{HALF,C,f,T}=h,stat=(px,label,time,sub)=>{T(label,px,sy,f(400,12,'sans'),C.mute);T(time,px,sy+30,f(600,26,'disp'),C.ink);T(sub,px,sy+50,f(400,12,'mono'),C.ink)};
-  stat(sx,'硫黄鉱石を焼く',dur(m.ts),`硫黄鉱石 ${num(Math.ceil(Su*o.ore))} 個`);
-  stat(sx+HALF/3,o.burn?'木を燃やして木炭を作る':`木炭を作る (${fuelOven.name} ${c} 台)`,dur(m.tc),`木 ${num(Math.ceil(m.wood))} 個`);
-  if(o.burn)stat(sx+HALF*2/3,'同じ炉で両方を作る',dur(m.both),`木 ${num(Math.ceil(m.bothWood))} 個`)};
 // The buttons under "いまの結果を渡す": the link, and the image made by card() shared, copied or saved as name().
 let say=()=>{};
 function shareUI(card,name,summary,hint){
@@ -196,6 +177,25 @@ function shareUI(card,name,summary,hint){
     $('#sh-send').addEventListener('click',async()=>{try{const file=new File([await png()],name(),{type:'image/png'});
         await navigator.share({files:[file],text:`${summary()}\n${location.href}`});say('')}
       catch(e){if(e.name!=='AbortError')say('共有できませんでした。「保存」を使ってください。')}})}}
+const dur=s=>{s=Math.round(s);const h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return h?`${h} 時間 ${m} 分`:m?`${m} 分${x?` ${x} 秒`:''}`:`${x} 秒`};
+const unit=e=>e.id.startsWith('ammo.')?'発':'個';
+const ii=k=>`<i class="ra-ico ra-ii-${esc(k)}" aria-hidden="true"></i>`;
+const EX=Object.fromEntries(R.explosives.map(e=>[e.id,e]));
+const fuelOven=R.ovens.find(o=>o.burn);
+// sulphur Su and charcoal C on c ovens of the kind o: seconds for the ore, wood for the charcoal and its seconds
+const smelt=(Su,C,o,c)=>{const burner=o.burn?o:fuelOven,ts=Su*o.sulfur/c,wood=C/burner.charcoal,tc=wood*burner.burn/c,both=Math.max(ts,tc);
+  return{ts,tc,wood,both,bothWood:o.burn?both*c/o.burn:null}};
+const showSmelt=(m,Su,o,c)=>{$('#s-time').textContent=dur(m.ts);$('#s-ore').textContent=`硫黄鉱石 ${num(Math.ceil(Su*o.ore))} 個`;
+  $('#c-time').textContent=dur(m.tc);$('#c-wood').textContent=`木 ${num(Math.ceil(m.wood))} 個`;
+  $('#b-time').textContent=o.burn?dur(m.both):'';
+  $('#b-wood').textContent=o.burn?`木 ${num(Math.ceil(m.bothWood))} 個`:'電気炉は木を燃やせません。木炭は燃料の炉で作るとして、左の時間を数えています。';
+  $('#b-wood').classList.toggle('ra-rd-plain',!o.burn)};
+const matOrder=mats=>Object.keys(mats).sort((a,b)=>(b==='sulfur')-(a==='sulfur')||mats[b]-mats[a]);
+// The three stats of the smelting, at the left edge sx and the top sy of a half-width column.
+const cardSmelt=(h,sx,sy,m,Su,o,c)=>{const{HALF,C,f,T}=h,stat=(px,label,time,sub)=>{T(label,px,sy,f(400,12,'sans'),C.mute);T(time,px,sy+30,f(600,26,'disp'),C.ink);T(sub,px,sy+50,f(400,12,'mono'),C.ink)};
+  stat(sx,'硫黄鉱石を焼く',dur(m.ts),`硫黄鉱石 ${num(Math.ceil(Su*o.ore))} 個`);
+  stat(sx+HALF/3,o.burn?'木を燃やして木炭を作る':`木炭を作る (${fuelOven.name} ${c} 台)`,dur(m.tc),`木 ${num(Math.ceil(m.wood))} 個`);
+  if(o.burn)stat(sx+HALF*2/3,'同じ炉で両方を作る',dur(m.both),`木 ${num(Math.ceil(m.bothWood))} 個`)};
 
 const P=new URLSearchParams(location.search);
 const byId=Object.fromEntries(R.targets.map(t=>[t.id,t]));
