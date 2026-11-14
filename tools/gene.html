@@ -41,7 +41,7 @@
 </div>
 <section class="ra-block" aria-labelledby="h-stock-g"><details class="ra-sec" open data-fold="h-stock-g"><summary><h2 class="ra-section" id="h-stock-g">手持ちの苗 <small id="stock-sub"></small></h2><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i></summary><div class="ra-block">
   <div class="ra-rd-controls">
-    <div class="ra-rd-field"><label for="plant">植物</label><select id="plant"></select></div>
+    <div class="ra-rd-field"><label for="plant">植物</label><select id="plant" class="ra-select gp-plant"></select></div>
     <div class="ra-rd-field"><label for="g-in">遺伝子</label><input id="g-in" class="gp-in" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="GGYYXW"></div>
     <button type="button" class="ra-button" id="g-add">＋ 足す</button>
   </div>
@@ -242,6 +242,7 @@ function searchPlans(stock,t,k){
 // N5105, random saplings, the large planter, target GGGYYY, 20 tries); 12 took up to 2.1 s
 const LET='ABCDEFJKLM',MAX=10;
 const ok6=s=>/^[GYHWX]{6}$/.test(s);
+const HINT=document.querySelector('#g-msg').textContent;
 const chips=(g,cls='')=>`<span class="gp-genes ${cls}">${[...g].map(c=>`<i class="gp-g ${GOOD.has(c)?'gp-good':'gp-bad'}">${c}</i>`).join('')}</span>`;
 const P=new URLSearchParams(location.search),KEY='ra-gene-stock';
 let store={};try{const v=JSON.parse(localStorage.getItem(KEY)||'{}');if(v&&typeof v==='object'&&!Array.isArray(v))store=v}catch(_){}
@@ -254,9 +255,18 @@ const S={p:plantBy.has(P.get('p'))?P.get('p'):plantBy.has(store._p)?store._p:R.p
   t:ok6((P.get('t')||'').toUpperCase())?P.get('t').toUpperCase():R.presets[0],
   b:boxBy.has(P.get('b'))?P.get('b'):R.planters[0].id,r:P.get('r')};
 S.g=P.has('g')?parseList(P.get('g')):parseList(stored(S.p).join('.'));
-// how many saplings the link or the device held beyond MAX (an earlier version kept up to 16)
-const held=(P.has('g')?String(P.get('g')).toUpperCase().split(/[.,\s]+/):stored(S.p).map(String)).filter(ok6).length,cut=held>MAX;
-const save=()=>{try{store[S.p]=S.g;store._p=S.p;localStorage.setItem(KEY,JSON.stringify(store))}catch(_){}};
+// how many saplings a list held, read as parseList reads it (an earlier version kept up to 16)
+const heldOf=raw=>String(raw||'').toUpperCase().split(/[.,\s]+/).filter(ok6).length;
+// what was left out when a list beyond MAX was read; from the device, the saved list is kept until the stock changes
+// extra: saplings of the device list beyond MAX, kept in the saved list until a sapling is taken out (adding stops at MAX)
+let extra=0;
+const noteCut=(link,held)=>{if(!link)extra=Math.max(0,held-MAX);
+  if(held>MAX)$('#g-msg').textContent=`苗は ${MAX} 株までです。${link?'リンク':'この端末に保存してあった苗'}の ${held} 株のうち、${MAX + 1} 株目から ${held-MAX} 株は外しました`+
+  (link?'。':' (苗を外すと、外した分は保存からも消えます)。')};
+// the address holds the stock this page wrote itself (at most MAX, the first of the device list) after a reload: read it as the device's
+const devRaw=stored(S.p).join('.'),fromLink=P.has('g')&&(heldOf(P.get('g'))>MAX||parseList(P.get('g')).join('.')!==parseList(devRaw).join('.'));
+const held=heldOf(fromLink?P.get('g'):devRaw);
+const save=(listToo=true)=>{try{if(listToo)store[S.p]=S.g;store._p=S.p;localStorage.setItem(KEY,JSON.stringify(store))}catch(_){}};
 $('#plant').innerHTML=R.plants.map(p=>`<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('');
 $('#goals').innerHTML=[...R.presets,'own'].map(t=>`<label class="ra-tab"><input type="radio" name="goal" value="${esc(t)}">${t==='own'?'自分で決める':esc(t)}</label>`).join('');
 $('#boxes').innerHTML=R.planters.map(b=>`<label class="ra-tab"><input type="radio" name="box" value="${esc(b.id)}">${esc(b.name)}</label>`).join('');
@@ -332,17 +342,18 @@ const addGenes=()=>{const v=$('#g-in').value.toUpperCase().replace(/\s/g,'');
   S.g.push(v);$('#g-in').value='';$('#g-msg').textContent=`${L(S.g.length-1)} として ${v} を足しました。`;save();render()};
 $('#g-add').addEventListener('click',addGenes);
 $('#g-in').addEventListener('keydown',ev=>{if(ev.key==='Enter')addGenes()});
-$('#stock').addEventListener('click',ev=>{const b=ev.target.closest('[data-del]');if(!b)return;S.g.splice(+b.dataset.del,1);S.r=null;save();render()});
-$('#g-clear').addEventListener('click',()=>{S.g=[];S.r=null;save();render()});
-$('#plant').addEventListener('change',ev=>{S.p=ev.target.value;S.g=parseList(stored(S.p).join('.'));S.r=null;save();render()});
+const dropped=()=>{$('#g-msg').textContent=extra?`保存してあった ${MAX + 1} 株目から後ろの ${extra} 株も、保存から消えました。`:HINT;extra=0};
+$('#stock').addEventListener('click',ev=>{const b=ev.target.closest('[data-del]');if(!b)return;S.g.splice(+b.dataset.del,1);S.r=null;save();dropped();render()});
+$('#g-clear').addEventListener('click',()=>{S.g=[];S.r=null;save();dropped();render()});
+$('#plant').addEventListener('change',ev=>{S.p=ev.target.value;const raw=stored(S.p).join('.');S.g=parseList(raw);S.r=null;save(false);
+  $('#g-msg').textContent=HINT;render();noteCut(false,heldOf(raw))});
 document.addEventListener('change',ev=>{const t=ev.target;
   if(t.name==='goal'){if(t.value==='own'){$('#own-wrap').dataset.open='1';$('#own').focus()}else{delete $('#own-wrap').dataset.open;S.t=t.value;S.r=null}render()}
   else if(t.name==='box'){S.b=t.value;S.r=null;render()}
   else if(t.name==='plan'){S.r=t.value;render()}});
 $('#own').addEventListener('input',ev=>{const v=ev.target.value.toUpperCase();if(ok6(v)){S.t=v;S.r=null;render()}});
 render();
-if(cut)$('#g-msg').textContent=`苗は ${MAX} 株までです。${P.has('g')?'リンク':'この端末に保存してあった苗'}の ${held} 株のうち、${MAX + 1} 株目から ${held-MAX} 株は外しました`+
-  (P.has('g')?'。':' (苗を足すか外すと、外した分は保存からも消えます)。');
+noteCut(fromLink,held);
 // The share image: the sapling made, how to plant it, its effects and the planter.
 const card=()=>drawCard(`Gene Planner ／ ${V.plant.name}`,[],h=>{const{x,W:CW,L:LX,C,f,T,box,rule}=h,p=V.pick,e=V.e;
   const gene=(g,px,py,sz)=>{for(let i=0;i<6;i++){const gx=px+i*(sz+3);box(GOOD.has(g[i])?css('--added'):css('--removed'),gx,py,sz,sz*1.15);
