@@ -37,10 +37,10 @@ TYPE_NAMES = {"Ore_Yield": ("鉱石", "Ore"), "Wood_Yield": ("木", "Wood"), "Sc
               "Radiation_Resistance": ("放射線のダメージ", "Radiation damage")}
 WORDS = {"ja": {"none": "なし", "item": "お茶・パイ", "pie": "熊肉パイ", "peak": "効き目", "time": "続く時間", "score": "値 × 時間",
                 "avg": "平均", "drinks": "使う数", "kind": "効果", "best": "いちばん強い", "longest": "いちばん長い",
-                "per": "材料 1 つあたり", "base": "材料", "min": "{m} 分", "rank": "順位", "uses": "{n} 回使う", "no_recipe": "作り方が無い物"},
+                "per": "材料 1 つあたり", "base": "材料", "min": "{m} 分", "rank": "順位", "uses": "{n} 回使う"},
          "en": {"none": "none", "item": "Tea or pie", "pie": "Bear Pie", "peak": "Effect", "time": "Lasts", "score": "Value × time",
                 "avg": "Average", "drinks": "Used", "kind": "Effect", "best": "Strongest", "longest": "Longest",
-                "per": "Per ingredient", "base": "Ingredients", "min": "{m} min", "rank": "Rank", "uses": "{n} uses", "no_recipe": "Not craftable"}}
+                "per": "Per ingredient", "base": "Ingredients", "min": "{m} min", "rank": "Rank", "uses": "{n} uses"}}
 
 
 def load() -> tuple[dict, dict, dict]:
@@ -57,8 +57,8 @@ def load() -> tuple[dict, dict, dict]:
 
 def buffs(items: dict) -> list[str]:
     """The items with a timed effect a player gets (the teas and pies of the Buff Planner)."""
-    return [sn for sn, it in items.items()
-            if any(m["type"] not in cc.NOT_ON_PLAYER for m in ((it.get("stats") or {}).get("consume") or {}).get("modifiers") or [])]
+    return [sn for sn, it in items.items() if sn not in cc.UNOBTAINABLE
+            and any(m["type"] not in cc.NOT_ON_PLAYER for m in ((it.get("stats") or {}).get("consume") or {}).get("modifiers") or [])]
 
 
 def mods(items: dict, sn: str) -> dict[str, tuple[float, float]]:
@@ -186,13 +186,6 @@ def tables(lang: str) -> dict[str, str]:
                 cells.append(f"{nm(r['item'])}{pie} ({w['avg']} {fmt_pct(r['avg'], t)}, {w['uses'].format(n=r['drinks'] + r['pies'])})")
             lines.append(f"| {k + 1} | " + " | ".join(cells) + " |")
         out[f"window-{t}"] = "\n".join(lines)
-    # the teas and pies that have no recipe (and come from no crate or corpse in data/loot): left out of the rankings
-    lines = [f"| {w['no_recipe']} | {w['peak']} | {w['time']} |", "|---|---|---|"]
-    for sn in sorted(sn for sn in buffs(items) if sn not in made):
-        ms = mods(items, sn)
-        lines.append(f"| {nm(sn)} | " + ", ".join(f"{TYPE_NAMES.get(t, (t, t))[0 if lang == 'ja' else 1]} {fmt_pct(v, t)}" for t, (v, _d) in ms.items())
-                     + f" | {mins(max(d for _v, d in ms.values()))} |")
-    out["special"] = "\n".join(lines)
     lines = [f"| {w['kind']} | {w['best']} | {w['longest']} |", "|---|---|---|"]
     for t, rows in fight(items, made).items():
         strong = rows[0]
