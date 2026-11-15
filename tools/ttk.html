@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TTK Planner: Rust の何発で倒れるかの計算 (防具・距離・部位) | Rust Analysis</title>
+<meta name="description" content="ゲーム Rust の装備と武器を比べるツール。装備と差し込み板 (アーマー) から部位ごとの守りと、銃と弓ごとに頭・胴・脚に何発で倒れるか、距離で弾が弱まって 1 発増える所を出します。">
+<meta name="theme-color" content="#f2f4f5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15181a" media="(prefers-color-scheme: dark)">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rust Analysis">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:title" content="TTK Planner: Rust の何発で倒れるかの計算 (防具・距離・部位) | Rust Analysis">
+<meta property="og:description" content="ゲーム Rust の装備と武器を比べるツール。装備と差し込み板 (アーマー) から部位ごとの守りと、銃と弓ごとに頭・胴・脚に何発で倒れるか、距離で弾が弱まって 1 発増える所を出します。">
+<meta property="og:url" content="https://maco165.github.io/rust-patch-notes/tools/ttk.html">
+<meta property="og:image" content="https://maco165.github.io/rust-patch-notes/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://maco165.github.io/rust-patch-notes/tools/ttk.html">
+<link rel="alternate" hreflang="ja" href="https://maco165.github.io/rust-patch-notes/tools/ttk.html">
+<link rel="alternate" hreflang="en" href="https://maco165.github.io/rust-patch-notes/en/tools/ttk.html">
+<link rel="alternate" hreflang="x-default" href="https://maco165.github.io/rust-patch-notes/tools/ttk.html">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "TTK Planner", "url": "https://maco165.github.io/rust-patch-notes/tools/ttk.html", "description": "ゲーム Rust の装備と武器を比べるツール。装備と差し込み板 (アーマー) から部位ごとの守りと、銃と弓ごとに頭・胴・脚に何発で倒れるか、距離で弾が弱まって 1 発増える所を出します。", "applicationCategory": "GameApplication", "operatingSystem": "Any", "inLanguage": "ja", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "isPartOf": {"@type": "WebSite", "name": "Rust Analysis", "url": "https://maco165.github.io/rust-patch-notes/"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Rust Analysis", "item": "https://maco165.github.io/rust-patch-notes/"}, {"@type": "ListItem", "position": 2, "name": "ツール", "item": "https://maco165.github.io/rust-patch-notes/tools.html"}, {"@type": "ListItem", "position": 3, "name": "TTK Planner", "item": "https://maco165.github.io/rust-patch-notes/tools/ttk.html"}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+JP:wght@400;600&display=swap">
+<link rel="stylesheet" href="../assets/style.css">
+</head><body>
+<header class="ra-site">
+  <a class="ra-site-name" href="../index.html"><b>Rust</b> Analysis</a>
+  <nav class="ra-nav" aria-label="ページ"><a href="../index.html"><i class="ra-ico ra-ico-month" aria-hidden="true"></i>今月</a><a href="../history.html"><i class="ra-ico ra-ico-history" aria-hidden="true"></i>これまで</a><a href="../genres.html"><i class="ra-ico ra-ico-genres" aria-hidden="true"></i>ジャンル</a><a href="../numbers.html"><i class="ra-ico ra-ico-numbers" aria-hidden="true"></i>数値</a><a href="../diffs.html"><i class="ra-ico ra-ico-diffs" aria-hidden="true"></i>版の差分</a><a href="../items.html"><i class="ra-ico ra-ico-items" aria-hidden="true"></i>アイテム</a><a href="../spec.html"><i class="ra-ico ra-ico-spec" aria-hidden="true"></i>仕様書</a><a href="../columns.html"><i class="ra-ico ra-ico-columns" aria-hidden="true"></i>コラム</a><a href="../tools.html" aria-current="page"><i class="ra-ico ra-ico-tools" aria-hidden="true"></i>ツール</a></nav>
+  <span class="ra-site-meta"><span class="ra-site-meta-w">データ </span>2026-11-05<span class="ra-site-meta-w"> まで</span></span>
+  <span class="ra-site-lang"><a href="../en/tools/ttk.html" lang="en" hreflang="en">English</a></span><a class="ra-site-link" href="https://github.com/maco165/rust-patch-notes" rel="noopener"><i class="ra-ico ra-ico-github" aria-hidden="true"></i>GitHub</a>
+</header>
+<script>(()=>{const n=document.querySelector('.ra-nav'),a=n&&n.querySelector('[aria-current]');if(a&&n.scrollWidth>n.clientWidth)n.scrollLeft=a.offsetLeft-(n.clientWidth-a.offsetWidth)/2})()</script>
+<main class="ra-page">
+<div class="ra-block">
+  <p class="ra-patch-meta"><a class="ra-link" href="../tools.html">ツール</a><span class="ra-src ra-src-export"><i class="ra-ico ra-ico-export" aria-hidden="true"></i>本体の書き出し 2026-11-07</span></p>
+  <div class="ra-tp-head"><span class="ra-ti ra-ti-page" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke-linecap="round" stroke-linejoin="round">
+<path d="M33.5 14.5C44.5 14 53 23 52.7 34C52.4 45 44 53 33 52.7C22 52.4 14 44 14.4 33.2C14.7 22.6 22.8 14.8 33.5 14.5Z" fill="#dbe6f6"/>
+<path d="M32 12.6C43.2 12 51.8 21 51.4 32.4C51 43.6 42.6 51.8 31.6 51.4C20.6 51 12.4 42.6 12.8 31.8C13.2 20.8 21.4 13 32.6 12.6" stroke="#1d4f91" stroke-width="3.2"/>
+<path d="M32 22.4C37.6 22.2 41.8 26.6 41.6 32.2C41.4 37.6 37.2 41.8 31.8 41.6C26.4 41.4 22.2 37.2 22.4 31.8C22.6 26.4 26.6 22.6 32.4 22.4" stroke="#1d4f91" stroke-width="2.8"/>
+<path d="M32 4.6Q32.6 11 32.2 18.4M32.2 45.6Q31.6 52 32 59.4M4.6 32.2Q11 31.6 18.4 32M45.6 32Q52 32.6 59.4 32.2" stroke="#1d4f91" stroke-width="3.2"/>
+<path d="M29.4 32Q29.4 29.2 32.2 29.2Q34.8 29.4 34.8 32.2Q34.6 34.8 32 34.8Q29.4 34.6 29.4 32Z" fill="#9c1b3d" stroke="#9c1b3d" stroke-width="2.4"/>
+</svg></span><h1 class="ra-patch-sub" lang="en">TTK Planner</h1></div>
+  <p class="ra-lead">装備と武器を比べます。装備と差し込み板を選ぶと、その守りと、武器ごとに頭・胴・脚へ何発で倒れるかを出します。距離で弾が弱まって 1 発増える所も示します。</p>
+</div>
+<section class="ra-block" aria-labelledby="h-gear"><details class="ra-sec" open data-fold="h-gear"><summary><h2 class="ra-section" id="h-gear">装備 <small id="gear-sub"></small></h2><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i></summary><div class="ra-block">
+  <div class="tp-step"><span class="tp-step-n">1</span><h3 class="tp-h3" id="h-set">装備の組み合わせ</h3><small>よくある組み合わせから選ぶ。Tier は作るのに要る作業台で、札は組の中で最も高いもの (T3 は Tier 3)</small></div>
+  <div class="tp-opts tp-opts-3" role="group" aria-labelledby="h-set" id="sets"></div>
+  <div class="tp-step"><span class="tp-step-n">2</span><h3 class="tp-h3" id="h-plate">差し込み板 (アーマー)</h3><small>服の枠に入れる板の種類と枚数</small></div>
+  <div class="tp-opts tp-opts-5" role="group" aria-labelledby="h-plate" id="inserts"></div>
+  <div class="tp-count"><span class="tp-count-l" id="h-count">服 1 着あたりの枚数</span><div class="tp-seg" role="group" aria-labelledby="h-count" id="count"></div></div>
+  <p class="tp-wear"><b>着ている物:</b> <span id="wear"></span></p>
+  <div class="tp-cards" id="cards"></div>
+  <p class="ra-rd-hint">性能の名前はゲームの表記 (銃弾ダメージは英語の Projectile) です。各部位の値は、その部位を覆う服の値の合計です (100% で頭打ち)。銃弾ダメージ 50% なら、その部位に当たる弾の量が半分になります。矢はゲームでは銃弾ダメージの欄にまとめて出ますが、計算では矢への守りを別に使います。板は 1 枚ごとに、カードに書いた分だけ守りを足します。枚数は服 1 着あたりで、服の枠の数 (作ったときに決まる。メタルフェイスマスクとコーヒー缶ヘルメットは最多 1 枚、ほかは 3 枚) までしか入りません。</p>
+</div></details></section>
+<section class="ra-block" aria-labelledby="h-cmp"><details class="ra-sec" open data-fold="h-cmp"><summary><h2 class="ra-section" id="h-cmp">装備ごとの守りの比較 <small id="cmp-sub"></small></h2><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i></summary><div class="ra-block">
+  <div class="tp-scroll"><table class="tp-tbl"><thead><tr><th>装備</th><th>頭</th><th>胴</th><th>脚</th></tr></thead><tbody id="cmp"></tbody></table></div>
+  <div class="tp-legend" aria-hidden="true"><span><i></i>板なし</span><span><i class="on"></i><span id="cmp-on"></span></span></div>
+</div></details></section>
+<section class="ra-block" aria-live="polite" aria-labelledby="h-ttk"><details class="ra-sec" open data-fold="h-ttk"><summary><h2 class="ra-section" id="h-ttk">何発で倒れるか <small id="ttk-sub"></small></h2><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i></summary><div class="ra-block">
+  <div class="tp-dist"><label for="dist">距離</label><input id="dist" class="tp-range" type="range" min="0" max="200" step="10"><b id="dist-v"></b></div>
+  <div class="tp-filter"><span class="tp-filter-l" id="h-kind">弾</span><div class="tp-chips" role="group" aria-labelledby="h-kind" id="kinds"></div></div>
+  <div class="tp-filter"><span class="tp-filter-l" id="h-tier">Tier</span><div class="tp-chips" role="group" aria-labelledby="h-tier" id="tiers"></div></div>
+  <p class="tp-empty" id="empty" hidden>この弾と Tier の組み合わせの武器はありません。弾か Tier を「すべて」に戻すと出ます。</p>
+  <div class="tp-scroll"><table class="tp-tbl"><thead><tr><th>武器と弾</th><th class="n">頭</th><th class="n">胴</th><th class="n">脚</th><th class="r">胴で倒すまで</th></tr></thead><tbody id="rows"></tbody></table></div>
+  <p class="ra-rd-hint">左が板なし、右が上で選んだ種類と枚数の板を入れたときの発数です。板で増えた所を色と太字で示します。下の小さな数字は 1 発で減る体力 (板なし → 板あり、部位の倍率と守りを掛けた後) で、散弾は全部の粒が当たったときの合計です。時間は (発数 − 1) × 撃つ間隔で、選んだ枚数の値です。当たる確率と反動は入れていません。「ルート限定」は作業台で作れず、箱や敵からだけ手に入る武器で、主な出どころを弾の横に書いています。近接の武器と、据え付けの 50 口径タレット、作れず箱からも出ない物 (スキン違い・ストアの品など) は出していません。</p>
+</div></details></section>
+<section class="ra-block" aria-labelledby="h-fall"><details class="ra-sec" open data-fold="h-fall"><summary><h2 class="ra-section" id="h-fall">距離による減り方 <small id="fall-sub"></small></h2><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i></summary><div class="ra-block">
+  <div class="tp-scroll"><table class="tp-tbl tp-fall"><thead><tr id="fall-head"></tr></thead><tbody id="fall"></tbody></table></div>
+  <p class="ra-rd-hint">弾は「減り始め」まではそのままの強さで、「減り終わり」で「遠くの倍率」まで弱まり、その間はまっすぐ下がります。距離の列は 10 m ごとで、いま選んだ装備と板で胴に当てたときの発数と、その下に 1 発で減る体力です。前の距離より 1 発以上増えた所に色を付け、いまの距離の列を枠で囲みます。</p>
+  <div class="ra-rd-share tp-share"><span class="ra-rd-label">いまの結果を渡す</span><div class="ra-rd-share-row"><button type="button" class="ra-rd-share-go" id="sh-link"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>リンクをコピー</button></div><span class="ra-rd-share-msg" id="sh-msg" role="status"></span></div>
+</div></details></section>
+<section class="ra-block" aria-labelledby="h-notes"><details class="ra-sec" open data-fold="h-notes"><summary><h2 class="ra-section" id="h-notes">計算の前提</h2><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i></summary><div class="ra-block">
+  <p class="ra-rd-hint">結果はゲームのサーバーの処理とデータから計算したもので、ゲームの中で撃って確かめたものではありません。決まりの根拠は調査の記録「プレイヤーを倒す発数の計算」にあります。</p>
+  <details class="ra-rd-notes"><summary><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i>ダメージの決まり <span class="ra-num">5 件</span></summary><ul>
+    <li>1 発の量は、弾のダメージ × 武器の倍率 × 距離の倍率 × (1 − 当たった部位を覆う服と板の守りの合計) × 部位の倍率です。</li>
+    <li>服の守りは、当たった部位を覆う服だけを足します。合計は 1 で頭打ちです。パーカーは頭を守りません。</li>
+    <li>差し込み板は、入れた服が覆う部位に 1 枚ずつ守りを足します。服の傷みの倍率は掛かりません。</li>
+    <li>部位の倍率は、頭 2・胴 1・脚 0.75 です。矢は頭 1.5、散弾は頭 1.25 です。</li>
+    <li>体力 100 が 0 以下になると倒れます。50 を 2 発でちょうど 0 なら 2 発です。</li>
+  </ul></details>
+  <details class="ra-rd-notes"><summary><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i>入れていないもの <span class="ra-num">4 件</span></summary><ul>
+    <li>壊れた服 (守りが 0.25 倍になる)、武器の付属品。服の枠の数は作ったときの乱数で決まり、作業台で作ると半分は枠が 0 です。</li>
+    <li>弾は武器の既定の弾だけです。HV 弾・爆発弾・焼夷弾は入れていません。</li>
+    <li>当たる確率、反動、弓を引く時間。</li>
+    <li>サーバーの設定は既定です。安全地帯の中では倒せません。</li>
+  </ul></details>
+</div></details></section>
+</main>
+<footer class="ra-foot"><p>Facepunch Studios とは関係のない、個人が解析して作った非公式のサイトです。変更点は公式の変更点の一覧を自分の言葉で日本語にしたもので、各回に出典のリンクがあります。アイテムの値はゲームのサーバーのデータから、版の差分はゲームの本体 (クライアント) の各月の版のデータから読んだもので、正しさは保証しません。</p>
+<p>アイコンの一部は <a class="ra-link" href="https://lucide.dev/" rel="noopener">Lucide</a> (ISC License) です。</p></footer>
+<script>
+const R={"version":"2026-11-07","hp":100.0,"maxD":200,"order":["Generic","Hunger","Thirst","Cold","Drowned","Heat","Bleeding","Poison","Suicide","Bullet","Slash","Blunt","Fall","Radiation","Bite","Stab","Explosion","RadiationExposure","ColdExposure","Decay","ElectricShock","Arrow","AntiVehicle","Collision","Fun_Water","BeeSting","Paintball","Cannon","LAST"],"dp":{"Damage.Arrow":{"areas":{"Head":1.5},"fallback":"Damage.Default"},"Damage.Ballista":{"areas":{"Head":1.5},"fallback":"Damage.Default"},"Damage.Buckshot":{"areas":{"Head":1.25},"fallback":"Damage.Default"},"Damage.Default":{"areas":{"Head":2.0,"Chest":1.0,"Stomach":1.0,"Arm":1.0,"Hand":1.0,"Leg":0.75,"Foot":0.75},"fallback":null},"Damage.Incendiary.Shell":{"areas":{"Head":1.0},"fallback":"Damage.Default"},"Damage.Melee":{"areas":{},"fallback":"Damage.Default"},"Damage.Paintball":{"areas":{},"fallback":"Damage.Default"},"Damage.Pistol":{"areas":{},"fallback":"Damage.Default"},"Damage.Rifle":{"areas":{},"fallback":"Damage.Default"},"Damage.Slug":{"areas":{},"fallback":"Damage.Default"},"Damage.Throwable":{"areas":{"Head":1.5},"fallback":"Damage.Default"}},"armor":{"Armor.All":["Head","Chest","Stomach","Arm","Hand","Leg","Foot"],"Armor.Body":["Chest","Stomach","Arm","Hand"],"Armor.BodyLegs":["Chest","Stomach","Arm","Hand","Leg","Foot"],"Armor.Head":["Head"],"Armor.Legs":["Leg","Foot"],"Armor.Onesie":["Chest","Stomach","Arm","Hand","Leg","Foot"]},"weapons":[{"id":"rifle.l96","name":"L96 ライフル","ammo":"ammo.rifle","int":2.6,"g":{"dmg":1.6,"ds":2,"fds":-1.0,"fdd":-1.0},"tier":4,"from":"ブラッドレーの箱・ロックされた箱"},{"id":"rifle.lr300","name":"LR-300 アサルトライフル","ammo":"ammo.rifle","int":0.12,"g":{"dmg":0.8,"ds":1.5,"fds":-1.0,"fdd":-1.0},"tier":4,"from":"ロックされた箱・補給物資"},{"id":"m16a2","name":"M16A2","ammo":"ammo.rifle","int":0.1,"g":{"dmg":0.7,"ds":1.4,"fds":-1.0,"fdd":-1.0},"tier":4,"from":"ロックされた箱"},{"id":"lmg.m249","name":"M249","ammo":"ammo.rifle","int":0.12,"g":{"dmg":1.3,"ds":1.3,"fds":-1.0,"fdd":-1.0},"tier":4,"from":"ヘリの箱・ブラッドレーの箱"},{"id":"rifle.m39","name":"M39 ライフル","ammo":"ammo.rifle","int":0.175,"g":{"dmg":1,"ds":1.5,"fds":-1.0,"fdd":-1.0},"tier":4,"from":"補給物資・そりのプレゼント"},{"id":"shotgun.m4","name":"M4 ショットガン","ammo":"ammo.shotgun","int":0.3,"g":{"dmg":0.8,"ds":1.5,"fds":-1.0,"fdd":-1.0},"tier":4,"from":"ロックされた箱・エリート箱"},{"id":"pistol.m92","name":"M92 ピストル","ammo":"ammo.pistol","int":0.15,"g":{"dmg":0.9,"ds":1,"fds":-1.0,"fdd":-1.0},"tier":4,"from":"補給物資・そりのプレゼント"},{"id":"shotgun.spas12","name":"SPAS-12 ショットガン","ammo":"ammo.shotgun","int":0.25,"g":{"dmg":0.75,"ds":1,"fds":-1.0,"fdd":-1.0},"tier":4,"from":"補給物資・そりのプレゼント"},{"id":"smg.uzi","name":"Uzi","ammo":"ammo.pistol","int":0.08,"g":{"dmg":0.65,"ds":0.8,"fds":-1.0,"fdd":-1.0},"tier":4,"from":"ロックされた箱・エリート箱"},{"id":"pistol.prototype17","name":"プロトタイプ 17","ammo":"ammo.pistol","int":0.1125,"g":{"dmg":0.8,"ds":0.5,"fds":-1.0,"fdd":-1.0},"tier":4,"from":"補給物資・そりのプレゼント"},{"id":"minigun","name":"ミニガン","ammo":"ammo.rifle","int":0.1,"g":{"dmg":0.75,"ds":1,"fds":-1.0,"fdd":-1.0},"tier":4,"from":"重装サイエンティスト・ロックされた箱"},{"id":"hmlmg","name":"HMLMG","ammo":"ammo.rifle","int":0.125,"g":{"dmg":1.15,"ds":1,"fds":-1.0,"fdd":-1.0},"tier":3,"from":""},{"id":"smg.mp5","name":"MP5A4","ammo":"ammo.pistol","int":0.1,"g":{"dmg":0.75,"ds":1,"fds":-1.0,"fdd":-1.0},"tier":3,"from":""},{"id":"rifle.sks","name":"SKS","ammo":"ammo.rifle","int":0.15,"g":{"dmg":0.85,"ds":1.25,"fds":-1.0,"fdd":-1.0},"tier":3,"from":""},{"id":"rifle.ak","name":"アサルトライフル","ammo":"ammo.rifle","int":0.1333,"g":{"dmg":1,"ds":1,"fds":-1.0,"fdd":-1.0},"tier":3,"from":""},{"id":"rifle.bolt","name":"ボルトアクションライフル","ammo":"ammo.rifle","int":1.7,"g":{"dmg":1.6,"ds":1.75,"fds":-1.0,"fdd":-1.0},"tier":3,"from":""},{"id":"smg.2","name":"カスタム SMG","ammo":"ammo.pistol","int":0.1,"g":{"dmg":0.6,"ds":0.7,"fds":-1.0,"fdd":-1.0},"tier":2,"from":""},{"id":"pistol.semiauto","name":"セミオートピストル","ammo":"ammo.pistol","int":0.15,"g":{"dmg":0.8,"ds":0.5,"fds":0.6,"fdd":1.5},"tier":2,"from":""},{"id":"rifle.semiauto","name":"セミオートライフル","ammo":"ammo.rifle","int":0.175,"g":{"dmg":0.8,"ds":1,"fds":-1.0,"fdd":-1.0},"tier":2,"from":""},{"id":"smg.thompson","name":"トンプソン","ammo":"ammo.pistol","int":0.13,"g":{"dmg":0.75,"ds":1,"fds":-1.0,"fdd":-1.0},"tier":2,"from":""},{"id":"pistol.python","name":"パイソンリボルバー","ammo":"ammo.pistol","int":0.15,"g":{"dmg":1.1,"ds":0.8,"fds":-1.0,"fdd":-1.0},"tier":2,"from":""},{"id":"shotgun.pump","name":"ポンプショットガン","ammo":"ammo.shotgun","int":1.1,"g":{"dmg":1,"ds":1,"fds":-1.0,"fdd":-1.0},"tier":2,"from":""},{"id":"revolver.hc","name":"大口径リボルバー","ammo":"ammo.rifle","int":0.7,"g":{"dmg":1.3,"ds":1.5,"fds":-1.0,"fdd":-1.0},"tier":2,"from":""},{"id":"crossbow","name":"クロスボウ","ammo":"arrow.wooden","int":1,"g":{"dmg":1.2,"ds":1.5,"fds":-1.0,"fdd":-1.0},"tier":1,"from":""},{"id":"bow.compound","name":"コンパウンドボウ","ammo":"arrow.wooden","int":1.25,"g":{"dmg":1,"ds":1,"fds":-1.0,"fdd":-1.0},"tier":1,"from":""},{"id":"shotgun.double","name":"ダブルバレルショットガン","ammo":"ammo.handmade.shell","int":0.5,"g":{"dmg":1,"ds":1,"fds":-1.0,"fdd":-1.0},"tier":1,"from":""},{"id":"pistol.nailgun","name":"ネイルガン","ammo":"ammo.nailgun.nails","int":0.15,"g":{"dmg":1,"ds":0.4,"fds":-1.0,"fdd":-1.0},"tier":1,"from":""},{"id":"minicrossbow","name":"ミニクロスボウ","ammo":"arrow.wooden","int":1,"g":{"dmg":1,"ds":0.8,"fds":-1.0,"fdd":-1.0},"tier":1,"from":""},{"id":"pistol.revolver","name":"リボルバー","ammo":"ammo.pistol","int":0.175,"g":{"dmg":0.7,"ds":0.4,"fds":-1.0,"fdd":-1.0},"tier":1,"from":""},{"id":"blowpipe","name":"吹き矢","ammo":"dart.wood","int":1.6,"g":{"dmg":1,"ds":1,"fds":-1.0,"fdd":-1.0},"tier":1,"from":""},{"id":"t1_smg","name":"手製の SMG","ammo":"ammo.pistol","int":0.14,"g":{"dmg":0.42,"ds":0.5,"fds":-1.0,"fdd":-1.0},"tier":1,"from":""},{"id":"speargun","name":"水中銃","ammo":"speargun.spear","int":1,"g":{"dmg":1,"ds":1,"fds":-1.0,"fdd":-1.0},"tier":1,"from":""},{"id":"shotgun.waterpipe","name":"水道管ショットガン","ammo":"ammo.handmade.shell","int":2,"g":{"dmg":1,"ds":1,"fds":-1.0,"fdd":-1.0},"tier":1,"from":""},{"id":"pistol.eoka","name":"エオカピストル","ammo":"ammo.handmade.shell","int":1.5,"g":{"dmg":1,"ds":1,"fds":-1.0,"fdd":-1.0},"tier":0,"from":""},{"id":"bow.hunting","name":"狩猟弓","ammo":"arrow.wooden","int":1.25,"g":{"dmg":1,"ds":1,"fds":-1.0,"fdd":-1.0},"tier":0,"from":""}],"ammo":{"dart.wood":{"name":"木のダーツ","dmg":[["Arrow",50]],"fs":10,"fe":60,"fm":0.8,"near":1.0,"dp":"Damage.Arrow","n":1,"group":"other"},"arrow.wooden":{"name":"木の矢","dmg":[["Arrow",50]],"fs":10,"fe":60,"fm":0.8,"near":1.0,"dp":"Damage.Arrow","n":1,"group":"arrow"},"ammo.rifle":{"name":"5.56mm","dmg":[["Bullet",50]],"fs":20,"fe":100,"fm":0.8,"near":1.0,"dp":"Damage.Rifle","n":1,"group":"556"},"ammo.handmade.shell":{"name":"手製の散弾","dmg":[["Bullet",9]],"fs":10,"fe":20,"fm":0.25,"near":1.0,"dp":"Damage.Buckshot","n":20,"group":"12g"},"ammo.pistol":{"name":"9mm","dmg":[["Bullet",50]],"fs":10,"fe":60,"fm":0.8,"near":1.0,"dp":"Damage.Pistol","n":1,"group":"9mm"},"ammo.nailgun.nails":{"name":"ネイルガンの釘","dmg":[["Arrow",18]],"fs":10,"fe":60,"fm":0.8,"near":1.0,"dp":"Damage.Arrow","n":1,"group":"other"},"ammo.shotgun":{"name":"12 Gauge","dmg":[["Bullet",15]],"fs":10,"fe":40,"fm":0.25,"near":1.0,"dp":"Damage.Buckshot","n":14,"group":"12g"},"speargun.spear":{"name":"水中銃の銛","dmg":[["Arrow",50]],"fs":10,"fe":60,"fm":0.8,"near":1.0,"dp":"Damage.Arrow","n":1,"group":"other"}},"wear":{"ballistic.helmet":{"name":"防弾ヘルメット","short":"Bal. Helmet","armor":"Armor.Head","cover":"Head","prot":{"Bullet":0.6,"Slash":0.8,"Blunt":0.8,"Bite":0.6,"Stab":0.7,"Explosion":0.8,"ColdExposure":-0.15,"Arrow":0.7,"AntiVehicle":1,"Collision":1,"Cannon":1},"slots":0,"tier":3},"ballistic.legarmor":{"name":"防弾レッグアーマー","short":"Bal. Legs","armor":"Armor.Legs","cover":"Legs","prot":{"Bullet":0.3,"Slash":0.3,"Blunt":0.3,"Bite":0.6,"Stab":0.4,"Explosion":0.2,"ColdExposure":-0.2,"Arrow":0.3,"AntiVehicle":1,"Collision":1,"Cannon":1},"slots":3,"tier":3},"ballistic.vest":{"name":"防弾ベスト","short":"Bal. Vest","armor":"Armor.Body","cover":"Chest","prot":{"Bullet":0.35,"Slash":0.3,"Blunt":0.4,"Bite":0.2,"Stab":0.2,"Explosion":0.2,"ColdExposure":-0.2,"Arrow":0.34,"AntiVehicle":1,"Collision":1,"Cannon":1},"slots":3,"tier":3},"coffeecan.helmet":{"name":"コーヒー缶ヘルメット","short":"Coffee Can","armor":"Armor.Head","cover":"Head","prot":{"Bullet":0.35,"Slash":0.5,"Blunt":0.5,"Bite":0.5,"Stab":0.5,"Explosion":0.5,"RadiationExposure":0.05,"Arrow":0.35,"AntiVehicle":1,"Collision":1,"Cannon":1},"slots":1,"tier":2},"hazmatsuit":{"name":"ハズマットスーツ","short":"Hazmat","armor":"Armor.All","cover":"Full body","prot":{"Cold":0.5,"Drowned":1,"Bullet":0.3,"Slash":0.3,"Blunt":0.3,"Bite":0.5,"Stab":0.3,"Explosion":0.3,"RadiationExposure":0.5,"ColdExposure":0.5,"Arrow":0.3,"AntiVehicle":1,"Collision":1,"BeeSting":3,"Cannon":1},"slots":3,"tier":2},"heavy.plate.helmet":{"name":"ヘビープレートヘルメット","short":"HP Helmet","armor":"Armor.Head","cover":"Head","prot":{"Heat":-1.5,"Bullet":0.9,"Slash":0.8,"Blunt":0.8,"Bite":0.8,"Stab":0.8,"Explosion":1,"RadiationExposure":0.07,"ColdExposure":-1,"Arrow":0.9,"AntiVehicle":1,"Collision":1,"Cannon":1},"slots":0,"tier":2},"heavy.plate.jacket":{"name":"ヘビープレートジャケット","short":"HP Jacket","armor":"Armor.Body","cover":"Chest","prot":{"Heat":-2.5,"Bullet":0.75,"Slash":0.7,"Blunt":0.7,"Bite":0.7,"Stab":0.7,"Explosion":1,"RadiationExposure":0.07,"ColdExposure":-1,"Arrow":0.75,"AntiVehicle":1,"Collision":1,"Cannon":1},"slots":0,"tier":2},"heavy.plate.pants":{"name":"ヘビープレートズボン","short":"HP Pants","armor":"Armor.Legs","cover":"Legs","prot":{"Heat":-2.5,"Bullet":0.75,"Slash":0.7,"Blunt":0.7,"Bite":0.7,"Stab":0.7,"Explosion":1,"RadiationExposure":0.07,"ColdExposure":-1,"Arrow":0.75,"AntiVehicle":1,"Collision":1,"Cannon":1},"slots":0,"tier":2},"hoodie":{"name":"パーカー","short":"Hoodie","armor":"Armor.Body","cover":"Chest","prot":{"Bullet":0.2,"Slash":0.2,"Blunt":0.2,"Bite":0.35,"Stab":0.15,"RadiationExposure":0.05,"ColdExposure":0.5,"Arrow":0.15,"AntiVehicle":1,"Collision":1,"Cannon":1},"slots":0,"tier":2},"metal.facemask":{"name":"メタルフェイスマスク","short":"Facemask","armor":"Armor.Head","cover":"Head","prot":{"Bullet":0.5,"Slash":0.7,"Blunt":0.7,"Bite":0.5,"Stab":0.7,"Explosion":0.5,"ColdExposure":-0.25,"Arrow":0.5,"AntiVehicle":1,"Collision":1,"Cannon":1},"slots":1,"tier":3},"metal.plate.torso":{"name":"メタルチェストプレート","short":"Chest Plate","armor":"Armor.Body","cover":"Chest","prot":{"Bullet":0.25,"Slash":0.2,"Blunt":0.2,"Bite":0.2,"Stab":0.2,"ColdExposure":-0.5,"Arrow":0.25,"AntiVehicle":1,"Collision":1,"Cannon":1},"slots":3,"tier":3},"pants":{"name":"ズボン","short":"Pants","armor":"Armor.Legs","cover":"Legs","prot":{"Bullet":0.15,"Slash":0.2,"Blunt":0.2,"Bite":0.2,"Stab":0.15,"RadiationExposure":0.05,"ColdExposure":0.5,"Arrow":0.15,"AntiVehicle":1,"Collision":1,"Cannon":1},"slots":0,"tier":1},"roadsign.jacket":{"name":"ロードサインジャケット","short":"RS Jacket","armor":"Armor.Body","cover":"Chest","prot":{"Bullet":0.2,"Slash":0.25,"Blunt":0.2,"Bite":0.6,"Stab":0.25,"ColdExposure":-0.5,"Arrow":0.2,"AntiVehicle":1,"Collision":1,"Cannon":1},"slots":3,"tier":2},"roadsign.kilt":{"name":"ロードサインキルト","short":"RS Kilt","armor":"Armor.Legs","cover":"Legs","prot":{"Bullet":0.2,"Slash":0.25,"Blunt":0.2,"Bite":0.6,"Stab":0.25,"ColdExposure":-0.5,"Arrow":0.2,"AntiVehicle":1,"Collision":1,"Cannon":1},"slots":3,"tier":2}},"sets":[{"id":"roadsign","name":"ロードサイン","en":"Road Sign","icon":["M12 3v18","M5 6h11l3 3-3 3H5z","M9 21h6"],"wear":["coffeecan.helmet","roadsign.jacket","roadsign.kilt","hoodie","pants"],"tier":2},{"id":"metal","name":"メタル","en":"Metal","icon":["M20 13c0 5-3.5 7.5-7.7 9a1 1 0 0 1-.6 0C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.2-2.7a1.2 1.2 0 0 1 1.6 0C14.5 3.8 17 5 19 5a1 1 0 0 1 1 1z","",""],"wear":["metal.facemask","metal.plate.torso","roadsign.kilt","hoodie","pants"],"tier":3},{"id":"ballistic","name":"防弾","en":"Ballistic","icon":["M20 13c0 5-3.5 7.5-7.7 9a1 1 0 0 1-.6 0C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.2-2.7a1.2 1.2 0 0 1 1.6 0C14.5 3.8 17 5 19 5a1 1 0 0 1 1 1z","M9 12l2 2 4-4",""],"wear":["ballistic.helmet","ballistic.vest","ballistic.legarmor","hoodie","pants"],"tier":3},{"id":"heavy","name":"ヘビープレート","en":"Heavy Plate","icon":["M20 13c0 5-3.5 7.5-7.7 9a1 1 0 0 1-.6 0C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.2-2.7a1.2 1.2 0 0 1 1.6 0C14.5 3.8 17 5 19 5a1 1 0 0 1 1 1z","M8 10h8","M8 14h8"],"wear":["heavy.plate.helmet","heavy.plate.jacket","heavy.plate.pants"],"tier":2},{"id":"hazmat","name":"ハズマット","en":"Hazmat","icon":["M8 3h8l1 5-2 13H9L7 8z","M10 8a2 2 0 1 0 4 0a2 2 0 1 0 -4 0","M9 14h6"],"wear":["hazmatsuit"],"tier":2},{"id":"none","name":"防具なし","en":"No armour","icon":["M2 12a10 10 0 1 0 20 0a10 10 0 1 0 -20 0","M4.9 4.9l14.2 14.2",""],"wear":[],"tier":0}],"inserts":[{"id":"clothing.mod.armorinsert_metal","name":"メタル","icon":["M5 3h14v18H5z","M9 8h6","M9 12h6"],"tier":2,"prot":{"Bullet":0.04,"Slash":0.02,"Blunt":0.02,"Stab":0.02,"Arrow":0.04,"Cannon":1.0},"game":"Projectile +4% · Melee +2%"},{"id":"clothing.mod.armorinsert_wood","name":"木","icon":["M5 3h14v18H5z","M9 3c-1 6 1 12 0 18","M15 3c1 6-1 12 0 18"],"tier":1,"prot":{"Bullet":0.02,"Slash":0.02,"Blunt":0.02,"Stab":0.02,"Arrow":0.02,"Cannon":1.0},"game":"Projectile +2% · Melee +2%"},{"id":"clothing.mod.armorinsert_lead","name":"鉛","icon":["M10.5 12a1.5 1.5 0 1 0 3 0a1.5 1.5 0 1 0 -3 0","M3 12a9 4 0 1 0 18 0a9 4 0 1 0 -18 0","M8 12a4 9 0 1 0 8 0a4 9 0 1 0 -8 0"],"tier":2,"prot":{"Bullet":0.01,"Slash":0.01,"Blunt":0.01,"Stab":0.01,"RadiationExposure":0.05,"Arrow":0.01,"Cannon":1.0},"game":"Projectile +1% · Melee +1% · Radiation +5%"},{"id":"clothing.mod.armorinsert_asbestos","name":"アスベスト","icon":["M12 22c4 0 7-3 7-7 0-4-3-6-4-10-2 2-3 4-3 6-1-1-2-2-2-4-2 2-5 5-5 8 0 4 3 7 7 7z","",""],"tier":2,"prot":{"Heat":0.65,"Bullet":0.01,"Slash":0.01,"Blunt":0.01,"Stab":0.01,"Explosion":0.5,"ElectricShock":0.65,"Cannon":1.0},"game":"Projectile +1% · Melee +1% · Explosion +50%"},{"id":"clothing.mod.armorinsert_wool","name":"ウール","icon":["M12 2v20","M3.3 7l17.4 10","M3.3 17l17.4-10"],"tier":1,"prot":{"Bullet":0.01,"Slash":0.02,"Blunt":0.02,"Stab":0.02,"ColdExposure":0.24,"Arrow":0.01,"Cannon":1.0},"game":"Projectile +1% · Melee +2% · Cold +24%"}],"groups":[{"id":"556","name":"5.56mm"},{"id":"9mm","name":"9mm"},{"id":"12g","name":"12 Gauge"},{"id":"arrow","name":"矢"},{"id":"other","name":"その他"}],"msg":{"none":"何も着ていない","slots":"板の枠 合計 {n}","noslots":"板の枠なし","plates":"{n} 枚","noplate":"板なし","plate_set":"{name}の板 {n} 枚","plate_total":"{name}の板 合計 {n} 枚","sub":"{set}・{plate}","card":"{area}の銃弾ダメージ","card_up":"板なし {off}% から +{d} (枠は最多 {room} 枚)","card_room":"板を最多 {room} 枚入れると {full}%","card_noroom":"この部位の服に板の枠は無い","card_sub":"矢への守り {arrow}% (計算用)・部位の倍率 ×{mult}","loot":"ルート限定","bench0":"作業台なし","from":"{ammo}・主に{from}","pellets":"{ammo} ({n} 粒)","hit":"1 発 {a}","hit2":"1 発 {a} → {b}","sec":"{s} 秒","never":"倒せない","ttk_sub":"{set}・{d} m・体力 {hp}・Tier の高い順・{n} 種","fall_sub":"{set}・{plate}・胴の発数","m":"{d} m","copied":"リンクをコピーしました。","nocopy":"コピーできませんでした。アドレス欄の URL をそのまま使えます。","all":"すべて","count_n":"{label} ({n})","areas":["頭","胴","脚"],"weapon":"武器","start":"減り始め","end":"減り終わり","far":"遠くの倍率"}};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const num=n=>Number(n).toLocaleString('en-US',{maximumFractionDigits:1});
+const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,parseInt(v,10)||lo));
+// The sections fold at their headings; which ones are folded is remembered on this device, per page.
+const FOLD='ra-fold-'+location.pathname.split('/').pop(),folds=()=>[...document.querySelectorAll('details[data-fold]')];
+try{const st=JSON.parse(localStorage.getItem(FOLD)||'{}');for(const d of folds())if(d.dataset.fold in st)d.open=!!st[d.dataset.fold]}catch(_){}
+document.addEventListener('toggle',ev=>{if(ev.target.dataset&&ev.target.dataset.fold)try{localStorage.setItem(FOLD,JSON.stringify(Object.fromEntries(folds().map(d=>[d.dataset.fold,d.open]))))}catch(_){}},true);
+// The share image: a 1200x675 card (drawn at 2x) in the page's own colours and fonts, with the site's name and `title` on
+// top and the page's address below. paint(h) draws the rest with the helpers h; icons are the names it draws with h.pic.
+const css=k=>getComputedStyle(document.documentElement).getPropertyValue(k).trim();
+async function drawCard(title,icons,paint){
+  const W=1200,H=675,K=2,L=48,HALF=(W-L*2-24)/2,cv=document.createElement('canvas');cv.width=W*K;cv.height=H*K;
+  const x=cv.getContext('2d');x.scale(K,K);
+  const C={bg:css('--plate'),up:css('--plate-raised'),sunk:css('--plate-sunken'),line:css('--line'),strong:css('--line-strong'),ink:css('--ink'),mute:css('--ink-muted'),rust:css('--rust')};
+  const F={sans:css('--font-sans'),mono:css('--font-mono'),disp:css('--font-display')},f=(w,px,fam)=>`${w} ${px}px ${F[fam]}`;
+  const used=[],pics={};
+  const pic=(k,px,py,sz)=>{if(pics[k])x.drawImage(pics[k],px,py,sz,sz)};
+  const M=(s,font)=>{x.font=font;return x.measureText(s).width};
+  // T draws text and returns the x where it ended (where it began, when right-aligned)
+  const T=(s,px,py,font,col,right)=>{used.push([font,s]);x.font=font;x.fillStyle=col;x.textAlign=right?'right':'left';x.fillText(s,px,py);
+    const w=x.measureText(s).width;return right?px-w:px+w};
+  const fit=(s,font,max)=>{if(M(s,font)<=max)return s;while(s.length>1&&M(s+'…',font)>max)s=s.slice(0,-1);return s+'…'};
+  const box=(col,a,b,w,h)=>{x.fillStyle=col;x.fillRect(a,b,w,h)};
+  const rule=(col,a,b,w,h,lw)=>{x.strokeStyle=col;x.lineWidth=lw;x.strokeRect(a+lw/2,b+lw/2,w-lw,h-lw)};
+  const h={x,W,H,L,HALF,C,f,T,M,fit,box,rule,pic};
+  const all=()=>{box(C.bg,0,0,W,H);const e=T('Rust Analysis',L,60,f(700,26,'disp'),C.ink);T(title,e+16,60,f(600,17,'sans'),C.mute);
+    T(`本体の書き出し ${R.version}`,W-L,60,f(400,14,'mono'),C.mute,1);box(C.ink,L,78,W-L*2,2);paint(h);
+    box(C.line,L,642,W-L*2,1);T('maco165.github.io/rust-patch-notes/tools/ttk.html',L,662,f(400,13,'mono'),C.mute);T('ゲームのデータからの計算値 ／ 非公式',W-L,662,f(400,13,'sans'),C.mute,1)};
+  // the first pass lists the text of each font, so the web fonts (split by unicode range) load before the pass that counts
+  all();try{await Promise.all(used.map(([font,s])=>document.fonts.load(font,s)))}catch(_){}
+  // the icons, as SVG images stroked in the ink colour; one that fails to load is left out
+  await Promise.all([...new Set(icons.filter(Boolean))].map(async k=>{try{const im=new Image();
+    im.src='data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 24 24" fill="none" stroke="${C.ink}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${R.icons[k]}</svg>`);
+    await im.decode();pics[k]=im}catch(_){}}));
+  used.length=0;all();return cv}
+// The buttons under "いまの結果を渡す": the link, and the image made by card() shared, copied or saved as name().
+let say=()=>{};
+function shareUI(card,name,summary,hint){
+  const png=async()=>{const cv=await card();return new Promise((ok,ng)=>cv.toBlob(b=>b?ok(b):ng(new Error('toBlob')),'image/png'))};
+  say=m=>{$('#sh-msg').textContent=m||hint};say();document.addEventListener('change',()=>say());
+  const clip=navigator.clipboard;
+  $('#sh-link').addEventListener('click',async()=>{try{await clip.writeText(location.href);say('リンクをコピーしました。')}
+    catch(_){say('コピーできませんでした。アドレス欄の URL をそのまま使えます。')}});
+  $('#sh-save').addEventListener('click',async()=>{try{const a=document.createElement('a');a.href=URL.createObjectURL(await png());a.download=name();
+    document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),10000);say(`画像を保存しました (${name()})。`)}
+    catch(_){say('画像を作れませんでした。')}});
+  if(clip&&clip.write&&window.ClipboardItem){$('#sh-copy').hidden=false;
+    $('#sh-copy').addEventListener('click',async()=>{try{await clip.write([new ClipboardItem({'image/png':png()})]);say('画像をコピーしました。貼り付けて送れます。')}
+      catch(_){say('画像をコピーできませんでした。「保存」を使ってください。')}})}
+  const probe=()=>{try{return navigator.canShare&&navigator.canShare({files:[new File([''],'a.png',{type:'image/png'})]})}catch(_){return false}};
+  if(probe()){$('#sh-send').hidden=false;
+    $('#sh-send').addEventListener('click',async()=>{try{const file=new File([await png()],name(),{type:'image/png'});
+        await navigator.share({files:[file],text:`${summary()}\n${location.href}`});say('')}
+      catch(e){if(e.name!=='AbortError')say('共有できませんでした。「保存」を使ってください。')}})}}
+
+const F=Math.fround,cl=(v,a,b)=>Math.max(a,Math.min(b,v));
+const lerp=(a,b,t)=>F(a+F(F(b-a)*cl(t,0,1)));
+const ilerp=(a,b,v)=>a!==b?cl(F(F(v-a)/F(b-a)),0,1):0;
+// DamageProperties.GetMultiplier: the asset's own value for the area, else its fallback's, else 1
+function areaMult(dp,area){while(dp){const d=R.dp[dp];if(area in d.areas)return F(d.areas[area]);dp=d.fallback}return 1}
+// what one projectile carries at `dist` metres: [damage by type, DamageProperties, pellets]
+function carried(w,dist){
+  const a=R.ammo[w.ammo],g=w.g,ds=F(g.ds);
+  const start=F(0+F(ds*F(a.fs))),fd=g.fdd>=0?F(g.fdd):1,end=F(0+F(F(ds*fd)*F(a.fe))),far=g.fds>=0?F(g.fds):F(a.fm);
+  const m=lerp(F(a.near),far,ilerp(start,end,F(dist))),s=F(1*F(0+F(F(g.dmg)*m)));
+  return[Object.fromEntries(a.dmg.map(([t,v])=>[t,F(F(v)*s)])),a.dp,a.n]}
+const covers=(sn,area)=>{const a=R.wear[sn]&&R.wear[sn].armor;return!!a&&R.armor[a].includes(area)};
+const insertOf=id=>R.inserts.find(x=>x.id===id);
+// the protection of the worn garments covering the area, each garment's own then its inserts one by one
+function guard(area,worn,plates){
+  const g=new Array(R.order.length).fill(0),add=pr=>{for(const[k,a]of Object.entries(pr)){const i=R.order.indexOf(k);if(i>=0)g[i]=F(g[i]+F(F(a)*1))}};
+  const ins=plates&&plates[1]>0?insertOf(plates[0]):null;
+  for(const sn of worn)if(covers(sn,area)){add(R.wear[sn].prot);if(ins)for(let i=0;i<Math.min(plates[1],R.wear[sn].slots);i++)add(ins.prot)}
+  return g}
+// the health one hit takes: the protections, then the area's multiplier; every pellet of buckshot on the area
+function perHit(w,area,worn,dist,plates){
+  const[d,dp,n]=carried(w,dist),gd=guard(area,worn,plates),v=new Array(R.order.length).fill(0);
+  for(const[k,x]of Object.entries(d))v[R.order.indexOf(k)]=F(x);
+  gd.forEach((a,i)=>{if(a!==0)v[i]=F(v[i]*F(1-cl(a,-1,1)))});
+  const m=areaMult(dp,area);let t=0;for(const x of v)t=F(t+F(x*m));return F(t*n)}
+function toDown(per,hp){if(!(per>0))return null;let h=F(hp??R.hp),n=0;while(h>0){h=F(Math.max(0,F(h-per)));n++}return n}
+function hits(w,area,worn,dist,plates){return toDown(perHit(w,area,worn,dist,plates))}
+
+const M=(k,o={})=>R.msg[k].replace(/\{(\w+)\}/g,(_,n)=>o[n]);
+const AREAS=[['Head',0],['Chest',1],['Leg',2]];
+const DISTS=Array.from({length:R.maxD/10+1},(_,i)=>i*10);
+const SET=Object.fromEntries(R.sets.map(s=>[s.id,s])),INS=Object.fromEntries(R.inserts.map(x=>[x.id,x]));
+const P=new URLSearchParams(location.search);
+const TIERS=[['all',M('all')],[4,M('loot')],[3,'Tier 3'],[2,'Tier 2'],[1,'Tier 1'],[0,M('bench0')]].filter(([id])=>id==='all'||R.weapons.some(w=>w.tier===id));
+// the state, in the address: s the set, p the insert, n inserts per garment, d metres, k the ammo group, t the tier
+const own=(o,k)=>k!=null&&Object.hasOwn(o,k);
+const S={s:own(SET,P.get('s'))?P.get('s'):'metal',p:own(INS,P.get('p'))?P.get('p'):R.inserts[0].id,n:clamp(P.has('n')?P.get('n'):3,0,3),
+  d:Math.round(clamp(P.has('d')?P.get('d'):40,0,R.maxD)/10)*10,k:R.groups.some(g=>g.id===P.get('k'))?P.get('k'):'all',
+  t:P.has('t')&&TIERS.some(([id])=>String(id)===P.get('t'))?(P.get('t')==='all'?'all':Number(P.get('t'))):'all'};
+const pct=v=>Math.round(Math.min(1,v)*100);
+const one=v=>String(Math.round(v*10)/10);
+const tierTag=t=>t===4?M('loot'):t?`Tier ${t}`:M('bench0');
+const glyph=p=>`<span class="tp-ic" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${p.filter(Boolean).map(d=>`<path d="${d}"></path>`).join('')}</svg></span>`;
+const byTier=(a,b)=>b.tier-a.tier;
+const sets=[...R.sets].map((s,i)=>[s,i]).sort((a,b)=>byTier(a[0],b[0])||a[1]-b[1]).map(x=>x[0]);
+const inserts=[...R.inserts].map((s,i)=>[s,i]).sort((a,b)=>byTier(a[0],b[0])||a[1]-b[1]).map(x=>x[0]);
+const bullet=(area,worn,plates)=>guard(area,worn,plates)[R.order.indexOf('Bullet')];
+const arrow=(area,worn,plates)=>guard(area,worn,plates)[R.order.indexOf('Arrow')];
+const groupOf=w=>R.ammo[w.ammo].group;
+function render(){
+  const set=SET[S.s],worn=set.wear,ins=INS[S.p],plates=[S.p,S.n];
+  const room=worn.reduce((n,g)=>n+R.wear[g].slots,0),total=worn.reduce((n,g)=>n+Math.min(R.wear[g].slots,S.n),0);
+  const plateLabel=S.n?M('plate_set',{name:ins.name,n:S.n}):M('noplate');
+  $('#gear-sub').textContent=M('sub',{set:set.name,plate:S.n?(total?M('plate_total',{name:ins.name,n:total}):M('noslots')):M('noplate')});
+  $('#sets').innerHTML=sets.map(s=>{const r=s.wear.reduce((n,g)=>n+R.wear[g].slots,0);
+    return`<button type="button" class="tp-opt${s.id===S.s?' is-on':''}" aria-pressed="${s.id===S.s}" data-set="${esc(s.id)}">${glyph(s.icon)}<span class="tp-opt-t"><span class="tp-opt-h"><b>${esc(s.name)}</b><span class="tp-tier">${s.tier?`Tier ${s.tier}`:'—'}</span></span>`
+      +`<span class="tp-items">${s.wear.length?s.wear.map(g=>`<small lang="en" title="${esc(R.wear[g].name)}">${esc(R.wear[g].short)} · T${R.wear[g].tier} · ${esc(R.wear[g].cover)}</small>`).join(''):`<small>${esc(M('none'))}</small>`}</span>`
+      +`<small class="tp-opt-k">${esc(r?M('slots',{n:r}):M('noslots'))}</small></span></button>`}).join('');
+  $('#inserts').innerHTML=inserts.map(x=>`<button type="button" class="tp-opt${x.id===S.p?' is-on':''}" aria-pressed="${x.id===S.p}" data-ins="${esc(x.id)}">${glyph(x.icon)}<span class="tp-opt-t tp-stack"><b>${esc(x.name)}</b><span class="tp-tier">Tier ${x.tier}</span><small lang="en">${esc(x.game)}</small></span></button>`).join('');
+  $('#count').innerHTML=[0,1,2,3].map(v=>`<button type="button" class="tp-chip tp-cnt${v===S.n?' is-on':''}" aria-pressed="${v===S.n}" data-n="${v}"><span class="tp-pips" aria-hidden="true">${[1,2,3].map(i=>`<i${i<=v?' class="on"':''}></i>`).join('')}</span>${esc(v?M('plates',{n:v}):M('noplate'))}</button>`).join('');
+  $('#wear').textContent=worn.length?worn.map(g=>R.wear[g].name+(R.wear[g].slots?` (${R.wear[g].slots})`:'')).join('・'):M('none');
+  $('#cards').innerHTML=AREAS.map(([a,i])=>{const off=bullet(a,worn,null),on=bullet(a,worn,plates),full=bullet(a,worn,[S.p,3]);
+    const r=worn.filter(g=>covers(g,a)).reduce((n,g)=>n+R.wear[g].slots,0);
+    const delta=!r?M('card_noroom'):S.n&&on!==off?M('card_up',{off:pct(off),d:pct(on)-pct(off),room:r}):M('card_room',{room:r,full:pct(full)});
+    return`<div class="tp-card"><div class="tp-card-h">${esc(M('card',{area:R.msg.areas[i]}))}</div><div class="tp-big">${pct(on)}<small>%</small></div><div class="tp-delta">${esc(delta)}</div>`
+      +`<div class="tp-sub">${esc(M('card_sub',{arrow:pct(arrow(a,worn,plates)),mult:areaMult('Damage.Default',a)}))}</div></div>`}).join('');
+  $('#cmp-sub').textContent=plateLabel;$('#cmp-on').textContent=plateLabel;
+  $('#cmp').innerHTML=sets.map(s=>{const r=s.wear.reduce((n,g)=>n+R.wear[g].slots,0);
+    return`<tr><td class="tp-name"><span class="tp-opt-h"><b>${esc(s.name)}</b><span class="tp-tier">${s.tier?`Tier ${s.tier}`:'—'}</span></span><small lang="en">${esc(s.en)}</small><small>${esc(r?M('slots',{n:r}):M('noslots'))}</small></td>`
+      +AREAS.map(([a])=>{const o=bullet(a,s.wear,null),p=bullet(a,s.wear,plates);
+        return`<td><div class="tp-bars"><span class="tp-bar"><i style="width:${pct(o)}%"></i></span><span class="tp-bar on"><i style="width:${pct(p)}%"></i></span></div><span class="tp-kv">${o===p?`${pct(o)}%`:`${pct(o)} → ${pct(p)}%`}</span></td>`}).join('')+'</tr>'}).join('');
+  // the weapons of the ammunition and tier picked, highest tier first, then the fewest hits to the torso and the quickest
+  const list=R.weapons.filter(w=>(S.k==='all'||groupOf(w)===S.k)&&(S.t==='all'||w.tier===S.t));
+  const ammoText=w=>{const a=R.ammo[w.ammo],n=a.n>1?M('pellets',{ammo:a.name,n:a.n}):a.name;return w.from?M('from',{ammo:n,from:w.from}):n};
+  const rows=list.map(w=>{const cells=AREAS.map(([a])=>{const o=hits(w,a,worn,S.d,null),p=hits(w,a,worn,S.d,plates),dO=perHit(w,a,worn,S.d,null),dP=perHit(w,a,worn,S.d,plates);return{o,p,dO,dP}});
+    const n=cells[1].p;return{w,cells,n,t:n==null?Infinity:(n-1)*w.int}})
+    .sort((x,y)=>y.w.tier-x.w.tier||(x.n??1e9)-(y.n??1e9)||x.t-y.t);
+  $('#ttk-sub').textContent=M('ttk_sub',{set:set.name,d:S.d,hp:R.hp,n:list.length});
+  $('#dist').value=S.d;$('#dist-v').textContent=M('m',{d:S.d});
+  $('#kinds').innerHTML=[['all',M('all')],...R.groups.map(g=>[g.id,g.name])].map(([id,l])=>{const n=R.weapons.filter(w=>(id==='all'||groupOf(w)===id)&&(S.t==='all'||w.tier===S.t)).length;
+    return`<button type="button" class="tp-chip${id===S.k?' is-on':''}" aria-pressed="${id===S.k}" data-k="${esc(id)}">${esc(M('count_n',{label:l,n}))}</button>`}).join('');
+  $('#tiers').innerHTML=TIERS.map(([id,l])=>{const n=R.weapons.filter(w=>(S.k==='all'||groupOf(w)===S.k)&&(id==='all'||w.tier===id)).length;
+    return`<button type="button" class="tp-chip${id===S.t?' is-on':''}" aria-pressed="${id===S.t}" data-t="${id}">${esc(M('count_n',{label:l,n}))}</button>`}).join('');
+  $('#empty').hidden=list.length>0;
+  const cnt=v=>v==null?`<span class="tp-never">${esc(M('never'))}</span>`:String(v);
+  $('#rows').innerHTML=rows.map(({w,cells,n,t})=>`<tr><td class="tp-name"><span class="tp-opt-h"><b>${esc(w.name)}</b><span class="tp-tier">${esc(tierTag(w.tier))}</span></span><small>${esc(ammoText(w))}</small></td>`
+    +cells.map(c=>`<td class="n"><span class="tp-pair${c.p!=null&&c.o!=null&&c.p>c.o?' up':''}"><span class="a">${cnt(c.o)}</span><span>→</span><span class="b">${cnt(c.p)}</span></span><small class="tp-dmg">${esc(c.dO===c.dP?M('hit',{a:one(c.dO)}):M('hit2',{a:one(c.dO),b:one(c.dP)}))}</small></td>`).join('')
+    +`<td class="r">${isFinite(t)?esc(M('sec',{s:t.toFixed(2)})):''}</td></tr>`).join('');
+  // the falloff of each weapon and the hits to the torso every 10 m, with the inserts picked
+  $('#fall-sub').textContent=M('fall_sub',{set:set.name,plate:plateLabel});
+  $('#fall-head').innerHTML=`<th>${esc(R.msg.weapon)}</th><th class="r">${esc(R.msg.start)}</th><th class="r">${esc(R.msg.end)}</th><th class="r">${esc(R.msg.far)}</th>`+DISTS.map(d=>`<th class="n">${d} m</th>`).join('');
+  const byT=[...list].map((w,i)=>[w,i]).sort((a,b)=>b[0].tier-a[0].tier||a[1]-b[1]).map(x=>x[0]);
+  $('#fall').innerHTML=byT.map(w=>{const a=R.ammo[w.ammo],ds=w.g.ds,fd=w.g.fdd>=0?w.g.fdd:1,far=w.g.fds>=0?w.g.fds:a.fm;let prev=null;
+    return`<tr><td class="tp-name"><span class="tp-opt-h"><b>${esc(w.name)}</b><span class="tp-tier">${esc(tierTag(w.tier))}</span></span><small>${esc(ammoText(w))}</small></td>`
+      +`<td class="r">${+(ds*a.fs).toFixed(1)} m</td><td class="r">${+(ds*fd*a.fe).toFixed(1)} m</td><td class="r">×${+far.toFixed(2)}</td>`
+      +DISTS.map(d=>{const n=hits(w,'Chest',worn,d,plates),c=[prev!=null&&n!=null&&n>prev?'up':'',d===S.d?'now':''].filter(Boolean).join(' ');prev=n;
+        return`<td class="n"><span class="tp-cell${c?' '+c:''}">${cnt(n)}</span><small class="tp-dmg">${one(perHit(w,'Chest',worn,d,plates))}</small></td>`}).join('')+'</tr>'}).join('');
+  const q=new URLSearchParams({s:S.s,p:S.p,n:S.n,d:S.d,k:S.k,t:S.t});history.replaceState(null,'','?'+q.toString())}
+document.addEventListener('click',ev=>{const b=ev.target.closest('[data-set],[data-ins],[data-n],[data-k],[data-t]');if(!b)return;
+  if(b.dataset.set)S.s=b.dataset.set;else if(b.dataset.ins)S.p=b.dataset.ins;else if(b.dataset.n!==undefined)S.n=Number(b.dataset.n);
+  else if(b.dataset.k)S.k=b.dataset.k;else if(b.dataset.t!==undefined)S.t=b.dataset.t==='all'?'all':Number(b.dataset.t);render()});
+$('#dist').addEventListener('input',ev=>{S.d=Math.round(clamp(ev.target.value,0,R.maxD)/10)*10;render()});
+$('#sh-link').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(location.href);$('#sh-msg').textContent=M('copied')}catch(_){$('#sh-msg').textContent=M('nocopy')}});
+render();
+</script></body></html>

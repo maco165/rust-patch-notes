@@ -28,14 +28,14 @@ flowchart LR
     e3["build_diffs.py<br/>data/diffs/"]
   end
   subgraph B["Build (Python)"]
-    b1["build_site.py<br/>imports raid_calc.py · gene_calc.py · consume_calc.py · loot_odds.py<br/>build_views.py · build_index.py · genres.py · item_icons.py"]
+    b1["build_site.py<br/>imports raid_calc.py · gene_calc.py · consume_calc.py · ttk_calc.py · loot_odds.py<br/>build_views.py · build_index.py · genres.py · item_icons.py"]
     b2["content/ · rules/ · design/<br/>digests, columns, *.yml, tokens.json, *.css, item-icons/"]
   end
   subgraph W["Site (GitHub Pages)"]
     w1["index.html · history.html · genres.html · numbers.html"]
     w2["items.html · spec.html · diffs.html"]
     w3["columns.html → columns/*.html"]
-    w4["tools.html → tools/raid.html → tools/craft.html<br/>tools.html → tools/gene.html · tools/buff.html"]
+    w4["tools.html → tools/raid.html → tools/craft.html<br/>tools.html → tools/gene.html · tools/buff.html · tools/ttk.html"]
     w5["assets/style.css<br/>used by every page"]
   end
   s1 --> e1
@@ -84,12 +84,14 @@ flowchart LR
 | [tools/craft.html](tools/craft.html) | 作る爆発物と手持ちの物資・炉の数から、足りない材料と炉の時間 | tools/raid.html と同じデータ |
 | [tools/gene.html](tools/gene.html) | 手持ちの苗から、目標に近い遺伝子の苗を作る植え方と、遺伝子の効き目 | サーバー本体のデータ (遺伝子の重み・植物・植木鉢) と、配合の決まりをサーバーの処理 (IL) から確かめた結果 |
 | [tools/buff.html](tools/buff.html) | お茶とパイを使う順番から、効く効果の値と切れる時刻、入れ替わる物と熊肉パイで短くなる物 | サーバー本体のデータ (お茶とパイの効果、版 2026-11-07) と、効果の重なり方と値の使われ方をサーバーの処理 (IL) から確かめた結果 |
+| [tools/ttk.html](tools/ttk.html) | 装備と差し込み板から部位ごとの守りと、銃と弓ごとに頭・胴・脚に何発で倒れるか、10 m ごとの発数 | サーバー本体のデータ (弾・武器・防具・部位の倍率、版 2026-11-07) と、ダメージの式をサーバーの処理 (IL) から確かめた結果 |
 | [tools/raid.html](tools/raid.html) | 壁・扉・外壁・設置物をまとめて壊すのに要る爆発物の数・硫黄・材料と、硫黄鉱石・木の数と炉の時間 | サーバー本体のデータ (建材・爆発物・炉、版 2026-11-07) と、ダメージと製錬の計算の仕方をサーバーの処理 (IL) から確かめた結果 |
 | [404.html](404.html) | 見つからないアドレスで出るページ (検索には載せない) | このサイトの文言 |
 | [en/tools.html](en/tools.html) | English の tools.html | tools.html と同じ計算。文言は content/i18n/en.yml から |
 | [en/tools/craft.html](en/tools/craft.html) | English の tools/craft.html | tools/craft.html と同じ計算。文言は content/i18n/en.yml から |
 | [en/tools/raid.html](en/tools/raid.html) | English の tools/raid.html | tools/raid.html と同じ計算。文言は content/i18n/en.yml から |
 | [en/tools/buff.html](en/tools/buff.html) | English の tools/buff.html | tools/buff.html と同じ計算。文言は content/i18n/en.yml から |
+| [en/tools/ttk.html](en/tools/ttk.html) | English の tools/ttk.html | tools/ttk.html と同じ計算。文言は content/i18n/en.yml から |
 | [en/columns.html](en/columns.html) | English の columns.html | content/columns/en/ の記事 (日本語の記事と同じ内容) |
 | [en/columns/buff-ranking.html](en/columns/buff-ranking.html) | English の columns/buff-ranking.html | content/columns/en/ の記事 (日本語の記事と同じ内容) |
 | [en/columns/wheel-myths.html](en/columns/wheel-myths.html) | English の columns/wheel-myths.html | content/columns/en/ の記事 (日本語の記事と同じ内容) |
