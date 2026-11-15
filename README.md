@@ -91,6 +91,7 @@ flowchart LR
 | [en/tools/raid.html](en/tools/raid.html) | English の tools/raid.html | tools/raid.html と同じ計算。文言は content/i18n/en.yml から |
 | [en/tools/buff.html](en/tools/buff.html) | English の tools/buff.html | tools/buff.html と同じ計算。文言は content/i18n/en.yml から |
 | [en/columns.html](en/columns.html) | English の columns.html | content/columns/en/ の記事 (日本語の記事と同じ内容) |
+| [en/columns/buff-ranking.html](en/columns/buff-ranking.html) | English の columns/buff-ranking.html | content/columns/en/ の記事 (日本語の記事と同じ内容) |
 | [en/columns/wheel-myths.html](en/columns/wheel-myths.html) | English の columns/wheel-myths.html | content/columns/en/ の記事 (日本語の記事と同じ内容) |
 | [en/columns/slot-machine.html](en/columns/slot-machine.html) | English の columns/slot-machine.html | content/columns/en/ の記事 (日本語の記事と同じ内容) |
 | [en/columns/loot-containers.html](en/columns/loot-containers.html) | English の columns/loot-containers.html | content/columns/en/ の記事 (日本語の記事と同じ内容) |
@@ -102,6 +103,7 @@ flowchart LR
 
 | 記事 | 日付 | 元にしたもの |
 |---|---|---|
+| [お茶とパイの最強の組み合わせ。1 杯ならミルキー、飲み直すなら熊肉パイと](columns/buff-ranking.html) | 2026-11-15 | サーバーの処理 (IL) とデータ (版 2026-11-07)。出典 2 件は記事の末尾 |
 | [ルーレットに必勝パターンはあるのか](columns/wheel-myths.html) | 2026-11-12 | サーバーの処理 (IL) とデータ (版 2026-11-07)。出典 8 件は記事の末尾 |
 | [スロットマシンは回すほど減る。戻りは平均 91.8%](columns/slot-machine.html) | 2026-11-12 | サーバーの処理 (IL) とデータ (版 2026-11-07)。出典 6 件は記事の末尾 |
 | [箱の中身はいつ決まるのか](columns/loot-containers.html) | 2026-11-12 | サーバーの処理 (IL) とデータ (版 2026-11-07)。出典 4 件は記事の末尾 |
