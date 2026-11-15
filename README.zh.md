@@ -23,14 +23,14 @@ flowchart LR
     e3["build_diffs.py<br/>data/diffs/"]
   end
   subgraph B["Build (Python)"]
-    b1["build_site.py<br/>imports raid_calc.py · gene_calc.py · consume_calc.py · loot_odds.py<br/>build_views.py · build_index.py · genres.py · item_icons.py"]
+    b1["build_site.py<br/>imports raid_calc.py · gene_calc.py · consume_calc.py · ttk_calc.py · loot_odds.py<br/>build_views.py · build_index.py · genres.py · item_icons.py"]
     b2["content/ · rules/ · design/<br/>digests, columns, *.yml, tokens.json, *.css, item-icons/"]
   end
   subgraph W["Site (GitHub Pages)"]
     w1["index.html · history.html · genres.html · numbers.html"]
     w2["items.html · spec.html · diffs.html"]
     w3["columns.html → columns/*.html"]
-    w4["tools.html → tools/raid.html → tools/craft.html<br/>tools.html → tools/gene.html · tools/buff.html"]
+    w4["tools.html → tools/raid.html → tools/craft.html<br/>tools.html → tools/gene.html · tools/buff.html · tools/ttk.html"]
     w5["assets/style.css<br/>used by every page"]
   end
   s1 --> e1
