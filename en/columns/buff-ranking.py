@@ -170,11 +170,22 @@ def tables(lang: str) -> dict[str, str]:
     w = WORDS[lang]
     nm = (lambda sn: names[sn]) if lang == "ja" else (lambda sn: items[sn]["name"])
     mins = lambda s: w["min"].format(m=f"{s / 60:g}")  # noqa: E731
+
+    def icon(sn: str) -> str:
+        """The colour icon of a tea (by its first effect), a pie (the basic and the rich share one) or an ingredient."""
+        if sn in items and not sn.startswith("pie.") and mods(items, sn):
+            return f"{{ci:{next(iter(mods(items, sn)))}}}"
+        return f"{{ci:{sn.removesuffix('.rich')}}}"
+
+    def link(sn: str, pie: str | None = None, label: str | None = None) -> str:
+        """The item with its icon, opening the Buff Planner with it (and the bear pie) eaten at second 0."""
+        e = f"{sn}:0" + (f",{pie}:0" if pie else "")
+        return f"{icon(sn)}[{label or nm(sn)}](../tools/buff.html?e={e})"
     out = {}
     for t, rows in gather(items, made).items():
         lines = [f"| {w['rank']} | {w['item']} | {w['pie']} | {w['peak']} | {w['time']} | {w['score']} |", "|---|---|---|---|---|---|"]
         for k, r in enumerate(rows[:TOP], 1):
-            lines.append(f"| {k} | {nm(r['item'])} | {nm(r['pie']) if r['pie'] else w['none']} | {fmt_pct(r['peak'], t)} | {mins(r['time'])} | {r['score'] * 100:,.0f} |")
+            lines.append(f"| {k} | {link(r['item'], r['pie'])} | {icon(r['pie']) + nm(r['pie']) if r['pie'] else w['none']} | {fmt_pct(r['peak'], t)} | {mins(r['time'])} | {r['score'] * 100:,.0f} |")
         out[f"gather-{t}"] = "\n".join(lines)
     for t, by in window(items, made).items():
         lines = [f"| {w['rank']} | " + " | ".join(f"{mins(m * 60)}" for m in WINDOWS) + " |", "|---|" + "---|" * len(WINDOWS)]
@@ -182,22 +193,22 @@ def tables(lang: str) -> dict[str, str]:
             cells = []
             for m in WINDOWS:
                 r = by[m][k]
-                pie = f" + {nm(r['pie'])}" if r["pie"] else ""
-                cells.append(f"{nm(r['item'])}{pie} ({w['avg']} {fmt_pct(r['avg'], t)}, {w['uses'].format(n=r['drinks'] + r['pies'])})")
+                label = nm(r["item"]) + (f" + {nm(r['pie'])}" if r["pie"] else "")
+                cells.append(f"{link(r['item'], r['pie'], label)} ({w['avg']} {fmt_pct(r['avg'], t)}, {w['uses'].format(n=r['drinks'] + r['pies'])})")
             lines.append(f"| {k + 1} | " + " | ".join(cells) + " |")
         out[f"window-{t}"] = "\n".join(lines)
     lines = [f"| {w['kind']} | {w['best']} | {w['longest']} |", "|---|---|---|"]
     for t, rows in fight(items, made).items():
         strong = rows[0]
         long = max(rows, key=lambda r: (r["time"], r["value"]))
-        lines.append(f"| {TYPE_NAMES[t][0 if lang == 'ja' else 1]} | {nm(strong['item'])} ({fmt_pct(strong['value'], t)}, {mins(strong['time'])}) "
-                     f"| {nm(long['item'])} ({fmt_pct(long['value'], t)}, {mins(long['time'])}) |")
+        lines.append(f"| {TYPE_NAMES[t][0 if lang == 'ja' else 1]} | {link(strong['item'])} ({fmt_pct(strong['value'], t)}, {mins(strong['time'])}) "
+                     f"| {link(long['item'])} ({fmt_pct(long['value'], t)}, {mins(long['time'])}) |")
     out["fight"] = "\n".join(lines)
     for t, rows in cost(items, made).items():
         lines = [f"| {w['rank']} | {w['item']} | {w['score']} | {w['base']} | {w['per']} |", "|---|---|---|---|---|"]
         for k, r in enumerate(rows[:TOP], 1):
-            parts = ", ".join(f"{nm(b) if b in names or lang == 'en' else b} {float(n):g}" for b, n in sorted(r["base"].items(), key=lambda x: (-x[1], x[0])))
-            lines.append(f"| {k} | {nm(r['item'])} | {r['score']:,.0f} | {parts} | {r['per']:,.1f} |")
+            parts = ", ".join(f"{icon(b)}{nm(b) if b in names or lang == 'en' else b} {float(n):g}" for b, n in sorted(r["base"].items(), key=lambda x: (-x[1], x[0])))
+            lines.append(f"| {k} | {link(r['item'])} | {r['score']:,.0f} | {parts} | {r['per']:,.1f} |")
         out[f"cost-{t}"] = "\n".join(lines)
     return out
 
