@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>お茶とパイの最強の組み合わせ。1 杯ならミルキー、飲み直すなら熊肉パイと | Rust Analysis</title>
+<meta name="description" content="お茶とパイを、Buff Planner と同じ計算で全部の組み合わせを試して比べました。採集の量、短い時間の強さ、戦うとき、材料あたりの 4 つのランキングです。">
+<meta name="theme-color" content="#f2f4f5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15181a" media="(prefers-color-scheme: dark)">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rust Analysis">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:title" content="お茶とパイの最強の組み合わせ。1 杯ならミルキー、飲み直すなら熊肉パイと | Rust Analysis">
+<meta property="og:description" content="お茶とパイを、Buff Planner と同じ計算で全部の組み合わせを試して比べました。採集の量、短い時間の強さ、戦うとき、材料あたりの 4 つのランキングです。">
+<meta property="og:url" content="https://maco165.github.io/rust-patch-notes/columns/buff-ranking.html">
+<meta property="og:image" content="https://maco165.github.io/rust-patch-notes/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://maco165.github.io/rust-patch-notes/columns/buff-ranking.html">
+<link rel="alternate" hreflang="ja" href="https://maco165.github.io/rust-patch-notes/columns/buff-ranking.html">
+<link rel="alternate" hreflang="en" href="https://maco165.github.io/rust-patch-notes/en/columns/buff-ranking.html">
+<link rel="alternate" hreflang="x-default" href="https://maco165.github.io/rust-patch-notes/columns/buff-ranking.html">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "お茶とパイの最強の組み合わせ。1 杯ならミルキー、飲み直すなら熊肉パイと", "description": "お茶とパイを、Buff Planner と同じ計算で全部の組み合わせを試して比べました。採集の量、短い時間の強さ、戦うとき、材料あたりの 4 つのランキングです。", "inLanguage": "ja", "datePublished": "2026-11-15", "dateModified": "2026-11-15", "url": "https://maco165.github.io/rust-patch-notes/columns/buff-ranking.html", "mainEntityOfPage": "https://maco165.github.io/rust-patch-notes/columns/buff-ranking.html", "image": "https://maco165.github.io/rust-patch-notes/assets/og.png", "author": {"@type": "Organization", "name": "Rust Analysis", "url": "https://maco165.github.io/rust-patch-notes/"}, "publisher": {"@type": "Organization", "name": "Rust Analysis", "url": "https://maco165.github.io/rust-patch-notes/"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Rust Analysis", "item": "https://maco165.github.io/rust-patch-notes/"}, {"@type": "ListItem", "position": 2, "name": "コラム", "item": "https://maco165.github.io/rust-patch-notes/columns.html"}, {"@type": "ListItem", "position": 3, "name": "お茶とパイの最強の組み合わせ。1 杯ならミルキー、飲み直すなら熊肉パイと", "item": "https://maco165.github.io/rust-patch-notes/columns/buff-ranking.html"}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+JP:wght@400;600&display=swap">
+<link rel="stylesheet" href="../assets/style.css">
+</head><body>
+<header class="ra-site">
+  <a class="ra-site-name" href="../index.html"><b>Rust</b> Analysis</a>
+  <nav class="ra-nav" aria-label="ページ"><a href="../index.html"><i class="ra-ico ra-ico-month" aria-hidden="true"></i>今月</a><a href="../history.html"><i class="ra-ico ra-ico-history" aria-hidden="true"></i>これまで</a><a href="../genres.html"><i class="ra-ico ra-ico-genres" aria-hidden="true"></i>ジャンル</a><a href="../numbers.html"><i class="ra-ico ra-ico-numbers" aria-hidden="true"></i>数値</a><a href="../diffs.html"><i class="ra-ico ra-ico-diffs" aria-hidden="true"></i>版の差分</a><a href="../items.html"><i class="ra-ico ra-ico-items" aria-hidden="true"></i>アイテム</a><a href="../spec.html"><i class="ra-ico ra-ico-spec" aria-hidden="true"></i>仕様書</a><a href="../columns.html" aria-current="page"><i class="ra-ico ra-ico-columns" aria-hidden="true"></i>コラム</a><a href="../tools.html"><i class="ra-ico ra-ico-tools" aria-hidden="true"></i>ツール</a></nav>
+  <span class="ra-site-meta"><span class="ra-site-meta-w">データ </span>2026-11-05<span class="ra-site-meta-w"> まで</span></span>
+  <span class="ra-site-lang"><a href="../en/columns/buff-ranking.html" lang="en" hreflang="en">English</a></span><a class="ra-site-link" href="https://github.com/maco165/rust-patch-notes" rel="noopener"><i class="ra-ico ra-ico-github" aria-hidden="true"></i>GitHub</a>
+</header>
+<script>(()=>{const n=document.querySelector('.ra-nav'),a=n&&n.querySelector('[aria-current]');if(a&&n.scrollWidth>n.clientWidth)n.scrollLeft=a.offsetLeft-(n.clientWidth-a.offsetWidth)/2})()</script>
+<main class="ra-page"><article class="ra-prose"><p class="ra-patch-meta"><a class="ra-link" href="../columns.html">コラム</a><time datetime="2026-11-15">2026-11-15</time><span><i class="ra-ico ra-ico-farming" aria-hidden="true"></i> 農業・食料・生存</span><span class="ra-src ra-src-export"><i class="ra-ico ra-ico-export" aria-hidden="true"></i>本体の書き出し 2026-11-07</span></p><h1 class="ra-prose-title">お茶とパイの最強の組み合わせ。1 杯ならミルキー、飲み直すなら熊肉パイと</h1><p class="ra-prose-lead">お茶とパイを、Buff Planner と同じ計算で全部の組み合わせを試して比べました。採集の量、短い時間の強さ、戦うとき、材料あたりの 4 つのランキングです。</p><div class="ra-callout">
+<p class="ra-callout-label">結論</p>
+<p class="ra-callout-main">1 杯で済ませるならミルキーピュア、切れるたびに飲み直すならクリーミーピュアとリッチ熊肉パイ</p>
+<p>1 杯の値 × 時間は、どの採集でもミルキーピュアが 1 位です。熊肉パイは、その 15 分の間だけ効き目を 1.5 倍 (リッチは 1.75 倍) にし、時間を 2 倍の速さで減らすので、1 杯の合計は少し減ります。切れるたびに飲み直すなら時間の減りは気にならず、クリーミーピュアとリッチ熊肉パイの組が 15〜60 分のどの長さでも最強です。材料あたりではベーシックが圧倒的です。</p>
+</div>
+<ul class="ra-facts">
+<li><span class="ra-facts-n">×0.75</span><span class="ra-facts-l">熊肉パイの 15 分の間の値 × 時間 (リッチは ×0.875)</span></li>
+<li><span class="ra-facts-n">+87.5%</span><span class="ra-facts-l">鉱石の平均 (クリーミーピュアとリッチ熊肉パイを飲み直す)</span></li>
+<li><span class="ra-facts-n">64 個</span><span class="ra-facts-l">ピュアのお茶 1 杯に要るベリー (ベーシックは 4 個)</span></li>
+</ul>
+<p>どのランキングも、Buff Planner と同じ計算 (サーバーの処理で確かめた重なり方) で、全部の組み合わせを試した結果です。同じ種類の効果は 1 つしか効かないので、たとえば鉱石のお茶を 2 種類重ねることはできません。作り方 (レシピ) の無いお茶とパイは、手に入れ方が分からないので、ランキングから外して最後に載せました。</p>
+<h2 class="ra-section">1. 採集の量 (値 × 時間)</h2>
+<p>1 杯 (と熊肉パイ 1 つ) を同時に使ったときの、効き目 × 続く時間の合計です。「値 × 時間」は、+40% が 30 分続けば 40 × 30 = 1,200 です。</p>
+<h3>鉱石</h3>
+<!-- table:gather-Ore_Yield -->
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">順位</th><th scope="col">お茶・パイ</th><th scope="col">熊肉パイ</th><th scope="col">効き目</th><th scope="col">続く時間</th><th scope="col">値 × 時間</th></tr></thead><tbody><tr><td>1</td><td>ミルキーピュア 鉱石ティー</td><td>なし</td><td>+40%</td><td>45 分</td><td>1,800</td></tr><tr><td>2</td><td>ミルキーピュア 鉱石ティー</td><td>リッチ 熊肉パイ</td><td>+70%</td><td>30 分</td><td>1,650</td></tr><tr><td>3</td><td>ミルキーピュア 鉱石ティー</td><td>熊肉パイ</td><td>+60%</td><td>30 分</td><td>1,500</td></tr><tr><td>4</td><td>クリーミーピュア 鉱石ティー</td><td>なし</td><td>+50%</td><td>24 分</td><td>1,200</td></tr><tr><td>5</td><td>ピュア 鉱石ティー</td><td>なし</td><td>+40%</td><td>30 分</td><td>1,200</td></tr></tbody></table></div>
+<!-- /table -->
+<h3>木</h3>
+<!-- table:gather-Wood_Yield -->
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">順位</th><th scope="col">お茶・パイ</th><th scope="col">熊肉パイ</th><th scope="col">効き目</th><th scope="col">続く時間</th><th scope="col">値 × 時間</th></tr></thead><tbody><tr><td>1</td><td>ミルキーピュア 木材ティー</td><td>なし</td><td>+150%</td><td>45 分</td><td>6,750</td></tr><tr><td>2</td><td>ミルキーピュア 木材ティー</td><td>リッチ 熊肉パイ</td><td>+262.5%</td><td>30 分</td><td>6,188</td></tr><tr><td>3</td><td>ミルキーピュア 木材ティー</td><td>熊肉パイ</td><td>+225%</td><td>30 分</td><td>5,625</td></tr><tr><td>4</td><td>クリーミーピュア 木材ティー</td><td>なし</td><td>+200%</td><td>24 分</td><td>4,800</td></tr><tr><td>5</td><td>ピュア 木材ティー</td><td>なし</td><td>+150%</td><td>30 分</td><td>4,500</td></tr></tbody></table></div>
+<!-- /table -->
+<h3>スクラップ</h3>
+<!-- table:gather-Scrap_Yield -->
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">順位</th><th scope="col">お茶・パイ</th><th scope="col">熊肉パイ</th><th scope="col">効き目</th><th scope="col">続く時間</th><th scope="col">値 × 時間</th></tr></thead><tbody><tr><td>1</td><td>ミルキーピュア スクラップティー</td><td>なし</td><td>+300%</td><td>90 分</td><td>27,000</td></tr><tr><td>2</td><td>ミルキーピュア スクラップティー</td><td>リッチ 熊肉パイ</td><td>+525%</td><td>75 分</td><td>25,875</td></tr><tr><td>3</td><td>ミルキーピュア スクラップティー</td><td>熊肉パイ</td><td>+450%</td><td>75 分</td><td>24,750</td></tr><tr><td>4</td><td>クリーミーピュア スクラップティー</td><td>なし</td><td>+400%</td><td>48 分</td><td>19,200</td></tr><tr><td>5</td><td>ピュア スクラップティー</td><td>なし</td><td>+300%</td><td>60 分</td><td>18,000</td></tr></tbody></table></div>
+<!-- /table -->
+<h3>採集 (動物と魚)</h3>
+<!-- table:gather-Harvesting -->
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">順位</th><th scope="col">お茶・パイ</th><th scope="col">熊肉パイ</th><th scope="col">効き目</th><th scope="col">続く時間</th><th scope="col">値 × 時間</th></tr></thead><tbody><tr><td>1</td><td>ミルキーピュア 収穫ティー</td><td>なし</td><td>+55%</td><td>30 分</td><td>1,650</td></tr><tr><td>2</td><td>ミルキーピュア 収穫ティー</td><td>リッチ 熊肉パイ</td><td>+96.3%</td><td>15 分</td><td>1,444</td></tr><tr><td>3</td><td>ミルキーピュア 収穫ティー</td><td>熊肉パイ</td><td>+82.5%</td><td>15 分</td><td>1,238</td></tr><tr><td>4</td><td>ピュア 収穫ティー</td><td>なし</td><td>+55%</td><td>20 分</td><td>1,100</td></tr><tr><td>5</td><td>クリーミーピュア 収穫ティー</td><td>なし</td><td>+65%</td><td>16 分</td><td>1,040</td></tr></tbody></table></div>
+<!-- /table -->
+<p>熊肉パイは、その 15 分の間だけ、鉱石・木・スクラップ・採集の効き目を 1.5 倍 (リッチは 1.75 倍) にし、残り時間を 2 倍の速さで減らします。その間の値 × 時間は 1.5 ÷ 2 = 0.75 倍 (リッチは 0.875 倍) です。お茶が 15 分の間に切れる採集のお茶ではこの倍率のまま減り、鉱石・木・スクラップのように 15 分より長く続くお茶では、残りは普通の速さなので差は小さくなります (表の 1 位どうしで 0.83〜0.96 倍)。どれも、1 杯なら熊肉パイを組まない方が多く採れます。</p>
+<h2 class="ra-section">2. 短い時間の強さ (切れるたびに飲み直す)</h2>
+<p>15・30・60 分の間、お茶と熊肉パイが切れるたびに同じ物を使い直したときの、効き目の平均です。使う回数は、お茶と熊肉パイを合わせた数です。</p>
+<h3>鉱石</h3>
+<!-- table:window-Ore_Yield -->
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">順位</th><th scope="col">15 分</th><th scope="col">30 分</th><th scope="col">60 分</th></tr></thead><tbody><tr><td>1</td><td>クリーミーピュア 鉱石ティー + リッチ 熊肉パイ (平均 +87.5%, 3 回使う)</td><td>クリーミーピュア 鉱石ティー + リッチ 熊肉パイ (平均 +87.5%, 5 回使う)</td><td>クリーミーピュア 鉱石ティー + リッチ 熊肉パイ (平均 +87.5%, 9 回使う)</td></tr><tr><td>2</td><td>クリーミーピュア 鉱石ティー + 熊肉パイ (平均 +75%, 3 回使う)</td><td>クリーミーピュア 鉱石ティー + 熊肉パイ (平均 +75%, 5 回使う)</td><td>クリーミーピュア 鉱石ティー + 熊肉パイ (平均 +75%, 9 回使う)</td></tr><tr><td>3</td><td>ピュア 鉱石ティー + リッチ 熊肉パイ (平均 +70%, 2 回使う)</td><td>ピュア 鉱石ティー + リッチ 熊肉パイ (平均 +70%, 4 回使う)</td><td>ミルキーピュア 鉱石ティー + リッチ 熊肉パイ (平均 +70%, 7 回使う)</td></tr></tbody></table></div>
+<!-- /table -->
+<h3>木</h3>
+<!-- table:window-Wood_Yield -->
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">順位</th><th scope="col">15 分</th><th scope="col">30 分</th><th scope="col">60 分</th></tr></thead><tbody><tr><td>1</td><td>クリーミーピュア 木材ティー + リッチ 熊肉パイ (平均 +350%, 3 回使う)</td><td>クリーミーピュア 木材ティー + リッチ 熊肉パイ (平均 +350%, 5 回使う)</td><td>クリーミーピュア 木材ティー + リッチ 熊肉パイ (平均 +350%, 9 回使う)</td></tr><tr><td>2</td><td>クリーミーピュア 木材ティー + 熊肉パイ (平均 +300%, 3 回使う)</td><td>クリーミーピュア 木材ティー + 熊肉パイ (平均 +300%, 5 回使う)</td><td>クリーミーピュア 木材ティー + 熊肉パイ (平均 +300%, 9 回使う)</td></tr><tr><td>3</td><td>ピュア 木材ティー + リッチ 熊肉パイ (平均 +262.5%, 2 回使う)</td><td>ピュア 木材ティー + リッチ 熊肉パイ (平均 +262.5%, 4 回使う)</td><td>ミルキーピュア 木材ティー + リッチ 熊肉パイ (平均 +262.5%, 7 回使う)</td></tr></tbody></table></div>
+<!-- /table -->
+<h3>スクラップ</h3>
+<!-- table:window-Scrap_Yield -->
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">順位</th><th scope="col">15 分</th><th scope="col">30 分</th><th scope="col">60 分</th></tr></thead><tbody><tr><td>1</td><td>クリーミーピュア スクラップティー + リッチ 熊肉パイ (平均 +700%, 2 回使う)</td><td>クリーミーピュア スクラップティー + リッチ 熊肉パイ (平均 +700%, 4 回使う)</td><td>クリーミーピュア スクラップティー + リッチ 熊肉パイ (平均 +700%, 7 回使う)</td></tr><tr><td>2</td><td>クリーミーピュア スクラップティー + 熊肉パイ (平均 +600%, 2 回使う)</td><td>クリーミーピュア スクラップティー + 熊肉パイ (平均 +600%, 4 回使う)</td><td>クリーミーピュア スクラップティー + 熊肉パイ (平均 +600%, 7 回使う)</td></tr><tr><td>3</td><td>ピュア スクラップティー + リッチ 熊肉パイ (平均 +525%, 2 回使う)</td><td>ピュア スクラップティー + リッチ 熊肉パイ (平均 +525%, 3 回使う)</td><td>ピュア スクラップティー + リッチ 熊肉パイ (平均 +525%, 6 回使う)</td></tr></tbody></table></div>
+<!-- /table -->
+<h3>採集 (動物と魚)</h3>
+<!-- table:window-Harvesting -->
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">順位</th><th scope="col">15 分</th><th scope="col">30 分</th><th scope="col">60 分</th></tr></thead><tbody><tr><td>1</td><td>クリーミーピュア 収穫ティー + リッチ 熊肉パイ (平均 +113.8%, 3 回使う)</td><td>クリーミーピュア 収穫ティー + リッチ 熊肉パイ (平均 +113.8%, 6 回使う)</td><td>クリーミーピュア 収穫ティー + リッチ 熊肉パイ (平均 +113.8%, 12 回使う)</td></tr><tr><td>2</td><td>クリーミーピュア 収穫ティー + 熊肉パイ (平均 +97.5%, 3 回使う)</td><td>クリーミーピュア 収穫ティー + 熊肉パイ (平均 +97.5%, 6 回使う)</td><td>クリーミーピュア 収穫ティー + 熊肉パイ (平均 +97.5%, 12 回使う)</td></tr><tr><td>3</td><td>ミルキーピュア 収穫ティー + リッチ 熊肉パイ (平均 +96.3%, 2 回使う)</td><td>ミルキーピュア 収穫ティー + リッチ 熊肉パイ (平均 +96.3%, 4 回使う)</td><td>ミルキーピュア 収穫ティー + リッチ 熊肉パイ (平均 +96.3%, 8 回使う)</td></tr></tbody></table></div>
+<!-- /table -->
+<p>飲み直せるなら、熊肉パイの「短くなる」は気にならず、強さだけが効きます。クリーミーピュアは効き目がいちばん強く、リッチ熊肉パイで 1.75 倍になるので、使う数は増えても平均は最も高くなります。</p>
+<h2 class="ra-section">3. 戦うための組み合わせ</h2>
+<p>戦うときに効く 4 つの効果は、どれも種類が違うので、いちばん強い物を全部同時に重ねられます。</p>
+<!-- table:fight -->
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">効果</th><th scope="col">いちばん強い</th><th scope="col">いちばん長い</th></tr></thead><tbody><tr><td>最大体力</td><td>クリーミーピュア 最大体力ティー (+20%, 16 分)</td><td>ミルキーピュア 最大体力ティー (+15%, 30 分)</td></tr><tr><td>体力の戻り</td><td>リッチ 豚肉パイ (×3.5, 30 分)</td><td>リッチ 豚肉パイ (×3.5, 30 分)</td></tr><tr><td>止血</td><td>リッチ ハンターズパイ (1, 30 分)</td><td>リッチ ハンターズパイ (1, 30 分)</td></tr><tr><td>放射線のダメージ</td><td>クリーミーピュア 放射線耐性ティー (−45%, 24 分)</td><td>ミルキーピュア 放射線耐性ティー (−35%, 45 分)</td></tr></tbody></table></div>
+<!-- /table -->
+<p>いちばん強い組み合わせは、クリーミーピュア 最大体力ティー (最大体力 120)、リッチ 豚肉パイ (時間をかけて戻る体力が 1 秒に 3.5)、リッチ ハンターズパイ (止血)、クリーミーピュア 放射線耐性ティー (放射線のダメージ −45%) です。かぼちゃパイも最大体力を上げますが、最大体力のお茶と同じ種類なので、後から使った方に入れ替わります。止血の値 (1) がどう効くかは、まだ確かめていません。</p>
+<h2 class="ra-section">4. 作る手間あたり (材料 1 つあたりの値 × 時間)</h2>
+<p>調合台と調理台のレシピを、作れない材料 (ベリー・牛乳・クリーム・卵・小麦など) までさかのぼって数えました。</p>
+<h3>鉱石</h3>
+<!-- table:cost-Ore_Yield -->
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">順位</th><th scope="col">お茶・パイ</th><th scope="col">値 × 時間</th><th scope="col">材料</th><th scope="col">材料 1 つあたり</th></tr></thead><tbody><tr><td>1</td><td>ベーシック 鉱石ティー</td><td>600</td><td>青のベリー 2, 黄のベリー 2</td><td>150.0</td></tr><tr><td>2</td><td>アドバンスド 鉱石ティー</td><td>900</td><td>青のベリー 8, 黄のベリー 8</td><td>56.2</td></tr><tr><td>3</td><td>ミルキーピュア 鉱石ティー</td><td>1,800</td><td>青のベリー 32, 黄のベリー 32, 牛乳 3</td><td>26.9</td></tr><tr><td>4</td><td>ピュア 鉱石ティー</td><td>1,200</td><td>青のベリー 32, 黄のベリー 32</td><td>18.8</td></tr><tr><td>5</td><td>クリーミーピュア 鉱石ティー</td><td>1,200</td><td>青のベリー 32, 黄のベリー 32, クリーム 3</td><td>17.9</td></tr></tbody></table></div>
+<!-- /table -->
+<h3>木</h3>
+<!-- table:cost-Wood_Yield -->
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">順位</th><th scope="col">お茶・パイ</th><th scope="col">値 × 時間</th><th scope="col">材料</th><th scope="col">材料 1 つあたり</th></tr></thead><tbody><tr><td>1</td><td>ベーシック 木材ティー</td><td>1,500</td><td>青のベリー 2, 赤のベリー 2</td><td>375.0</td></tr><tr><td>2</td><td>アドバンスド 木材ティー</td><td>3,000</td><td>青のベリー 8, 赤のベリー 8</td><td>187.5</td></tr><tr><td>3</td><td>ミルキーピュア 木材ティー</td><td>6,750</td><td>青のベリー 32, 赤のベリー 32, 牛乳 3</td><td>100.7</td></tr><tr><td>4</td><td>クリーミーピュア 木材ティー</td><td>4,800</td><td>青のベリー 32, 赤のベリー 32, クリーム 3</td><td>71.6</td></tr><tr><td>5</td><td>ピュア 木材ティー</td><td>4,500</td><td>青のベリー 32, 赤のベリー 32</td><td>70.3</td></tr></tbody></table></div>
+<!-- /table -->
+<h3>スクラップ</h3>
+<!-- table:cost-Scrap_Yield -->
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">順位</th><th scope="col">お茶・パイ</th><th scope="col">値 × 時間</th><th scope="col">材料</th><th scope="col">材料 1 つあたり</th></tr></thead><tbody><tr><td>1</td><td>ベーシック スクラップティー</td><td>3,000</td><td>白のベリー 2, 黄のベリー 2</td><td>750.0</td></tr><tr><td>2</td><td>アドバンスド スクラップティー</td><td>9,000</td><td>白のベリー 8, 黄のベリー 8</td><td>562.5</td></tr><tr><td>3</td><td>ミルキーピュア スクラップティー</td><td>27,000</td><td>白のベリー 32, 黄のベリー 32, 牛乳 3</td><td>403.0</td></tr><tr><td>4</td><td>クリーミーピュア スクラップティー</td><td>19,200</td><td>白のベリー 32, 黄のベリー 32, クリーム 3</td><td>286.6</td></tr><tr><td>5</td><td>ピュア スクラップティー</td><td>18,000</td><td>白のベリー 32, 黄のベリー 32</td><td>281.2</td></tr></tbody></table></div>
+<!-- /table -->
+<h3>採集 (動物と魚)</h3>
+<!-- table:cost-Harvesting -->
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">順位</th><th scope="col">お茶・パイ</th><th scope="col">値 × 時間</th><th scope="col">材料</th><th scope="col">材料 1 つあたり</th></tr></thead><tbody><tr><td>1</td><td>ベーシック 収穫ティー</td><td>700</td><td>緑のベリー 3, 黄のベリー 1</td><td>175.0</td></tr><tr><td>2</td><td>アドバンスド 収穫ティー</td><td>900</td><td>緑のベリー 12, 黄のベリー 4</td><td>56.2</td></tr><tr><td>3</td><td>ミルキーピュア 収穫ティー</td><td>1,650</td><td>緑のベリー 48, 黄のベリー 16, 牛乳 3</td><td>24.6</td></tr><tr><td>4</td><td>ピュア 収穫ティー</td><td>1,100</td><td>緑のベリー 48, 黄のベリー 16</td><td>17.2</td></tr><tr><td>5</td><td>クリーミーピュア 収穫ティー</td><td>1,040</td><td>緑のベリー 48, 黄のベリー 16, クリーム 3</td><td>15.5</td></tr></tbody></table></div>
+<!-- /table -->
+<h3>最大体力</h3>
+<!-- table:cost-Max_Health -->
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">順位</th><th scope="col">お茶・パイ</th><th scope="col">値 × 時間</th><th scope="col">材料</th><th scope="col">材料 1 つあたり</th></tr></thead><tbody><tr><td>1</td><td>ベーシック 最大体力ティー</td><td>100</td><td>赤のベリー 3, 黄のベリー 1</td><td>25.0</td></tr><tr><td>2</td><td>かぼちゃパイ</td><td>100</td><td>卵 3, 小麦 3, かぼちゃ 1</td><td>14.3</td></tr><tr><td>3</td><td>リッチ かぼちゃパイ</td><td>150</td><td>クリーム 4, 卵 3, 小麦 3, かぼちゃ 1</td><td>13.6</td></tr><tr><td>4</td><td>アドバンスド 最大体力ティー</td><td>200</td><td>赤のベリー 12, 黄のベリー 4</td><td>12.5</td></tr><tr><td>5</td><td>ミルキーピュア 最大体力ティー</td><td>450</td><td>赤のベリー 48, 黄のベリー 16, 牛乳 3</td><td>6.7</td></tr></tbody></table></div>
+<!-- /table -->
+<p>アドバンスドは同じお茶 4 杯から、ピュアはアドバンスド 4 杯から作るので、ピュア 1 杯にはベーシック 16 杯分 (ベリー 64 個) が要ります。値 × 時間は、鉱石と採集で 2 倍ほど、木とスクラップでも 3〜6 倍にしかならず、16 倍の材料には届かないので、材料あたりではベーシックがいちばん得です。ベリーが余っているならピュアやミルキーピュアで長く効かせ、ベリーが少ないならベーシックを何杯も使う方が多く採れます。</p>
+<h2 class="ra-section">作り方の無い物</h2>
+<p>次の 2 つは強いですが、レシピが無く、このサイトの抽選のデータでは箱からも NPC からも出ません。ランキングからは外しました。</p>
+<!-- table:special -->
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">作り方が無い物</th><th scope="col">効き目</th><th scope="col">続く時間</th></tr></thead><tbody><tr><td>サバイバーズパイ</td><td>採集 (動物と魚) +150%</td><td>5 分</td></tr><tr><td>スーパー血清</td><td>木 +500%, 鉱石 +400%, スクラップ +500%</td><td>60 分</td></tr></tbody></table></div>
+<!-- /table -->
+<h2 class="ra-section">計算の仕方</h2>
+<ul><li>効果の値と時間は、サーバー本体から書き出したデータ (版 2026-11-07) です。重なり方と、熊肉パイの効き方は、サーバーの処理で確かめました。</li><li>鉱石・木・スクラップ・採集の「+40%」は、採った量や箱のスクラップに 1.4 を掛けることです。</li><li>表は <code>content/columns/buff-ranking.py</code> が計算し、検査がこのコラムの表と同じかを確かめています。</li></ul><h2 class="ra-section">出典</h2><ul><li><a class="ra-link" href="https://maco165.github.io/rust-patch-notes/tools/buff.html" rel="noopener">Buff Planner (お茶と食べ物の組み合わせの計算機)</a></li><li><a class="ra-link" href="https://wiki.facepunch.com/rust/item/oretea" rel="noopener">公式 Wiki ベーシック 鉱石ティー</a></li></ul></article></main>
+<footer class="ra-foot"><p>Facepunch Studios とは関係のない、個人が解析して作った非公式のサイトです。変更点は公式の変更点の一覧を自分の言葉で日本語にしたもので、各回に出典のリンクがあります。アイテムの値はゲームのサーバーのデータから、版の差分はゲームの本体 (クライアント) の各月の版のデータから読んだもので、正しさは保証しません。</p>
+<p>アイコンの一部は <a class="ra-link" href="https://lucide.dev/" rel="noopener">Lucide</a> (ISC License) です。</p></footer>
+</body></html>

@@ -659,9 +659,10 @@ section.gp-drop { outline: 2px dashed var(--blueprint); outline-offset: 4px; }
 
 /* Buff Planner (tools/buff.html): the buttons of teas and pies, the order eaten, warnings, time bands and the table */
 .bp-chips { flex: 1 1 280px; display: flex; flex-wrap: wrap; gap: var(--space-2); }
-.bp-chip { display: inline-flex; align-items: baseline; gap: var(--space-2); min-height: var(--chip-h); padding: 0 var(--space-3); border: var(--rule) solid var(--line-strong); border-radius: var(--radius-xs); background: var(--plate-raised); color: var(--ink); font: inherit; font-size: 14px; cursor: pointer; }
+.bp-chip { display: inline-flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 2px; min-width: 96px; min-height: 52px; padding: var(--space-1) var(--space-3); border: var(--rule) solid var(--line-strong); border-radius: var(--radius-xs); background: var(--plate-raised); color: var(--ink); font: inherit; font-size: 14px; cursor: pointer; }
 .bp-chip small { font-family: var(--font-mono); font-size: 12px; color: var(--ink-muted); }
-.bp-chip b { font-weight: 400; }
+.bp-chip b { font-weight: 400; line-height: 20px; }
+.bp-chip small { line-height: 16px; }
 .bp-chip.is-on { border-color: var(--ink); background: var(--ink); color: var(--plate); }
 .bp-chip.is-on b { font-weight: 600; }
 .bp-chip.is-on small { color: var(--plate-sunken); }
@@ -672,7 +673,36 @@ section.gp-drop { outline: 2px dashed var(--blueprint); outline-offset: 4px; }
 .bp-ord small.bp-dupnote { color: var(--rust); font-weight: 600; }
 .bp-en { display: block; font-family: var(--font-mono); font-size: 11px; font-weight: 400; color: var(--ink-muted); }
 .ra-rd-kind .bp-en { margin-top: 2px; }
+.bp-grp { margin: var(--space-6) 0 var(--space-3); padding-bottom: var(--space-1); border-bottom: var(--rule) solid var(--line-strong); font-size: 16px; }
+.bp-grp:first-child { margin-top: 0; }
+/* wide screens: a grid of kinds by grades; narrow ones: a list of kinds that open on their grades */
+.bp-narrow { display: none; }
+.bp-mx { width: 100%; border-collapse: collapse; font-size: 14px; }
+.bp-mx thead th { padding: var(--space-1) var(--space-2); border-bottom: var(--rule) solid var(--line-strong); text-align: left; font-size: 12px; font-weight: 600; color: var(--ink-muted); white-space: nowrap; }
+.bp-mx tbody th { padding: var(--space-2) var(--space-3) var(--space-2) 0; text-align: left; font-size: 14px; white-space: nowrap; }
+.bp-mx tbody th .bp-en { margin-top: 2px; }
+.bp-mx td { padding: 3px; }
+.bp-mx tbody tr { border-bottom: var(--rule) solid var(--line); }
+.bp-mx .bp-chip { width: 100%; min-width: 0; min-height: 40px; flex-direction: row; align-items: center; justify-content: flex-start; padding: 0 var(--space-2); }
+.bp-mx .bp-chip b { display: none; }
+.bp-mx .bp-chip small { font-size: 13px; color: inherit; }
+.bp-mx .bp-chip.is-on small { color: var(--plate); }
+.bp-ac { border-top: var(--rule) solid var(--line-strong); }
+.bp-ac details { border-bottom: var(--rule) solid var(--line); }
+.bp-ac summary { display: flex; align-items: center; gap: var(--space-2); min-height: 48px; list-style: none; cursor: pointer; }
+.bp-ac summary::-webkit-details-marker { display: none; }
+.bp-ac summary b { font-size: 15px; }
+.bp-ac summary .bp-en { display: inline; }
+.bp-ac-pick { margin-left: auto; font-size: 13px; font-weight: 600; text-align: right; }
+.bp-ac-pick:not(:empty) { padding: 2px 8px; border-radius: var(--radius-xs); background: var(--ink); color: var(--plate); }
+.bp-ac summary .ra-ico { flex: none; margin-left: auto; color: var(--ink-muted); transform: rotate(180deg); }
+.bp-ac-pick + .ra-ico { margin-left: 0; }
+.bp-ac details[open] summary .ra-ico { transform: none; }
+.bp-ac .bp-chips { padding: 0 0 var(--space-3); }
+.bp-ac .bp-chip { flex-direction: row; align-items: baseline; min-height: 40px; min-width: 0; padding: 0 var(--space-3); gap: var(--space-2); }
+@media (max-width: 760px) { .bp-wide { display: none; } .bp-narrow { display: block; } }
 .bp-order { border-top: var(--rule-heavy) solid var(--ink); }
+.bp-pick-msg { position: sticky; bottom: var(--space-2); margin: var(--space-3) 0 0; padding: var(--space-2) var(--space-3); border-left: 4px solid var(--rust); background: var(--rust-soft); font-size: 14px; }
 .bp-ord { display: grid; grid-template-columns: 28px minmax(0, 1fr) 120px 140px 36px; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-2); border-bottom: var(--rule) solid var(--line); }
 .bp-ord > span { display: flex; flex-direction: column; min-width: 0; }
 .bp-ord small { font-size: 13px; color: var(--ink-muted); }
@@ -719,6 +749,19 @@ section.gp-drop { outline: 2px dashed var(--blueprint); outline-offset: 4px; }
   .bp-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .bp-tl-row, .bp-axis { grid-template-columns: 110px minmax(0, 1fr); }
   .bp-tbl td:nth-child(2), .bp-tbl th:nth-child(2) { display: none; }
+}
+
+/* The colour icon of each tool (design/tool-icons/), in a white tile so that its colours read in the dark theme too */
+.ra-ti { display: inline-flex; align-items: center; justify-content: center; flex: none; background: #ffffff; border: var(--rule) solid var(--line); border-radius: 10px; }
+.ra-ti svg { width: 78%; height: 78%; }
+.ra-ti-list { width: 56px; height: 56px; }
+.ra-ti-page { width: 72px; height: 72px; border-radius: 12px; }
+.ra-tools-title { gap: var(--space-3); }
+.ra-tp-head { display: flex; align-items: center; gap: var(--space-4); }
+.ra-tp-head .ra-patch-sub { margin: 0; }
+@media (max-width: 640px) {
+  .ra-ti-list { width: 44px; height: 44px; }
+  .ra-ti-page { width: 56px; height: 56px; }
 }
 .ra-ii-apple { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06Z'/%3E%3Cpath d='M10 2c1 .5 2 2 2 5'/%3E%3C/svg%3E"); }
 .ra-ii-armchair { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 9V6a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v3'/%3E%3Cpath d='M3 16a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v1.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V11a2 2 0 0 0-4 0z'/%3E%3Cpath d='M5 18v2'/%3E%3Cpath d='M19 18v2'/%3E%3C/svg%3E"); }
