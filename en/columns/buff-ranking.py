@@ -17,7 +17,6 @@ from __future__ import annotations
 
 import re
 import sys
-from fractions import Fraction
 from pathlib import Path
 
 import yaml
@@ -46,13 +45,7 @@ WORDS = {"ja": {"none": "なし", "item": "お茶・パイ", "pie": "熊肉パ�
 def load() -> tuple[dict, dict, dict]:
     items = cc.newest_items()
     names = yaml.safe_load((ROOT / "rules" / "item-names-ja.yml").read_text(encoding="utf-8"))["names"]
-    recipes = yaml.safe_load(max((ROOT / "data" / "recipes").glob("*.yml")).read_text(encoding="utf-8"))
-    made = {}
-    for lst in recipes["lists"]:
-        for r in lst["recipes"]:
-            if r["produced"] and r["produced"] not in made:
-                made[r["produced"]] = r
-    return items, names, made
+    return items, names, cc.newest_recipes()
 
 
 def buffs(items: dict) -> list[str]:
@@ -126,18 +119,6 @@ def fight(items: dict, made: dict) -> dict[str, list[dict]]:
     return out
 
 
-def base(made: dict, sn: str, seen: tuple = ()) -> dict[str, Fraction]:
-    """The ingredients that are not made, for one of `sn`, following the recipes down."""
-    r = made.get(sn)
-    if r is None or sn in seen:
-        return {sn: Fraction(1)}
-    out: dict[str, Fraction] = {}
-    for g in r["ingredients"]:
-        for k, v in base(made, g["item"], (*seen, sn)).items():
-            out[k] = out.get(k, Fraction(0)) + v * g["amount"] / r["count"]
-    return out
-
-
 def cost(items: dict, made: dict) -> dict[str, list[dict]]:
     out = {}
     for t in GATHER + ["Max_Health"]:
@@ -146,7 +127,7 @@ def cost(items: dict, made: dict) -> dict[str, list[dict]]:
             if t not in mods(items, sn) or sn not in made:
                 continue
             v, d = mods(items, sn)[t]
-            b = base(made, sn)
+            b = cc.base_ingredients(made, sn)
             n = sum(b.values())
             rows.append({"item": sn, "base": b, "n": n, "score": v * 100 * d / 60, "per": v * 100 * d / 60 / float(n)})
         rows.sort(key=lambda r: (-r["per"], r["item"]))
