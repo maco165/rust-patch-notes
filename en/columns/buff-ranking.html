@@ -51,7 +51,7 @@
 <li><span class="ra-facts-n">+87.5%</span><span class="ra-facts-l">average ore bonus (Creamy Pure and a rich Bear Pie, had again)</span></li>
 <li><span class="ra-facts-n">64</span><span class="ra-facts-l">berries in one Pure tea (Basic takes 4)</span></li>
 </ul>
-<p>Every ranking tries all the combinations with the calculation of the Buff Planner (the stacking rules read from the server's code). Only one effect of a kind works, so two ore teas cannot be stacked. Teas and pies with no recipe are left out of the rankings, as it is not clear how to get them, and listed at the end.</p>
+<p>Every ranking tries all the combinations with the calculation of the Buff Planner (the stacking rules read from the server's code). Only one effect of a kind works, so two ore teas cannot be stacked.</p>
 <h2 class="ra-section">1. Amount gathered (value × time)</h2>
 <p>One tea (and one Bear Pie) had at the same time: the effect times how long it lasts. +40% for 30 minutes is 40 × 30 = 1,200.</p>
 <h3>Ore</h3>
@@ -119,11 +119,6 @@
 <div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">Rank</th><th scope="col">Tea or pie</th><th scope="col">Value × time</th><th scope="col">Ingredients</th><th scope="col">Per ingredient</th></tr></thead><tbody><tr><td>1</td><td>Basic Max Health Tea</td><td>100</td><td>Red Berry 3, Yellow Berry 1</td><td>25.0</td></tr><tr><td>2</td><td>Pumpkin Pie</td><td>100</td><td>Egg 3, Wheat 3, Pumpkin 1</td><td>14.3</td></tr><tr><td>3</td><td>Rich Pumpkin Pie</td><td>150</td><td>Cream 4, Egg 3, Wheat 3, Pumpkin 1</td><td>13.6</td></tr><tr><td>4</td><td>Advanced Max Health Tea</td><td>200</td><td>Red Berry 12, Yellow Berry 4</td><td>12.5</td></tr><tr><td>5</td><td>Milky Pure Max Health Tea</td><td>450</td><td>Red Berry 48, Yellow Berry 16, Milk 3</td><td>6.7</td></tr></tbody></table></div>
 <!-- /table -->
 <p>Advanced is made from 4 teas, and Pure from 4 Advanced, so one Pure takes 16 Basic teas (64 berries). Value × time only doubles for ore and harvesting, and grows 3 to 6 times for wood and scrap, short of 16 times the ingredients, so Basic gives the most per ingredient. With berries to spare, Pure or Milky Pure lasts long; with few berries, several Basic teas gather more.</p>
-<h2 class="ra-section">Not craftable</h2>
-<p>These two are strong but have no recipe, and in this site's loot data they come from no crate or NPC. They are left out of the rankings.</p>
-<!-- table:special -->
-<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">Not craftable</th><th scope="col">Effect</th><th scope="col">Lasts</th></tr></thead><tbody><tr><td>Survivor's Pie</td><td>Harvesting (animals, fish) +150%</td><td>5 min</td></tr><tr><td>Super Serum</td><td>Wood +500%, Ore +400%, Scrap +500%</td><td>60 min</td></tr></tbody></table></div>
-<!-- /table -->
 <h2 class="ra-section">How it is worked out</h2>
 <ul><li>The values and times are the data exported from the server (build 2026-11-07). How effects stack and how the Bear Pie works were read from the server's code.</li><li>+40% for ore, wood, scrap and harvesting means what you gather, or the scrap of a crate, is multiplied by 1.4.</li><li>The tables are worked out by <code>content/columns/buff-ranking.py</code>, and a check makes sure the tables of this column are the same.</li></ul><h2 class="ra-section">Sources</h2><ul><li><a class="ra-link" href="https://maco165.github.io/rust-patch-notes/en/tools/buff.html" rel="noopener">Buff Planner (teas and food calculator)</a></li><li><a class="ra-link" href="https://wiki.facepunch.com/rust/item/oretea" rel="noopener">Official wiki, Basic Ore Tea</a></li></ul></article></main>
 <footer class="ra-foot"><p>An unofficial site made by one person, not affiliated with Facepunch Studios. The values are read from the game server’s data and code; there is no guarantee that they are right.</p>
