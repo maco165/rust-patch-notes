@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#15181a" media="(prefers-color-scheme: dark)">
 <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
 <link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png">
-<meta property="og:type" content="website">
+<meta property="og:type" content="article">
 <meta property="og:site_name" content="Rust Analysis">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:title" content="老虎机越转越亏，平均返还率 91.8% | Rust Analysis">
@@ -20,9 +20,16 @@
 <meta name="twitter:site" content="@maco165_rust">
 <meta name="twitter:creator" content="@maco165_rust">
 <link rel="canonical" href="https://maco165.github.io/rust-patch-notes/zh/columns/slot-machine.html">
+<link rel="alternate" type="application/atom+xml" title="Rust Analysis" href="https://maco165.github.io/rust-patch-notes/zh/feed.xml">
+<meta property="article:published_time" content="2026-11-12">
+<meta property="article:modified_time" content="2026-11-12">
+<meta property="og:locale:alternate" content="ja_JP">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:locale:alternate" content="ko_KR">
+<meta property="og:locale:alternate" content="ru_RU">
 <link rel="alternate" hreflang="ja" href="https://maco165.github.io/rust-patch-notes/columns/slot-machine.html">
 <link rel="alternate" hreflang="en" href="https://maco165.github.io/rust-patch-notes/en/columns/slot-machine.html">
-<link rel="alternate" hreflang="zh" href="https://maco165.github.io/rust-patch-notes/zh/columns/slot-machine.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://maco165.github.io/rust-patch-notes/zh/columns/slot-machine.html">
 <link rel="alternate" hreflang="ko" href="https://maco165.github.io/rust-patch-notes/ko/columns/slot-machine.html">
 <link rel="alternate" hreflang="ru" href="https://maco165.github.io/rust-patch-notes/ru/columns/slot-machine.html">
 <link rel="alternate" hreflang="x-default" href="https://maco165.github.io/rust-patch-notes/columns/slot-machine.html">
@@ -156,7 +163,7 @@ def payout(faces, multiplier=1):
 <h2 class="ra-section">调查方法</h2>
 <p>我们阅读了服务器本体的代码（老虎机类的中间代码），并从数据文件中读取了赔付设置和老虎机的数值。没有启动服务器。赌注 2、倍率 1～5、转动时间 2.5 秒、图案权重、赔付表，都是读出的数值。</p>
 <p>每种图案的张数（1,000 张中）是重写公开的 .NET 随机数算法后，逐个种子计算得出的。重写的算法是否正确，通过与广为人知的数值一致来确认（种子 0 的第 1 个数是 1559595546，种子 42 是 1434747710）。概率和平均返还是由这些张数计算出来的。</p>
-<p>这不是在游戏中实际转动统计得到的结果，而是确认代码就是这样写的。文中 100 万次、1,000 万次的结果，是运行我们自己写的、行为相同的程序得到的。</p><h2 class="ra-section">出处</h2><ul><li><a class="ra-link" href="https://docs.unity3d.com/ScriptReference/Random.Range.html" rel="noopener">Unity docs, UnityEngine.Random.Range</a></li><li><a class="ra-link" href="https://docs.unity3d.com/ScriptReference/Random.html" rel="noopener">Unity docs, UnityEngine.Random</a></li><li><a class="ra-link" href="https://learn.microsoft.com/en-us/dotnet/api/system.random" rel="noopener">.NET docs, System.Random</a></li><li><a class="ra-link" href="https://learn.microsoft.com/en-us/dotnet/api/system.random.-ctor" rel="noopener">.NET docs, System.Random constructors</a></li><li><a class="ra-link" href="https://learn.microsoft.com/en-us/dotnet/api/system.random.next" rel="noopener">.NET docs, System.Random.Next</a></li><li><a class="ra-link" href="https://github.com/microsoft/referencesource/blob/master/mscorlib/system/random.cs" rel="noopener">System.Random source published by Microsoft</a></li></ul></article></main>
+<p>这不是在游戏中实际转动统计得到的结果，而是确认代码就是这样写的。文中 100 万次、1,000 万次的结果，是运行我们自己写的、行为相同的程序得到的。</p><h2 class="ra-section">出处</h2><ul><li><a class="ra-link" href="https://docs.unity3d.com/ScriptReference/Random.Range.html" rel="noopener">Unity docs, UnityEngine.Random.Range</a></li><li><a class="ra-link" href="https://docs.unity3d.com/ScriptReference/Random.html" rel="noopener">Unity docs, UnityEngine.Random</a></li><li><a class="ra-link" href="https://learn.microsoft.com/en-us/dotnet/api/system.random" rel="noopener">.NET docs, System.Random</a></li><li><a class="ra-link" href="https://learn.microsoft.com/en-us/dotnet/api/system.random.-ctor" rel="noopener">.NET docs, System.Random constructors</a></li><li><a class="ra-link" href="https://learn.microsoft.com/en-us/dotnet/api/system.random.next" rel="noopener">.NET docs, System.Random.Next</a></li><li><a class="ra-link" href="https://github.com/microsoft/referencesource/blob/master/mscorlib/system/random.cs" rel="noopener">System.Random source published by Microsoft</a></li></ul><div class="ra-col-share"><span class="ra-col-share-h">分享这篇文章</span><a class="ra-button" href="https://twitter.com/intent/tweet?text=%E8%80%81%E8%99%8E%E6%9C%BA%E8%B6%8A%E8%BD%AC%E8%B6%8A%E4%BA%8F%EF%BC%8C%E5%B9%B3%E5%9D%87%E8%BF%94%E8%BF%98%E7%8E%87%2091.8%25&amp;url=https%3A//maco165.github.io/rust-patch-notes/zh/columns/slot-machine.html&amp;via=maco165_rust" rel="noopener" target="_blank">X</a><a class="ra-button" href="https://www.reddit.com/submit?url=https%3A//maco165.github.io/rust-patch-notes/zh/columns/slot-machine.html&amp;title=%E8%80%81%E8%99%8E%E6%9C%BA%E8%B6%8A%E8%BD%AC%E8%B6%8A%E4%BA%8F%EF%BC%8C%E5%B9%B3%E5%9D%87%E8%BF%94%E8%BF%98%E7%8E%87%2091.8%25" rel="noopener" target="_blank">Reddit</a><button type="button" class="ra-button" data-copy="https://maco165.github.io/rust-patch-notes/zh/columns/slot-machine.html">复制链接</button><span class="ra-col-share-msg" role="status"></span></div></article></main>
 <footer class="ra-foot"><p>本站为个人分析制作的非官方网站，与 Facepunch Studios 无关。数值读取自游戏服务器的数据与代码，不保证准确。</p>
 <p>部分图标来自 <a class="ra-link" href="https://lucide.dev/" rel="noopener">Lucide</a> (ISC License)。</p></footer>
-<script>(()=>{const m=document.querySelector('details.ra-site-lang');document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('[data-lang]');if(a)try{localStorage.setItem('ra-lang',a.dataset.lang)}catch(_){}if(m&&m.open&&!m.contains(e.target))m.open=false});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&m&&m.open){m.open=false;m.querySelector('summary').focus()}})})()</script></body></html>
+<script>(()=>{const m=document.querySelector('details.ra-site-lang');document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('[data-lang]');if(a)try{localStorage.setItem('ra-lang',a.dataset.lang)}catch(_){}if(m&&m.open&&!m.contains(e.target))m.open=false});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&m&&m.open){m.open=false;m.querySelector('summary').focus()}})})()</script><script>document.addEventListener('click',async e=>{const b=e.target.closest&&e.target.closest('[data-copy]');if(!b)return;const m=b.parentElement.querySelector('.ra-col-share-msg');try{await navigator.clipboard.writeText(b.dataset.copy);m.textContent='已复制链接。'}catch(_){m.textContent='无法复制。可以直接使用地址栏中的 URL。'}})</script></body></html>

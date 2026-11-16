@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko">
+  <id>https://maco165.github.io/rust-patch-notes/ko/feed.xml</id><title>Rust Analysis</title>
+  <link href="https://maco165.github.io/rust-patch-notes/ko/"/><link rel="self" href="https://maco165.github.io/rust-patch-notes/ko/feed.xml"/>
+  <updated>2026-11-15T00:00:00Z</updated><author><name>Rust Analysis</name></author>
+  <entry>
+    <id>https://maco165.github.io/rust-patch-notes/ko/columns/buff-ranking.html</id><title>차와 파이 최강 조합: 한 잔이면 Milky, 다시 마신다면 Bear Pie와</title><link href="https://maco165.github.io/rust-patch-notes/ko/columns/buff-ranking.html"/>
+    <published>2026-11-15T00:00:00Z</published><updated>2026-11-15T00:00:00Z</updated>
+    <summary>차와 파이를 Buff Planner와 같은 계산으로 모든 조합을 시험해 비교했습니다. 채집량, 짧은 시간의 강함, 전투, 재료당 효율의 4가지 순위입니다.</summary>
+  </entry>
+  <entry>
+    <id>https://maco165.github.io/rust-patch-notes/ko/columns/wheel-myths.html</id><title>Big Wheel에 필승 패턴이 있을까?</title><link href="https://maco165.github.io/rust-patch-notes/ko/columns/wheel-myths.html"/>
+    <published>2026-11-12T00:00:00Z</published><updated>2026-11-12T00:00:00Z</updated>
+    <summary>Bandit Camp의 Big Wheel에 얽힌 7가지 이야기를 서버 코드를 읽은 결과로 하나씩 확인합니다. 지금은 패턴이 없습니다. 2024년 5월 이전에는 이전 당첨을 보면 다음에 잘 나올 칸을 알 수 있었고, 평균적으로 늘어나는 베팅법도 있었습니다.</summary>
+  </entry>
+  <entry>
+    <id>https://maco165.github.io/rust-patch-notes/ko/columns/slot-machine.html</id><title>슬롯머신은 돌릴수록 줄어든다: 평균 환수율 91.8%</title><link href="https://maco165.github.io/rust-patch-notes/ko/columns/slot-machine.html"/>
+    <published>2026-11-12T00:00:00Z</published><updated>2026-11-12T00:00:00Z</updated>
+    <summary>슬롯머신의 그림이 정해지는 방식과 배당을 서버 코드와 데이터에서 읽었습니다. 2 Scrap을 걸면 평균 1.84가 돌아옵니다. 잘 터지는 기계도, 잘 터지는 시간도 없습니다.</summary>
+  </entry>
+  <entry>
+    <id>https://maco165.github.io/rust-patch-notes/ko/columns/loot-containers.html</id><title>상자의 내용물은 언제 정해질까?</title><link href="https://maco165.github.io/rust-patch-notes/ko/columns/loot-containers.html"/>
+    <published>2026-11-12T00:00:00Z</published><updated>2026-11-12T00:00:00Z</updated>
+    <summary>Barrel, Military Crate, Locked Crate의 내용물이 언제, 어떻게 정해지는지 서버 코드로 확인했습니다. 내용물은 상자가 스폰될 때 정해지며, 여는 사람이나 시각으로는 바뀌지 않습니다.</summary>
+  </entry>
+  <entry>
+    <id>https://maco165.github.io/rust-patch-notes/ko/columns/card-games.html</id><title>블랙잭과 포커, 카드를 세면 이길 수 있을까?</title><link href="https://maco165.github.io/rust-patch-notes/ko/columns/card-games.html"/>
+    <published>2026-11-12T00:00:00Z</published><updated>2026-11-12T00:00:00Z</updated>
+    <summary>블랙잭 머신과 Card Table을 서버 코드를 읽은 결과로 확인합니다. 덱은 매번 새로 만들어지므로 카드를 세어도 유리해지지 않습니다. 하우스 엣지는 약 0.8%입니다.</summary>
+  </entry>
+  <entry>
+    <id>https://maco165.github.io/rust-patch-notes/ko/index.html</id><title>Rust 2026년 11월 업데이트 &#x27;Printed and Polished&#x27; 정리</title><link href="https://maco165.github.io/rust-patch-notes/ko/index.html"/>
+    <published>2026-11-05T00:00:00Z</published><updated>2026-11-05T00:00:00Z</updated>
+    <summary>게임 Rust의 2026년 11월 업데이트 &#x27;Printed and Polished&#x27;의 변경 사항 215건을 건수, 요점, 장르별 건수, 아이템 설정의 차이로 정리한 페이지입니다.</summary>
+  </entry>
+</feed>

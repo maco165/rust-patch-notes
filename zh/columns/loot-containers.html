@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#15181a" media="(prefers-color-scheme: dark)">
 <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
 <link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png">
-<meta property="og:type" content="website">
+<meta property="og:type" content="article">
 <meta property="og:site_name" content="Rust Analysis">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:title" content="箱子里的物品是什么时候决定的？ | Rust Analysis">
@@ -20,9 +20,16 @@
 <meta name="twitter:site" content="@maco165_rust">
 <meta name="twitter:creator" content="@maco165_rust">
 <link rel="canonical" href="https://maco165.github.io/rust-patch-notes/zh/columns/loot-containers.html">
+<link rel="alternate" type="application/atom+xml" title="Rust Analysis" href="https://maco165.github.io/rust-patch-notes/zh/feed.xml">
+<meta property="article:published_time" content="2026-11-12">
+<meta property="article:modified_time" content="2026-11-12">
+<meta property="og:locale:alternate" content="ja_JP">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:locale:alternate" content="ko_KR">
+<meta property="og:locale:alternate" content="ru_RU">
 <link rel="alternate" hreflang="ja" href="https://maco165.github.io/rust-patch-notes/columns/loot-containers.html">
 <link rel="alternate" hreflang="en" href="https://maco165.github.io/rust-patch-notes/en/columns/loot-containers.html">
-<link rel="alternate" hreflang="zh" href="https://maco165.github.io/rust-patch-notes/zh/columns/loot-containers.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://maco165.github.io/rust-patch-notes/zh/columns/loot-containers.html">
 <link rel="alternate" hreflang="ko" href="https://maco165.github.io/rust-patch-notes/ko/columns/loot-containers.html">
 <link rel="alternate" hreflang="ru" href="https://maco165.github.io/rust-patch-notes/ru/columns/loot-containers.html">
 <link rel="alternate" hreflang="x-default" href="https://maco165.github.io/rust-patch-notes/columns/loot-containers.html">
@@ -188,7 +195,7 @@ def fill(rng):
 <h2 class="ra-section">尚不清楚的事</h2>
 <ul><li><strong>重置时间为无穷大的箱子。</strong> Elite Crate 和 Locked Crate 的重置时间被设为无穷大。计时器的设计是“到了预定时间才执行”，所以设为无穷大可以理解为永远不执行。不过，Unity 的随机数在收到无穷大时会返回什么，属于 Unity 引擎内部，我们没有确认。</li><li><strong>重新刷出的间隔和位置。</strong> 被搜空的箱子要几分钟才重新刷出、哪个位置刷出哪种箱子，因为没有读遗迹的数据，所以不清楚。</li><li><strong>游戏模式的加成。</strong> 抽取的权重有按游戏模式追加加成的机制。普通模式没有加成，本文的数字都是这种情况下的。服务器的时代设定按默认（无限制）处理。Hardcore、Primitive 等模式下数字会变。</li><li><strong>与箱子外观的对应。</strong> 预制体名与游戏中箱子的外观和名称的对应关系，是根据预制体名推测的。</li><li><strong>本文的对象。</strong> 本文针对 2026-11-07 版本。表的权重经常随更新而变化。</li><li><strong>2020 年 Supply Drop 的抽取次数。</strong> “8 次”是现在 Supply Drop 箱子里残留的旧设置（<code>maxDefinitionsToSpawn</code> 8）。没有槽位的箱子按这个次数抽取表的代码至今仍在，但 2020 年的值是否为 8，我们没有确认。</li><li><strong>2020 年的代码。</strong> 旧版本的服务器无法获取，所以 2020-11 和 2021-08 只读了客户端的表，并假定是否以蓝图形式出现与现在一样由物品的标记（<code>spawnAsBlueprint</code>）决定来计算。与 2021-08 的差异中，也包含 Tech Tree Update 以外的更新带来的变化。</li><li><strong>2020 年以前。</strong> 年表中更早的条目只依据官方更新日志的文字。</li></ul>
 <h2 class="ra-section">调查方法</h2>
-<p>我们阅读了服务器代码、105 个箱子设置和 1,327 个掉落表（没有运行服务器）。概率由表计算得出，并确认与自编程序的 10 万个箱子在 0.5 个百分点以内吻合（“至少 1 把枪”和 Bradley 为试验值）。旧版本的表用 <code>scripts/dump_loot_spawns.py</code> 读取。这些不是在游戏中打开箱子计数得到的结果。</p><h2 class="ra-section">出处</h2><ul><li><a class="ra-link" href="https://rust.facepunch.com/changes" rel="noopener">Official list of changes (how the loot tables changed)</a></li><li><a class="ra-link" href="https://docs.unity3d.com/ScriptReference/Random.Range.html" rel="noopener">Unity documentation, UnityEngine.Random.Range</a></li><li><a class="ra-link" href="https://docs.unity3d.com/ScriptReference/Random.html" rel="noopener">Unity documentation, UnityEngine.Random</a></li><li><a class="ra-link" href="https://docs.unity3d.com/ScriptReference/ScriptableObject.html" rel="noopener">Unity documentation, ScriptableObject</a></li></ul></article></main>
+<p>我们阅读了服务器代码、105 个箱子设置和 1,327 个掉落表（没有运行服务器）。概率由表计算得出，并确认与自编程序的 10 万个箱子在 0.5 个百分点以内吻合（“至少 1 把枪”和 Bradley 为试验值）。旧版本的表用 <code>scripts/dump_loot_spawns.py</code> 读取。这些不是在游戏中打开箱子计数得到的结果。</p><h2 class="ra-section">出处</h2><ul><li><a class="ra-link" href="https://rust.facepunch.com/changes" rel="noopener">Official list of changes (how the loot tables changed)</a></li><li><a class="ra-link" href="https://docs.unity3d.com/ScriptReference/Random.Range.html" rel="noopener">Unity documentation, UnityEngine.Random.Range</a></li><li><a class="ra-link" href="https://docs.unity3d.com/ScriptReference/Random.html" rel="noopener">Unity documentation, UnityEngine.Random</a></li><li><a class="ra-link" href="https://docs.unity3d.com/ScriptReference/ScriptableObject.html" rel="noopener">Unity documentation, ScriptableObject</a></li></ul><div class="ra-col-share"><span class="ra-col-share-h">分享这篇文章</span><a class="ra-button" href="https://twitter.com/intent/tweet?text=%E7%AE%B1%E5%AD%90%E9%87%8C%E7%9A%84%E7%89%A9%E5%93%81%E6%98%AF%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E5%86%B3%E5%AE%9A%E7%9A%84%EF%BC%9F&amp;url=https%3A//maco165.github.io/rust-patch-notes/zh/columns/loot-containers.html&amp;via=maco165_rust" rel="noopener" target="_blank">X</a><a class="ra-button" href="https://www.reddit.com/submit?url=https%3A//maco165.github.io/rust-patch-notes/zh/columns/loot-containers.html&amp;title=%E7%AE%B1%E5%AD%90%E9%87%8C%E7%9A%84%E7%89%A9%E5%93%81%E6%98%AF%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E5%86%B3%E5%AE%9A%E7%9A%84%EF%BC%9F" rel="noopener" target="_blank">Reddit</a><button type="button" class="ra-button" data-copy="https://maco165.github.io/rust-patch-notes/zh/columns/loot-containers.html">复制链接</button><span class="ra-col-share-msg" role="status"></span></div></article></main>
 <footer class="ra-foot"><p>本站为个人分析制作的非官方网站，与 Facepunch Studios 无关。数值读取自游戏服务器的数据与代码，不保证准确。</p>
 <p>部分图标来自 <a class="ra-link" href="https://lucide.dev/" rel="noopener">Lucide</a> (ISC License)。</p></footer>
-<script>(()=>{const m=document.querySelector('details.ra-site-lang');document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('[data-lang]');if(a)try{localStorage.setItem('ra-lang',a.dataset.lang)}catch(_){}if(m&&m.open&&!m.contains(e.target))m.open=false});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&m&&m.open){m.open=false;m.querySelector('summary').focus()}})})()</script></body></html>
+<script>(()=>{const m=document.querySelector('details.ra-site-lang');document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('[data-lang]');if(a)try{localStorage.setItem('ra-lang',a.dataset.lang)}catch(_){}if(m&&m.open&&!m.contains(e.target))m.open=false});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&m&&m.open){m.open=false;m.querySelector('summary').focus()}})})()</script><script>document.addEventListener('click',async e=>{const b=e.target.closest&&e.target.closest('[data-copy]');if(!b)return;const m=b.parentElement.querySelector('.ra-col-share-msg');try{await navigator.clipboard.writeText(b.dataset.copy);m.textContent='已复制链接。'}catch(_){m.textContent='无法复制。可以直接使用地址栏中的 URL。'}})</script></body></html>

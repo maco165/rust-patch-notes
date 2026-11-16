@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="zh-Hans">
+  <id>https://maco165.github.io/rust-patch-notes/zh/feed.xml</id><title>Rust Analysis</title>
+  <link href="https://maco165.github.io/rust-patch-notes/zh/"/><link rel="self" href="https://maco165.github.io/rust-patch-notes/zh/feed.xml"/>
+  <updated>2026-11-15T00:00:00Z</updated><author><name>Rust Analysis</name></author>
+  <entry>
+    <id>https://maco165.github.io/rust-patch-notes/zh/columns/buff-ranking.html</id><title>茶与派的最强组合：只喝一杯选 Milky，续喝就配 Bear Pie</title><link href="https://maco165.github.io/rust-patch-notes/zh/columns/buff-ranking.html"/>
+    <published>2026-11-15T00:00:00Z</published><updated>2026-11-15T00:00:00Z</updated>
+    <summary>用与 Buff Planner 相同的计算，把茶和派的所有组合都试了一遍并加以比较。共有采集量、短时间强度、战斗用、按材料计算这 4 个排名。</summary>
+  </entry>
+  <entry>
+    <id>https://maco165.github.io/rust-patch-notes/zh/columns/wheel-myths.html</id><title>Big Wheel 转盘有必胜规律吗？</title><link href="https://maco165.github.io/rust-patch-notes/zh/columns/wheel-myths.html"/>
+    <published>2026-11-12T00:00:00Z</published><updated>2026-11-12T00:00:00Z</updated>
+    <summary>我们根据阅读服务器代码的结果，逐一检验关于 Bandit Camp 转盘的 7 种说法。现在没有任何规律。2024 年 5 月之前，看上一次开出的格就能知道下一次更容易开出哪些格，也存在平均下来能赚的下注方式。</summary>
+  </entry>
+  <entry>
+    <id>https://maco165.github.io/rust-patch-notes/zh/columns/slot-machine.html</id><title>老虎机越转越亏，平均返还率 91.8%</title><link href="https://maco165.github.io/rust-patch-notes/zh/columns/slot-machine.html"/>
+    <published>2026-11-12T00:00:00Z</published><updated>2026-11-12T00:00:00Z</updated>
+    <summary>我们从服务器代码和数据中读出了老虎机图案的决定方式和赔付。下注 2 Scrap，平均只返还 1.84。既没有容易出奖的机器，也没有容易出奖的时间段。</summary>
+  </entry>
+  <entry>
+    <id>https://maco165.github.io/rust-patch-notes/zh/columns/loot-containers.html</id><title>箱子里的物品是什么时候决定的？</title><link href="https://maco165.github.io/rust-patch-notes/zh/columns/loot-containers.html"/>
+    <published>2026-11-12T00:00:00Z</published><updated>2026-11-12T00:00:00Z</updated>
+    <summary>Barrel、Military Crate 和 Locked Crate 里的物品是何时、如何决定的？我们从服务器代码中确认：物品在箱子刷出时就已决定，不会因开箱的人或时间而改变。</summary>
+  </entry>
+  <entry>
+    <id>https://maco165.github.io/rust-patch-notes/zh/columns/card-games.html</id><title>21 点和扑克，靠算牌能赢吗？</title><link href="https://maco165.github.io/rust-patch-notes/zh/columns/card-games.html"/>
+    <published>2026-11-12T00:00:00Z</published><updated>2026-11-12T00:00:00Z</updated>
+    <summary>根据阅读服务器代码的结果，检验 21 点机台和牌桌。牌堆每局都会重新生成，算牌不会带来任何优势。庄家优势约为 0.8%。</summary>
+  </entry>
+  <entry>
+    <id>https://maco165.github.io/rust-patch-notes/zh/index.html</id><title>Rust 2026 年 11 月更新“Printed and Polished”汇总</title><link href="https://maco165.github.io/rust-patch-notes/zh/index.html"/>
+    <published>2026-11-05T00:00:00Z</published><updated>2026-11-05T00:00:00Z</updated>
+    <summary>游戏 Rust 2026 年 11 月的更新“Printed and Polished”共有 215 项变更。本页汇总变更数量、要点、各类别的变更数以及物品设置的差异。</summary>
+  </entry>
+</feed>
