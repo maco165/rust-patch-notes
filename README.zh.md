@@ -1,6 +1,6 @@
 <p align="center"><a href="https://maco165.github.io/rust-patch-notes/zh/index.html"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme/hero-zh-dark.png"><img src="assets/readme/hero-zh.png" alt="Rust Analysis" width="100%"></picture></a></p>
 
-<p align="center"><a href="README.md">日本語</a> · <a href="README.en.md">English</a> · <b>简体中文</b> · <a href="README.ko.md">한국어</a> · <a href="README.ru.md">Русский</a></p>
+<p align="center"><a href="README.md"><img src="assets/readme/lang-ja.png" alt="日本語" height="40"></a> <a href="README.en.md"><img src="assets/readme/lang-en.png" alt="English" height="40"></a> <a href="README.zh.md"><img src="assets/readme/lang-zh-on.png" alt="简体中文" height="40"></a> <a href="README.ko.md"><img src="assets/readme/lang-ko.png" alt="한국어" height="40"></a> <a href="README.ru.md"><img src="assets/readme/lang-ru.png" alt="Русский" height="40"></a></p>
 
 <p align="center"><b><a href="https://maco165.github.io/rust-patch-notes/zh/index.html">https://maco165.github.io/rust-patch-notes/</a></b></p>
 
@@ -19,6 +19,8 @@
 - 5 种语言、只需浏览器、免费：支持日语、英语、中文、韩语和俄语，无需注册、没有广告，全部在浏览器中运行
 
 **理念** — 只写确认过的内容。未确认的内容会标明“未确认”。
+
+**审核** — 每项变更在公开前都由 Anthropic 的 AI“Claude”检查差异，并经人工批准。
 
 ## 页面截图
 
@@ -67,3 +69,9 @@
 - 本仓库只存放生成的页面，请不要手动修改。
 - 部分图标来自 [Lucide](https://lucide.dev/)（ISC License，`LICENSE-lucide.txt`）。未使用游戏的图标或图片。
 - 结构图中的标志是各自所有者的商标（图标：svgl、Lucide；用 stack-diagram 绘制）。
+
+## 关于游戏 Rust
+
+Rust 是 Facepunch Studios 开发的多人生存游戏。玩家从海滩开始，手里只有一块石头，需要收集资源、制作工具、建造基地，并与其他玩家合作或争夺。游戏于 2013 年开始抢先体验，2018 年正式发售。每月第一个星期四会有大型更新，本站追踪这些变化。PC 版在 Steam 上发售，PlayStation 和 Xbox 平台则有 Rust Console Edition。
+
+<p><a href="https://store.steampowered.com/app/252490/Rust/"><img src="assets/readme/steam-zh.png" alt="Steam" height="46"></a> &nbsp; <a href="https://rust.facepunch.com/">官方网站: rust.facepunch.com</a></p>

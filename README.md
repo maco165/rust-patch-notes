@@ -1,6 +1,6 @@
 <p align="center"><a href="https://maco165.github.io/rust-patch-notes/"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme/hero-ja-dark.png"><img src="assets/readme/hero-ja.png" alt="Rust Analysis" width="100%"></picture></a></p>
 
-<p align="center"><b>日本語</b> · <a href="README.en.md">English</a> · <a href="README.zh.md">简体中文</a> · <a href="README.ko.md">한국어</a> · <a href="README.ru.md">Русский</a></p>
+<p align="center"><a href="README.md"><img src="assets/readme/lang-ja-on.png" alt="日本語" height="40"></a> <a href="README.en.md"><img src="assets/readme/lang-en.png" alt="English" height="40"></a> <a href="README.zh.md"><img src="assets/readme/lang-zh.png" alt="简体中文" height="40"></a> <a href="README.ko.md"><img src="assets/readme/lang-ko.png" alt="한국어" height="40"></a> <a href="README.ru.md"><img src="assets/readme/lang-ru.png" alt="Русский" height="40"></a></p>
 
 <p align="center"><b><a href="https://maco165.github.io/rust-patch-notes/">https://maco165.github.io/rust-patch-notes/</a></b></p>
 
@@ -24,6 +24,8 @@
 - 5 言語・ブラウザだけ・無料: 日本語・英語・中国語・韓国語・ロシア語で読め、登録も広告も無く、ブラウザの中だけで動きます
 
 **考え方** — 確かめたことだけを書きます。確かめていないことは「未確認」と書きます。
+
+**確認** — 変更は、公開の前に Anthropic の AI「Claude」が差分を確かめ、人が承認しています。
 
 ## 画面
 
@@ -145,3 +147,9 @@
 - `sitemap.xml`: 検索エンジン向けのページの一覧
 
 ページと README はすべて生成物です。直接は編集せず、元のリポジトリで作り直して置き換えます。
+
+## ゲーム Rust について
+
+Rust は Facepunch Studios が開発した、マルチプレイのサバイバルゲームです。石ひとつだけを持って浜辺から始め、資源を集め、道具を作り、拠点を建てて、ほかのプレイヤーと協力したり奪い合ったりします。2013 年に早期アクセスで始まり、2018 年に正式リリースされました。毎月第 1 木曜日に大きなアップデートがあり、このサイトはその変化を追っています。PC 版は Steam で、PlayStation と Xbox 向けには Rust Console Edition があります。
+
+<p><a href="https://store.steampowered.com/app/252490/Rust/"><img src="assets/readme/steam-ja.png" alt="Steam" height="46"></a> &nbsp; <a href="https://rust.facepunch.com/">公式サイト: rust.facepunch.com</a></p>

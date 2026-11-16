@@ -1,6 +1,6 @@
 <p align="center"><a href="https://maco165.github.io/rust-patch-notes/en/index.html"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme/hero-en-dark.png"><img src="assets/readme/hero-en.png" alt="Rust Analysis" width="100%"></picture></a></p>
 
-<p align="center"><a href="README.md">日本語</a> · <b>English</b> · <a href="README.zh.md">简体中文</a> · <a href="README.ko.md">한국어</a> · <a href="README.ru.md">Русский</a></p>
+<p align="center"><a href="README.md"><img src="assets/readme/lang-ja.png" alt="日本語" height="40"></a> <a href="README.en.md"><img src="assets/readme/lang-en-on.png" alt="English" height="40"></a> <a href="README.zh.md"><img src="assets/readme/lang-zh.png" alt="简体中文" height="40"></a> <a href="README.ko.md"><img src="assets/readme/lang-ko.png" alt="한국어" height="40"></a> <a href="README.ru.md"><img src="assets/readme/lang-ru.png" alt="Русский" height="40"></a></p>
 
 <p align="center"><b><a href="https://maco165.github.io/rust-patch-notes/en/index.html">https://maco165.github.io/rust-patch-notes/</a></b></p>
 
@@ -19,6 +19,8 @@ An unofficial, one-person site about the game Rust (Facepunch Studios): the offi
 - Five languages, just a browser, free: Japanese, English, Chinese, Korean and Russian, no sign-up and no ads, everything runs in your browser
 
 **Principle** — Only what has been checked is written. Anything not checked is marked as not confirmed.
+
+**Review** — Every change is checked as a diff by Claude, Anthropic's AI, and approved by a person before it goes public.
 
 ## Screens
 
@@ -67,3 +69,9 @@ This month, genres, the tools and the articles are in Japanese, English, Chinese
 - This repository holds only the generated pages. Do not edit them by hand.
 - Some icons are from [Lucide](https://lucide.dev/) (ISC License, `LICENSE-lucide.txt`). No icons or images of the game are used.
 - The logos in the diagram are trademarks of their owners (icons: svgl, Lucide; drawn with stack-diagram).
+
+## About the game Rust
+
+Rust is a multiplayer survival game by Facepunch Studios. You start on a beach with nothing but a rock, gather resources, craft tools, build a base, and team up with or fight other players. It entered Early Access in 2013 and was fully released in 2018. A big update lands on the first Thursday of every month, and this site follows those changes. The PC version is on Steam; Rust Console Edition is available for PlayStation and Xbox.
+
+<p><a href="https://store.steampowered.com/app/252490/Rust/"><img src="assets/readme/steam-en.png" alt="Steam" height="46"></a> &nbsp; <a href="https://rust.facepunch.com/">Official site: rust.facepunch.com</a></p>

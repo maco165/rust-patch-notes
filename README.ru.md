@@ -1,6 +1,6 @@
 <p align="center"><a href="https://maco165.github.io/rust-patch-notes/ru/index.html"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme/hero-ru-dark.png"><img src="assets/readme/hero-ru.png" alt="Rust Analysis" width="100%"></picture></a></p>
 
-<p align="center"><a href="README.md">日本語</a> · <a href="README.en.md">English</a> · <a href="README.zh.md">简体中文</a> · <a href="README.ko.md">한국어</a> · <b>Русский</b></p>
+<p align="center"><a href="README.md"><img src="assets/readme/lang-ja.png" alt="日本語" height="40"></a> <a href="README.en.md"><img src="assets/readme/lang-en.png" alt="English" height="40"></a> <a href="README.zh.md"><img src="assets/readme/lang-zh.png" alt="简体中文" height="40"></a> <a href="README.ko.md"><img src="assets/readme/lang-ko.png" alt="한국어" height="40"></a> <a href="README.ru.md"><img src="assets/readme/lang-ru-on.png" alt="Русский" height="40"></a></p>
 
 <p align="center"><b><a href="https://maco165.github.io/rust-patch-notes/ru/index.html">https://maco165.github.io/rust-patch-notes/</a></b></p>
 
@@ -19,6 +19,8 @@
 - Пять языков, только браузер, бесплатно: японский, английский, китайский, корейский и русский, без регистрации и рекламы, всё работает в браузере
 
 **Принцип** — Пишем только то, что проверено. Непроверенное помечаем как неподтверждённое.
+
+**Проверка** — Каждое изменение перед публикацией проверяет по диффу Claude — ИИ от Anthropic, — и одобряет человек.
 
 ## Экраны
 
@@ -67,3 +69,9 @@
 - В этом репозитории только сгенерированные страницы. Не правьте их вручную.
 - Часть иконок — из [Lucide](https://lucide.dev/) (ISC License, `LICENSE-lucide.txt`). Иконки и изображения игры не используются.
 - Логотипы на схеме — товарные знаки их владельцев (иконки: svgl, Lucide; схема сделана stack-diagram).
+
+## Об игре Rust
+
+Rust — многопользовательская игра на выживание от Facepunch Studios. Вы начинаете на берегу с одним камнем в руках, добываете ресурсы, создаёте инструменты, строите базу и объединяетесь с другими игроками или сражаетесь с ними. Игра вышла в раннем доступе в 2013 году и полностью — в 2018-м. В первый четверг каждого месяца выходит крупное обновление, и этот сайт следит за этими изменениями. Версия для ПК — в Steam, для PlayStation и Xbox есть Rust Console Edition.
+
+<p><a href="https://store.steampowered.com/app/252490/Rust/"><img src="assets/readme/steam-ru.png" alt="Steam" height="46"></a> &nbsp; <a href="https://rust.facepunch.com/">Официальный сайт: rust.facepunch.com</a></p>
