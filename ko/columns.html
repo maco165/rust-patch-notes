@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<script>(()=>{try{if(/bot|crawl|spider|slurp|lighthouse|inspection/i.test(navigator.userAgent))return;const A={"ja":"../columns.html","en":"../en/columns.html","zh":"../zh/columns.html","ko":"../ko/columns.html","ru":"../ru/columns.html"},S=["ja","en","zh","ko","ru"];let w=localStorage.getItem('ra-lang');if(!w){for(const l of navigator.languages||[navigator.language||'']){const c=String(l).toLowerCase().split('-')[0];if(S.includes(c)){w=c;break}}w=w||'en'}if(!A[w])w=A.en?'en':null;if(w&&w!=='ko')location.replace(A[w]+location.search+location.hash)}catch(_){}})()</script><title>칼럼: Rust의 구조를 코드로 확인하기 | Rust Analysis</title>
+<meta name="description" content="게임 Rust에서 떠도는 이야기 (룰렛 필승법, 상자 내용물, 슬롯머신 환급률 등)를 서버의 코드와 데이터를 읽어 확인하는 칼럼 목록입니다.">
+<meta name="theme-color" content="#f2f4f5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15181a" media="(prefers-color-scheme: dark)">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rust Analysis">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:title" content="칼럼: Rust의 구조를 코드로 확인하기 | Rust Analysis">
+<meta property="og:description" content="게임 Rust에서 떠도는 이야기 (룰렛 필승법, 상자 내용물, 슬롯머신 환급률 등)를 서버의 코드와 데이터를 읽어 확인하는 칼럼 목록입니다.">
+<meta property="og:url" content="https://maco165.github.io/rust-patch-notes/ko/columns.html">
+<meta property="og:image" content="https://maco165.github.io/rust-patch-notes/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://maco165.github.io/rust-patch-notes/ko/columns.html">
+<link rel="alternate" hreflang="ja" href="https://maco165.github.io/rust-patch-notes/columns.html">
+<link rel="alternate" hreflang="en" href="https://maco165.github.io/rust-patch-notes/en/columns.html">
+<link rel="alternate" hreflang="zh" href="https://maco165.github.io/rust-patch-notes/zh/columns.html">
+<link rel="alternate" hreflang="ko" href="https://maco165.github.io/rust-patch-notes/ko/columns.html">
+<link rel="alternate" hreflang="ru" href="https://maco165.github.io/rust-patch-notes/ru/columns.html">
+<link rel="alternate" hreflang="x-default" href="https://maco165.github.io/rust-patch-notes/columns.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+JP:wght@400;600&display=swap&family=Noto+Sans+KR:wght@400;600">
+<style>html:lang(ko){--font-sans:"Noto Sans KR","IBM Plex Sans JP",system-ui,sans-serif;--font-display:"Big Shoulders Display","Noto Sans KR",sans-serif}</style>
+<link rel="stylesheet" href="../assets/style.css">
+</head><body>
+<header class="ra-site">
+  <a class="ra-site-name" href="tools.html"><b>Rust</b> Analysis</a>
+  <nav class="ra-nav" aria-label="페이지"><a href="columns.html" aria-current="page"><i class="ra-ico ra-ico-columns" aria-hidden="true"></i>칼럼</a><a href="tools.html"><i class="ra-ico ra-ico-tools" aria-hidden="true"></i>도구</a></nav>
+  <span class="ra-site-meta">2026-11-05</span>
+  <span class="ra-site-lang"><a href="../columns.html" lang="ja" hreflang="ja" data-lang="ja">日本語</a><a href="../en/columns.html" lang="en" hreflang="en" data-lang="en">English</a><a href="../zh/columns.html" lang="zh" hreflang="zh" data-lang="zh">简体中文</a><a href="../ru/columns.html" lang="ru" hreflang="ru" data-lang="ru">Русский</a></span><a class="ra-site-link" href="https://github.com/maco165/rust-patch-notes" rel="noopener"><i class="ra-ico ra-ico-github" aria-hidden="true"></i>GitHub</a>
+</header>
+<script>(()=>{const n=document.querySelector('.ra-nav'),a=n&&n.querySelector('[aria-current]');if(a&&n.scrollWidth>n.clientWidth)n.scrollLeft=a.offsetLeft-(n.clientWidth-a.offsetWidth)/2})()</script>
+<main class="ra-page"><div class="ra-block"><h1 class="ra-patch-sub">칼럼</h1><p class="ra-lead">게임 안에서 떠도는 이야기를 서버의 코드와 데이터를 읽어 확인합니다.</p></div><section class="ra-block" aria-labelledby="h-list"><h2 class="ra-section" id="h-list">확인한 것 <small>5</small></h2><div class="ra-col-list"><article class="ra-col-row"><span class="ra-ti ra-ti-col" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke-linecap="round" stroke-linejoin="round">
+<path d="M15 5.4Q20 4.6 25.4 5.2L33.6 26L24.4 28.4Z" fill="#9c1b3d" stroke="#9c1b3d" stroke-width="2.6"/>
+<path d="M38.6 5.2Q43.6 4.6 49 5.4L39.8 28.4L30.6 26Z" fill="#f8e1d5" stroke="#9c1b3d" stroke-width="2.8"/>
+<path d="M32 23.6C42.2 23.2 49.8 31 49.4 41.4C49 51.2 41.6 58.6 31.6 58.2C21.8 57.8 14.4 50.4 14.8 40.6C15.2 30.8 22.4 24 32.6 23.6Z" fill="#ffd77a" stroke="#9c1b3d" stroke-width="3.2"/>
+<path d="M23.4 37.2Q23.2 46 26.6 49.6Q31 51.6 35.4 49.4Q38.8 45.8 38.6 37Q31 36.4 23.4 37.2Z" fill="#f8e1d5" stroke="#9c1b3d" stroke-width="2.6"/>
+<path d="M38.6 39.6Q44 39.4 43.6 43.2Q43 46.8 37.8 46.4" stroke="#9c1b3d" stroke-width="2.4"/>
+<path d="M28 33Q26.6 31 28.2 29M34 32.8Q32.6 30.8 34.2 28.8" stroke="#9c1b3d" stroke-width="2.2"/>
+</svg></span><div class="ra-col-main"><h3><a class="ra-link" href="columns/buff-ranking.html">차와 파이 최강 조합: 한 잔이면 Milky, 다시 마신다면 Bear Pie와</a></h3><p>차와 파이를 Buff Planner와 같은 계산으로 모든 조합을 시험해 비교했습니다. 채집량, 짧은 시간의 강함, 전투, 재료당 효율의 4가지 순위입니다.</p></div><div class="ra-col-meta"><span class="ra-col-genre"><i class="ra-ico ra-ico-farming" aria-hidden="true"></i>농업, 식량, 생존</span><span class="ra-num-sm">2026-11-15</span></div></article><article class="ra-col-row"><span class="ra-ti ra-ti-col" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke-linecap="round" stroke-linejoin="round">
+<path d="M33.5 14.5C45.9 14.1 55.9 24.1 55.5 36.9C55.1 49.3 45.5 58.9 33.1 58.5C20.9 58.1 11.1 48.3 11.5 36.1C11.9 23.9 21.1 14.9 33.5 14.5Z" fill="#d6eee3"/>
+<path d="M32 35L54 35A22 22 0 0 1 47.56 50.56ZM32 35L32 57A22 22 0 0 1 16.44 50.56ZM32 35L10 35A22 22 0 0 1 16.44 19.44ZM32 35L32 13A22 22 0 0 1 47.56 19.44Z" fill="#ffd77a"/>
+<path d="M32 13C44.4 12.6 54.4 22.6 54 35.4C53.6 47.8 44 57.4 31.6 57C19.4 56.6 9.6 46.8 10 34.6C10.4 22.4 19.6 13.4 32.6 13" stroke="#0b6649" stroke-width="3.2"/>
+<path d="M32 13.6Q32.6 35 32 56.6M10.6 35Q32 34.4 53.6 35.2M16.8 19.8Q32.5 34.5 47.2 50.2M47.2 19.8Q31.5 35.5 16.8 50.2" stroke="#0b6649" stroke-width="2.4"/>
+<path d="M27.8 35Q27.8 30.8 32.2 30.8Q36.2 31 36.2 35.2Q36 39.2 32 39.2Q27.8 39 27.8 35Z" fill="#0b6649" stroke="#0b6649" stroke-width="2"/>
+<path d="M26.4 4.8Q32 4.2 37.6 4.8L32.2 16.4Z" fill="#9c1b3d" stroke="#9c1b3d" stroke-width="2.6"/>
+</svg></span><div class="ra-col-main"><h3><a class="ra-link" href="columns/wheel-myths.html">Big Wheel에 필승 패턴이 있을까?</a></h3><p>Bandit Camp의 Big Wheel에 얽힌 7가지 이야기를 서버 코드를 읽은 결과로 하나씩 확인합니다. 지금은 패턴이 없습니다. 2024년 5월 이전에는 이전 당첨을 보면 다음에 잘 나올 칸을 알 수 있었고, 평균적으로 늘어나는 베팅법도 있었습니다.</p></div><div class="ra-col-meta"><span class="ra-col-genre"><i class="ra-ico ra-ico-economy" aria-hidden="true"></i>경제, 상점</span><span class="ra-num-sm">2026-11-12</span></div></article><article class="ra-col-row"><span class="ra-ti ra-ti-col" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke-linecap="round" stroke-linejoin="round">
+<path d="M11.5 57.5Q10.9 37.5 11.9 21.5Q12.5 12.1 21.5 11.7L37.5 11.5Q46.9 12.1 47.5 21.5Q48.3 39.5 47.5 57.5Z" fill="#ffd77a"/>
+<path d="M10 56Q9.4 36 10.4 20Q11 10.6 20 10.2L36 10Q45.4 10.6 46 20Q46.8 38 46 56Q28 57 10 56Z" stroke="#1a1f23" stroke-width="3"/>
+<path d="M15 22.4Q28 21.6 41 22.2Q41.6 29 41.2 36Q28 36.8 15.2 36.2Q14.4 29 15 22.4Z" fill="#f8e1d5" stroke="#1a1f23" stroke-width="2.6"/>
+<path d="M23.6 22.6Q24 29 23.6 36M32.4 22.4Q32.8 29 32.4 36" stroke="#1a1f23" stroke-width="2.2"/>
+<path d="M19.4 29.2h.01M28 29h.01" stroke="#9c1b3d" stroke-width="4.6"/>
+<path d="M36.8 29.2h.01" stroke="#1a1f23" stroke-width="4.6"/>
+<path d="M17 45.4Q28 44.8 39 45.4L38.6 50Q28 50.6 17.4 50Z" fill="#1a1f23" stroke="#1a1f23" stroke-width="2.2"/>
+<path d="M46.4 36Q52.8 36.6 53.4 33Q54.2 24 53.8 17" stroke="#1a1f23" stroke-width="3"/>
+<path d="M49.8 12.6Q49.8 8.6 53.8 8.6Q57.8 8.8 57.6 12.8Q57.4 16.6 53.6 16.6Q49.8 16.4 49.8 12.6Z" fill="#9c1b3d" stroke="#9c1b3d" stroke-width="2.2"/>
+</svg></span><div class="ra-col-main"><h3><a class="ra-link" href="columns/slot-machine.html">슬롯머신은 돌릴수록 줄어든다: 평균 환수율 91.8%</a></h3><p>슬롯머신의 그림이 정해지는 방식과 배당을 서버 코드와 데이터에서 읽었습니다. 2 Scrap을 걸면 평균 1.84가 돌아옵니다. 잘 터지는 기계도, 잘 터지는 시간도 없습니다.</p></div><div class="ra-col-meta"><span class="ra-col-genre"><i class="ra-ico ra-ico-economy" aria-hidden="true"></i>경제, 상점</span><span class="ra-num-sm">2026-11-12</span></div></article><article class="ra-col-row"><span class="ra-ti ra-ti-col" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke-linecap="round" stroke-linejoin="round">
+<path d="M17.5 13.5Q12.1 33.5 17.9 55.5Q33.5 58.9 49.1 55.5Q54.9 33.5 49.5 13.5Z" fill="#f8e1d5"/>
+<path d="M16 12Q10.6 32 16.4 54Q32 57.4 47.6 54Q53.4 32 48 12" stroke="#a83a0c" stroke-width="3.2"/>
+<path d="M24.8 17Q22.6 34 25.2 55M39.2 17Q41.4 34 38.8 55" stroke="#a83a0c" stroke-width="2.2"/>
+<path d="M16 12C16.4 8.6 23 7.2 32 7.4C41 7.4 47.8 8.8 48 12C47.8 15.4 41 16.6 32 16.4C23 16.4 16.2 15.2 16 12Z" fill="#ffd77a" stroke="#a83a0c" stroke-width="3"/>
+<path d="M13.8 24.2Q32 28.8 50.2 24M14 42.2Q32 46.8 50 42" stroke="#6b757e" stroke-width="3.2"/>
+</svg></span><div class="ra-col-main"><h3><a class="ra-link" href="columns/loot-containers.html">상자의 내용물은 언제 정해질까?</a></h3><p>Barrel, Military Crate, Locked Crate의 내용물이 언제, 어떻게 정해지는지 서버 코드로 확인했습니다. 내용물은 상자가 스폰될 때 정해지며, 여는 사람이나 시각으로는 바뀌지 않습니다.</p></div><div class="ra-col-meta"><span class="ra-col-genre"><i class="ra-ico ra-ico-monuments" aria-hidden="true"></i>모뉴먼트, 이벤트</span><span class="ra-num-sm">2026-11-12</span></div></article><article class="ra-col-row"><span class="ra-ti ra-ti-col" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke-linecap="round" stroke-linejoin="round">
+<path d="M8 16.8Q20.4 13 33.2 10.4Q38 27.6 42 45.2Q29.6 49 16.8 51.6Q12 34.4 8 16.8Z" fill="#1d4f91" stroke="#1d4f91" stroke-width="3"/>
+<path d="M13.6 20.4Q21.6 17.8 30 16.2" stroke="#dbe6f6" stroke-width="2.2"/>
+<path d="M29.4 15Q42 16.8 55 19.6Q52.4 37.4 48.6 55Q35.8 53.2 23 50.4Q25.8 32.6 29.4 15Z" fill="#dbe6f6" stroke="#1d4f91" stroke-width="3"/>
+<path d="M40.4 26.2L46 36L37.8 44L32.2 34.2Z" fill="#9c1b3d" stroke="#9c1b3d" stroke-width="2.2"/>
+<path d="M32.6 21.4h.01M45.4 48.6h.01" stroke="#9c1b3d" stroke-width="4"/>
+</svg></span><div class="ra-col-main"><h3><a class="ra-link" href="columns/card-games.html">블랙잭과 포커, 카드를 세면 이길 수 있을까?</a></h3><p>블랙잭 머신과 Card Table을 서버 코드를 읽은 결과로 확인합니다. 덱은 매번 새로 만들어지므로 카드를 세어도 유리해지지 않습니다. 하우스 엣지는 약 0.8%입니다.</p></div><div class="ra-col-meta"><span class="ra-col-genre"><i class="ra-ico ra-ico-economy" aria-hidden="true"></i>경제, 상점</span><span class="ra-num-sm">2026-11-12</span></div></article></div></section></main>
+<footer class="ra-foot"><p>Facepunch Studios와 관계없이 개인이 분석해서 만든 비공식 사이트입니다. 값은 게임 서버의 데이터와 코드에서 읽은 것이며, 정확성은 보증하지 않습니다.</p>
+<p>일부 아이콘은 <a class="ra-link" href="https://lucide.dev/" rel="noopener">Lucide</a> (ISC License)입니다.</p></footer>
+<script>document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('[data-lang]');if(a)try{localStorage.setItem('ra-lang',a.dataset.lang)}catch(_){}})</script></body></html>

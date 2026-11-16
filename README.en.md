@@ -67,15 +67,15 @@ flowchart LR
 
 ## Languages
 
-The tools and the articles are in Japanese and English; the other pages are in Japanese only. The change lists are the official English text put into Japanese, so they will not be translated back: read https://rust.facepunch.com/changes.
+The tools and the articles are in Japanese, English, Chinese (Simplified), Korean and Russian; the other pages are in Japanese only. The tools and the articles open in your browser's language the first time (a language you pick with the language links is kept). Item names are the game's English names in every language. The change lists are the official English text put into Japanese, so they will not be translated back: read https://rust.facepunch.com/changes.
 
 | Language | Status |
 |---|---|
 | 日本語 | Every page |
 | English | Tools, articles and this README |
-| 简体中文 | This README; the pages are planned |
-| 한국어 | This README; the pages are planned |
-| Русский | This README; the pages are planned |
+| 简体中文 | Tools, articles and README |
+| 한국어 | Tools, articles and README |
+| Русский | Tools, articles and README |
 
 ## Good to know
 

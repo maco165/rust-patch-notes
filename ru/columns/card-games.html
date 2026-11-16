@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<script>(()=>{try{if(/bot|crawl|spider|slurp|lighthouse|inspection/i.test(navigator.userAgent))return;const A={"ja":"../../columns/card-games.html","en":"../../en/columns/card-games.html","zh":"../../zh/columns/card-games.html","ko":"../../ko/columns/card-games.html","ru":"../../ru/columns/card-games.html"},S=["ja","en","zh","ko","ru"];let w=localStorage.getItem('ra-lang');if(!w){for(const l of navigator.languages||[navigator.language||'']){const c=String(l).toLowerCase().split('-')[0];if(S.includes(c)){w=c;break}}w=w||'en'}if(!A[w])w=A.en?'en':null;if(w&&w!=='ru')location.replace(A[w]+location.search+location.hash)}catch(_){}})()</script><title>Можно ли обыграть блэкджек и покер подсчётом карт? | Rust Analysis</title>
+<meta name="description" content="Проверили по коду сервера автомат для блэкджека и карточный стол. Колода собирается заново каждый раунд, подсчёт карт не помогает. Доля казино — около 0.8%.">
+<meta name="theme-color" content="#f2f4f5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15181a" media="(prefers-color-scheme: dark)">
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+<link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rust Analysis">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:title" content="Можно ли обыграть блэкджек и покер подсчётом карт? | Rust Analysis">
+<meta property="og:description" content="Проверили по коду сервера автомат для блэкджека и карточный стол. Колода собирается заново каждый раунд, подсчёт карт не помогает. Доля казино — около 0.8%.">
+<meta property="og:url" content="https://maco165.github.io/rust-patch-notes/ru/columns/card-games.html">
+<meta property="og:image" content="https://maco165.github.io/rust-patch-notes/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://maco165.github.io/rust-patch-notes/ru/columns/card-games.html">
+<link rel="alternate" hreflang="ja" href="https://maco165.github.io/rust-patch-notes/columns/card-games.html">
+<link rel="alternate" hreflang="en" href="https://maco165.github.io/rust-patch-notes/en/columns/card-games.html">
+<link rel="alternate" hreflang="zh" href="https://maco165.github.io/rust-patch-notes/zh/columns/card-games.html">
+<link rel="alternate" hreflang="ko" href="https://maco165.github.io/rust-patch-notes/ko/columns/card-games.html">
+<link rel="alternate" hreflang="ru" href="https://maco165.github.io/rust-patch-notes/ru/columns/card-games.html">
+<link rel="alternate" hreflang="x-default" href="https://maco165.github.io/rust-patch-notes/columns/card-games.html">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Можно ли обыграть блэкджек и покер подсчётом карт?", "description": "Проверили по коду сервера автомат для блэкджека и карточный стол. Колода собирается заново каждый раунд, подсчёт карт не помогает. Доля казино — около 0.8%.", "inLanguage": "ru", "datePublished": "2026-11-12", "dateModified": "2026-11-12", "url": "https://maco165.github.io/rust-patch-notes/ru/columns/card-games.html", "mainEntityOfPage": "https://maco165.github.io/rust-patch-notes/ru/columns/card-games.html", "image": "https://maco165.github.io/rust-patch-notes/assets/og.png", "author": {"@type": "Organization", "name": "Rust Analysis", "url": "https://maco165.github.io/rust-patch-notes/"}, "publisher": {"@type": "Organization", "name": "Rust Analysis", "url": "https://maco165.github.io/rust-patch-notes/"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Rust Analysis", "item": "https://maco165.github.io/rust-patch-notes/ru/tools.html"}, {"@type": "ListItem", "position": 2, "name": "Статьи", "item": "https://maco165.github.io/rust-patch-notes/ru/columns.html"}, {"@type": "ListItem", "position": 3, "name": "Можно ли обыграть блэкджек и покер подсчётом карт?", "item": "https://maco165.github.io/rust-patch-notes/ru/columns/card-games.html"}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+JP:wght@400;600&display=swap&family=IBM+Plex+Sans:wght@400;600">
+<style>html:lang(ru){--font-sans:"IBM Plex Sans","IBM Plex Sans JP",system-ui,sans-serif;--font-display:"Big Shoulders Display","IBM Plex Sans",sans-serif}</style>
+<link rel="stylesheet" href="../../assets/style.css">
+</head><body>
+<header class="ra-site">
+  <a class="ra-site-name" href="../tools.html"><b>Rust</b> Analysis</a>
+  <nav class="ra-nav" aria-label="Страницы"><a href="../columns.html" aria-current="page"><i class="ra-ico ra-ico-columns" aria-hidden="true"></i>Статьи</a><a href="../tools.html"><i class="ra-ico ra-ico-tools" aria-hidden="true"></i>Инструменты</a></nav>
+  <span class="ra-site-meta">2026-11-05</span>
+  <span class="ra-site-lang"><a href="../../columns/card-games.html" lang="ja" hreflang="ja" data-lang="ja">日本語</a><a href="../../en/columns/card-games.html" lang="en" hreflang="en" data-lang="en">English</a><a href="../../zh/columns/card-games.html" lang="zh" hreflang="zh" data-lang="zh">简体中文</a><a href="../../ko/columns/card-games.html" lang="ko" hreflang="ko" data-lang="ko">한국어</a></span><a class="ra-site-link" href="https://github.com/maco165/rust-patch-notes" rel="noopener"><i class="ra-ico ra-ico-github" aria-hidden="true"></i>GitHub</a>
+</header>
+<script>(()=>{const n=document.querySelector('.ra-nav'),a=n&&n.querySelector('[aria-current]');if(a&&n.scrollWidth>n.clientWidth)n.scrollLeft=a.offsetLeft-(n.clientWidth-a.offsetWidth)/2})()</script>
+<main class="ra-page"><article class="ra-prose"><p class="ra-patch-meta"><a class="ra-link" href="../columns.html">Статьи</a><time datetime="2026-11-12">2026-11-12</time><span><i class="ra-ico ra-ico-economy" aria-hidden="true"></i> Экономика и магазины</span><span class="ra-src ra-src-export"><i class="ra-ico ra-ico-export" aria-hidden="true"></i>Сборка игры 2026-11-07</span></p><div class="ra-tp-head"><span class="ra-ti ra-ti-page" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke-linecap="round" stroke-linejoin="round">
+<path d="M8 16.8Q20.4 13 33.2 10.4Q38 27.6 42 45.2Q29.6 49 16.8 51.6Q12 34.4 8 16.8Z" fill="#1d4f91" stroke="#1d4f91" stroke-width="3"/>
+<path d="M13.6 20.4Q21.6 17.8 30 16.2" stroke="#dbe6f6" stroke-width="2.2"/>
+<path d="M29.4 15Q42 16.8 55 19.6Q52.4 37.4 48.6 55Q35.8 53.2 23 50.4Q25.8 32.6 29.4 15Z" fill="#dbe6f6" stroke="#1d4f91" stroke-width="3"/>
+<path d="M40.4 26.2L46 36L37.8 44L32.2 34.2Z" fill="#9c1b3d" stroke="#9c1b3d" stroke-width="2.2"/>
+<path d="M32.6 21.4h.01M45.4 48.6h.01" stroke="#9c1b3d" stroke-width="4"/>
+</svg></span><h1 class="ra-prose-title">Можно ли обыграть блэкджек и покер подсчётом карт?</h1></div><p class="ra-prose-lead">Проверили по коду сервера автомат для блэкджека и карточный стол. Колода собирается заново каждый раунд, подсчёт карт не помогает. Доля казино — около 0.8%.</p><div class="ra-callout">
+<p class="ra-callout-label">Ответ</p>
+<p class="ra-callout-main">Подсчёт карт не даёт преимущества</p>
+<p>Колода собирается заново и тасуется в начале каждого раунда. В блэкджеке это 10 колод (520 карт), в покере — 1 колода (52 карты). Карты, вышедшие в одном раунде, никак не влияют на следующий.</p>
+</div>
+<ul class="ra-facts">
+<li><span class="ra-facts-n">520 карт</span><span class="ra-facts-l">Шуз для блэкджека. Собирается заново каждый раунд</span></li>
+<li><span class="ra-facts-n">около −0.8%</span><span class="ra-facts-l">Средний результат в блэкджеке по базовой стратегии (оценка)</span></li>
+<li><span class="ra-facts-n">0</span><span class="ra-facts-l">Доля казино в покере. Всё возвращается игрокам</span></li>
+</ul>
+<p>Если играть по правилам, в блэкджеке вы теряете гораздо медленнее, чем в рулетке (−4% при лучшей ставке). Но в среднем всё равно теряете. В покере доли казино нет: выигрыш и проигрыш зависят только от того, как вы играете против соперников.</p>
+<p>В статье речь идёт об автомате для блэкджека, который стоит, например, в Bandit Camp (имя класса <code>BlackjackMachine</code>), и о карточном столе (<code>CardTable</code>; на нём играют в техасский холдем).</p>
+<h2 class="ra-section">Как устроен блэкджек</h2>
+<h3>Один раунд</h3>
+<ol class="ra-timeline" aria-label="Один раунд блэкджека">
+<li class="ra-timeline-hot" style="--w:14"><strong>Сборка шуза</strong><span>Мгновенно</span><small>10 колод (520 карт) выкладываются заново и тасуются. Ещё до ставок</small></li>
+<li style="--w:30"><strong>Приём ставок</strong><span>До 30 секунд</span><small>5–500 Scrap</small></li>
+<li style="--w:14"><strong>Раздача</strong><span>1 секунда</span><small>По 2 карты в порядке номеров мест. У дилера 1 карта закрыта</small></li>
+<li style="--w:30"><strong>Ход игроков</strong><span>30 секунд на действие</span><small>Все ходят одновременно</small></li>
+<li style="--w:20"><strong>Ход дилера</strong><span>1 карта в секунду</span><small>Берёт механически, только по сумме</small></li>
+<li style="--w:14"><strong>Выплата</strong><span>Через 1 секунду</span><small>Следующий раунд — через 4 секунды</small></li>
+</ol>
+<p>Шуз собирается <strong>до</strong> приёма ставок. Кода, который раскладывал бы карты, посмотрев на размер ставки, нет.</p>
+<h3>Правила</h3>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">Что</th><th scope="col">Правило этого автомата</th><th scope="col">Для игрока</th></tr></thead><tbody><tr><td>Шуз</td><td>10 колод, 520 карт. Собирается заново каждый раунд</td><td>Считать бессмысленно</td></tr><tr><td>Дилер</td><td>Останавливается на 17 и больше, но на мягких 17 (17, если туз считать за 11) берёт</td><td>Чуть хуже</td></tr><tr><td>Блэкджек (21 с 2 карт)</td><td>3:2. Возвращается 2.5 ставки (с округлением вниз)</td><td>Стандарт</td></tr><tr><td>Закрытая карта дилера</td><td>Проверяется только в конце раунда. Если у дилера 21 с 2 карт, добавленное при удвоении или сплите тоже проигрывается</td><td>Чуть хуже</td></tr><tr><td>Удвоение</td><td>На любых первых 2 картах без туза, при любой сумме. С тузом нельзя</td><td>Чуть хуже</td></tr><tr><td>Сплит</td><td>Только один раз. Парой считаются карты с одинаковым значением, например 10 и картинка. Тузы после сплита получают по 1 карте, и на этом всё</td><td>Стандарт</td></tr><tr><td>Удвоение после сплита</td><td>Можно (если в руке нет туза)</td><td>Лучше</td></tr><tr><td>21 с 2 карт после сплита</td><td>Тоже 3:2</td><td>Лучше</td></tr><tr><td>Страховка</td><td>Когда открытая карта дилера — туз. Стоит половину ставки, при попадании платит 2:1</td><td>Брать невыгодно</td></tr><tr><td>Сдача, побочные ставки</td><td>Нет</td><td>—</td></tr><tr><td>Ставка</td><td>5–500 Scrap. Предел меняется настройкой сервера <code>blackjackmachine.maxbet</code> (25–1,000,000)</td><td>—</td></tr><tr><td>Места</td><td>3 места на автомат</td><td>—</td></tr></tbody></table></div>
+<p>Выигрыш и проигрыш определяются так. Если игрок первым перебрал 21, он проигрывает сразу. Даже если дилер потом переберёт, ничего не вернётся. Отсюда и берётся доля казино.</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">Результат</th><th scope="col">Возврат</th></tr></thead><tbody><tr><td>Победа с 21 на 2 картах (побеждает и против 21 дилера из 3 карт и больше)</td><td>2.5 ставки</td></tr><tr><td>Обычная победа</td><td>2 ставки</td></tr><tr><td>Ничья</td><td>Ставка возвращается как есть</td></tr><tr><td>Проигрыш, перебор</td><td>0</td></tr><tr><td>Страховка сыграла (у дилера 21 с 2 карт)</td><td>Тройная сумма страховки</td></tr></tbody></table></div>
+<p>Выплата 2.5 ставки округляется вниз. При ставке 5 вернётся 12, а не 12.5, поэтому <strong>ставьте чётные суммы</strong> — так вы ничего не теряете.</p>
+<h3>Что влияет на карты, а что нет</h3>
+<div class="ra-uses">
+<div><p class="ra-uses-head ra-uses-yes">Используется</p><ul><li>Шуз, заново выложенный для этого раунда</li><li>Криптографический генератор случайных чисел (только при тасовании)</li><li>Сумма карт (берёт ли дилер)</li></ul></div>
+<div><p class="ra-uses-head ra-uses-no">Не используется</p><ul><li>Карты и результаты прошлых раундов</li><li>Время суток, номер раунда</li><li>Число игроков на сервере</li><li>Размер ставки</li><li>Кто ставил и его история побед и поражений</li><li>Сколько автомат уже выплатил</li></ul></div>
+</div>
+<p>Поставленный Scrap исчезает в конце раунда, а выплаты создаются заново. У автомата нет «накопленной» суммы, поэтому состояния «скоро начнёт отдавать» просто не существует.</p>
+<h2 class="ra-section">Как тасуется шуз</h2>
+<p>Единственный вызов генератора случайных чисел при тасовании — встроенный в .NET <code>System.Security.Cryptography.RandomNumberGenerator.GetInt32</code>. Это криптографический генератор ОС: у него нет ни зерна, ни внутриигрового состояния. Это не тот генератор Unity, которым пользуется рулетка.</p>
+<p>Словами тасование выглядит так.</p>
+<pre class="ra-code">При сборке нового шуза:
+  выложить карты по порядку от двойки пик до туза треф, столько раз, сколько колод
+  начиная с верхней позиции и двигаясь вниз:
+    с равной вероятностью выбрать 1 позицию «ниже» этой и поменять карты местами
+При раздаче:
+  брать карты сверху по 1</pre>
+<h3>Отклонение от равномерности — ровно на одну карту</h3>
+<p>В учебном тасовании (Fisher–Yates) партнёром для обмена может быть и «сама эта позиция»: карта вправе случайно остаться на месте. Этот автомат выбирает партнёра только «ниже этой позиции». Такой вариант называют алгоритмом Саттоло, и при нём <strong>ни одна карта не остаётся на той позиции, где была до тасования.</strong></p>
+<p>До тасования верхние 13 карт нового шуза лежат в таком порядке (все трефы).</p>
+<div class="ra-strip" role="img" aria-label="Верхние 13 карт шуза до тасования. Трефы: A, K, Q, J, 10, 9, 8, 7, 6, 5, 4, 3, 2"><span class="ra-strip-hot">A</span><span>K</span><span>Q</span><span>J</span><span>10</span><span>9</span><span>8</span><span>7</span><span>6</span><span>5</span><span>4</span><span>3</span><span>2</span></div>
+<p>После тасования верхняя карта с равной вероятностью выбирается из всех, кроме «туза треф, который изначально лежал сверху». Вторая — из всех, кроме «короля треф, который изначально был вторым», и так далее. Иначе говоря, <strong>первой розданной картой никогда не будет именно этот туз треф.</strong></p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">Шуз</th><th scope="col">Шанс, что первая карта — туз</th><th scope="col">При равномерном тасовании</th></tr></thead><tbody><tr><td>Блэкджек (520 карт)</td><td>39/519 = 7.51%</td><td>40/520 = 7.69%</td></tr><tr><td>Покер (52 карты)</td><td>3/51 = 5.88%</td><td>4/52 = 7.69%</td></tr></tbody></table></div>
+<p>Отклонение — в одну карту. По нашему расчёту, оно добавляет к доле казино в блэкджеке около 0.1 пункта (см. раздел ниже). Между раундами перекос не накапливается, потому что шуз каждый раз собирается заново.</p>
+<h2 class="ra-section">Доля казино</h2>
+<h3>Сколько в среднем теряется со 100 Scrap ставки</h3>
+<ol class="ra-gbars ra-loss" style="--max:16" aria-label="Сколько в среднем теряется со 100 Scrap ставки"><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Базовая стратегия</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:0.8"></span></span><span class="ra-gbar-n">−0.8</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Рулетка (1, 3, 5)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:4"></span></span><span class="ra-gbar-n">−4</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Брать как дилер</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:5.9"></span></span><span class="ra-gbar-n">−5.9</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Всегда стоп на 12 и больше</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:6"></span></span><span class="ra-gbar-n">−6.0</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Страховка</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:7.9"></span></span><span class="ra-gbar-n">−7.9</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Рулетка (20)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:16"></span></span><span class="ra-gbar-n">−16</span></span></li></ol>
+<p>Цифры по блэкджеку — <strong>оценка</strong> нашей собственной программы, о которой ниже. Цифры по рулетке взяты из статьи «Есть ли выигрышная схема на Big Wheel?».</p>
+<p>На одном и том же автомате стиль игры меняет результат больше чем в 7 раз. Если играть «на глаз», выйдет хуже, чем в рулетке.</p>
+<h3>Не берите страховку</h3>
+<p>Когда открытая карта — туз, шанс, что закрытая карта — десятка или картинка, равен 159/518 = 30.7% (чуть меньше, чем 160/519 при равномерном тасовании: на позицию закрытой карты никогда не попадает та картинка, что лежала там до тасования). Если страховка сыграет, возвращается её тройная сумма, так что в среднем выходит 3 × 0.307 − 1 = <strong>−7.9%</strong>. Это примерно в 10 раз хуже основной ставки. Хорошая у вас рука или плохая, выгоднее не брать.</p>
+<h3>Базовая стратегия</h3>
+<p>Таблица действий с лучшим средним для каждой руки по правилам этого автомата. H — взять карту, S — стоп, D — удвоить, P — сплит. Столбцы — открытая карта дилера.</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table ra-prose-short"><thead><tr><th scope="col">Ваша рука (без туза)</th><th scope="col">2</th><th scope="col">3</th><th scope="col">4</th><th scope="col">5</th><th scope="col">6</th><th scope="col">7</th><th scope="col">8</th><th scope="col">9</th><th scope="col">10</th><th scope="col">A</th></tr></thead><tbody><tr><td>8 и меньше</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td></tr><tr><td>9</td><td>H</td><td>D</td><td>D</td><td>D</td><td>D</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td></tr><tr><td>10, 11</td><td>D</td><td>D</td><td>D</td><td>D</td><td>D</td><td>D</td><td>D</td><td>D</td><td>H</td><td>H</td></tr><tr><td>12</td><td>H</td><td>H</td><td>S</td><td>S</td><td>S</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td></tr><tr><td>13–16</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td></tr><tr><td>17 и больше</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td></tr></tbody></table></div>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table ra-prose-short"><thead><tr><th scope="col">Ваша рука (туз за 11)</th><th scope="col">2</th><th scope="col">3</th><th scope="col">4</th><th scope="col">5</th><th scope="col">6</th><th scope="col">7</th><th scope="col">8</th><th scope="col">9</th><th scope="col">10</th><th scope="col">A</th></tr></thead><tbody><tr><td>13–17</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td></tr><tr><td>18</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>H</td><td>H</td><td>H</td></tr><tr><td>19 и больше</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td></tr></tbody></table></div>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table ra-prose-short"><thead><tr><th scope="col">Пара</th><th scope="col">2</th><th scope="col">3</th><th scope="col">4</th><th scope="col">5</th><th scope="col">6</th><th scope="col">7</th><th scope="col">8</th><th scope="col">9</th><th scope="col">10</th><th scope="col">A</th></tr></thead><tbody><tr><td>2, 3, 7</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>H</td><td>H</td><td>H</td><td>H</td></tr><tr><td>4</td><td>H</td><td>H</td><td>H</td><td>P</td><td>P</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td></tr><tr><td>5</td><td>D</td><td>D</td><td>D</td><td>D</td><td>D</td><td>D</td><td>D</td><td>D</td><td>H</td><td>H</td></tr><tr><td>6</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td></tr><tr><td>8</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>H</td><td>H</td></tr><tr><td>9</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>S</td><td>P</td><td>P</td><td>S</td><td>S</td></tr><tr><td>10, картинки</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td></tr><tr><td>A</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td></tr></tbody></table></div>
+<p>От известной таблицы есть 2 отличия. Первое — <strong>руку с тузом нельзя удвоить</strong>, поэтому в строках, где туз считается за 11, только H или S. Второе — <strong>когда открытая карта дилера 10 или туз</strong>. Этот автомат проверяет, нет ли у дилера 21 с 2 карт, только в конце раунда, поэтому вы можете проиграть и добавленные ставки. Поэтому на 11 не удваивают, а пару восьмёрок не сплитуют.</p>
+<h2 class="ra-section">Программа, которая ведёт себя так же</h2>
+<p>Эту программу мы написали с нуля по правилам, которые узнали из кода. Код игры не копировался. Части про шуз, взятие карт дилером и выплату — вот и всё.</p>
+<pre class="ra-code ra-code-src">DECKS = 10
+VALUES = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11]  # Одна масть. 2–K, последним туз (11)
+SHOE = VALUES * 4 * DECKS                                # 520 карт по порядку. Конец — верх шуза
+
+class Shoe:
+    def __init__(self, rng, fair=False, cards=SHOE):
+        self.cards, self.n, self.rng, self.fair = cards[:], len(cards), rng, fair
+
+    def take(self):
+        """1 карта сверху. Сначала позиция n меняется с какой-то позицией ниже n (сама n не выбирается)"""
+        self.n -= 1
+        n = self.n
+        if n:
+            k = self.rng.randrange(n + 1 if self.fair else n)
+            self.cards[k], self.cards[n] = self.cards[n], self.cards[k]
+        return self.cards[n]
+
+def dealer_draws(hard, ace):
+    """hard — сумма, где тузы считаются за 1. Стоп на 17 и больше и на мягких 18–21. На мягких 17 берёт"""
+    return not (hard &gt;= 17 or (ace and 18 &lt;= hard + 10 &lt;= 21))
+
+def settle(cards, bet, dealer):
+    """Возврат для одной руки. 21 с 2 карт — 2.5 ставки (с округлением вниз), победа — 2, ничья — 1"""
+    mine, natural = best(*state(cards)), len(cards) == 2 and best(*state(cards)) == 21
+    if mine &gt; 21:
+        return 0
+    house = best(*state(dealer))
+    if len(dealer) == 2 and house == 21:
+        return bet if natural else 0
+    if house &gt; 21:
+        house = 0
+    if mine &gt; house or (mine == house and natural):
+        return bet * 5 // 2 if natural else bet * 2
+    return bet if mine == house else 0</pre>
+<p><code>state</code> превращает руку в «сумму с тузами за 1» и «есть ли туз», а <code>best</code> возвращает сумму, где один туз считается за 11, если это возможно (полный код — в файле).</p>
+<p>Тасование здесь делает обмен для каждой позиции «в момент, когда эта карта берётся». После своего обмена позиция n больше не двигается, так что результат тот же, как если бы всё перетасовали заранее, а потом раздавали. Генератор случайных чисел — из Python, поэтому порядок карт с игрой не совпадёт, но способ тасования и правила те же.</p>
+<p>Ни у <code>take</code>, ни у <code>settle</code> нет входа для прошлых результатов, времени или того, кто ставил. На вход идут только источник случайности и карты этого раунда.</p>
+<p>Базовая стратегия считается внутри той же программы. Шуз принимается за такой, где «каждое значение всегда выпадает с вероятностью 1/13»; для каждой руки сравниваются средние при стопе, взятии, удвоении и сплите, и выбирается лучшее. Таблицы выше — её вывод.</p>
+<h3>Итоги 1 млн раундов</h3>
+<p>Один игрок, ставка 10 Scrap каждый раунд, 1 млн раундов (зерно генератора 1). Результаты — в долях от исходной ставки.</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table ra-prose-short"><thead><tr><th scope="col">Стиль игры</th><th scope="col">Среднее (за раунд)</th><th scope="col">Погрешность</th><th scope="col">Победы</th><th scope="col">Ничьи</th><th scope="col">Поражения</th></tr></thead><tbody><tr><td>Базовая стратегия</td><td>−0.66%</td><td>±0.11</td><td>43.43%</td><td>8.63%</td><td>47.94%</td></tr><tr><td>Брать как дилер (без удвоений и сплитов)</td><td>−5.86%</td><td>±0.10</td><td>41.11%</td><td>9.70%</td><td>49.19%</td></tr><tr><td>Всегда стоп на 12 и больше</td><td>−6.02%</td><td>±0.10</td><td>42.61%</td><td>6.51%</td><td>50.87%</td></tr></tbody></table></div>
+<p>Та же базовая стратегия, посчитанная не симуляцией, а расчётом, даёт следующее.</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">Способ</th><th scope="col">Среднее</th></tr></thead><tbody><tr><td>Расчёт (бесконечный шуз)</td><td>−0.79%</td></tr><tr><td>Расчёт (то же, плюс первые 4 карты с вероятностями тасования этого автомата)</td><td>−0.87%</td></tr><tr><td>Симуляция, 1 млн раундов</td><td>−0.66% (±0.11)</td></tr><tr><td>Симуляция, 5.5 млн раундов (1 млн с зерном 1 и по 1.5 млн с зёрнами 2, 3, 4)</td><td>−0.77% (±0.05)</td></tr></tbody></table></div>
+<p>В блэкджеке результат сильно скачет от раунда к раунду, и даже после 1 млн раундов остаётся разброс ±0.1 пункта. Сводя расчёты и симуляции вместе, мы оцениваем <strong>долю казино примерно в 0.8% (0.7–0.9%)</strong>.</p>
+<p>21 с 2 карт выпадало в 4.69% случаев. Это чуть меньше 4.74% при равномерном тасовании, и разница — как раз эффект того, что «первая карта никогда не бывает тем самым тузом».</p>
+<p>Полная программа лежит в <a class="ra-link" href="card-games.py">card-games.py</a>. <code>python3 card-games.py</code> выдаёт те же цифры (работает около минуты).</p>
+<h2 class="ra-section">Покер (техасский холдем)</h2>
+<ul class="ra-facts">
+<li><span class="ra-facts-n">52 карты</span><span class="ra-facts-l">1 колода. Собирается заново каждую раздачу</span></li>
+<li><span class="ra-facts-n">5 / 10</span><span class="ra-facts-l">Блайнды. Анте нет</span></li>
+<li><span class="ra-facts-n">100–1,000</span><span class="ra-facts-l">Scrap, который можно принести за стол</span></li>
+</ul>
+<ol class="ra-timeline" aria-label="Одна раздача техасского холдема">
+<li class="ra-timeline-hot" style="--w:14"><strong>Сборка колоды</strong><span>Мгновенно</span><small>52 карты выкладываются заново и тасуются</small></li>
+<li style="--w:20"><strong>Блайнды и карманные карты</strong><span>Автоматически</span><small>Ставятся 5 и 10, каждому раздаётся по 2 карты</small></li>
+<li style="--w:36"><strong>4 круга торговли</strong><span>30 секунд на игрока</span><small>Между ними флоп (3 карты), тёрн и ривер</small></li>
+<li style="--w:16"><strong>Вскрытие</strong><span>Мгновенно</span><small>Комбинации сравниваются по 2 карманным + 5 общим картам</small></li>
+<li style="--w:14"><strong>Выплата</strong><span>Мгновенно</span><small>Весь банк уходит победителю. Следующая раздача — через 8 секунд</small></li>
+</ol>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">Что</th><th scope="col">Правило карточного стола</th></tr></thead><tbody><tr><td>Игроки</td><td>От 2. Столы бывают 4 видов: на 2, 3, 4 и 6 мест</td></tr><tr><td>Блайнды</td><td>Следующий за баттоном ставит 5, за ним — 10 (вдвоём 5 ставит баттон). Баттон каждую раздачу сдвигается на одно место</td></tr><tr><td>Бай-ин</td><td>100–1,000 Scrap в хранилище места. Если остаётся меньше 10, со следующей раздачи вы выбываете</td></tr><tr><td>Минимальный рейз</td><td>10 и больше (не меньше предыдущего повышения)</td></tr><tr><td>Тайм-аут</td><td>Через 30 секунд — фолд. 4 минуты без действий — вас снимают с места</td></tr><tr><td>Определение комбинации</td><td>Лучшая из 7 карт: 2 карманных и 5 общих. При равенстве банк делится поровну</td></tr><tr><td>Доля казино (рейк)</td><td><strong>Нет</strong></td></tr></tbody></table></div>
+<p>Код выплаты раздаёт банк победителям слоями, начиная с самой маленькой ставки, и в конце проверяет, что «банк должен быть пуст». Кода, где стол что-то забирал бы себе, нет. <strong>Весь поставленный Scrap возвращается кому-то из игроков.</strong></p>
+<p>Поэтому у покера нет «среднего возврата против казино». Если сложить выигрыши и проигрыши всех за столом, всегда выйдет 0. Выиграете вы или нет, зависит только от того, играете ли вы лучше соперников.</p>
+<h2 class="ra-section">Проверяем расхожие утверждения</h2>
+<div class="ra-myth"><p class="ra-myth-q">«Если считать вышедшие карты, можно ставить крупно, когда шансы на вашей стороне»</p><p class="ra-myth-a"><span class="ra-verdict">Не работает</span>Подсчёт карт помогает, только если использованные карты не возвращаются в шуз и игра переходит в следующий раунд без них. Этот автомат каждый раунд собирает все 520 карт заново, так что подсчитанное не переносится. А шуз собирается до ставок, поэтому увидеть карты раунда до ставки тоже нельзя.</p></div>
+<div class="ra-myth"><p class="ra-myth-q">«Проигрываю подряд. Автомат копит, скоро будет выигрыш»</p><p class="ra-myth-a"><span class="ra-verdict">Не работает</span>Автомат не помнит ни сколько выплатил, ни сколько принял. Поставленный Scrap исчезает в конце раунда, а выплаты создаются заново. Между раундами сохраняются только места и Scrap у игроков.</p></div>
+<div class="ra-myth"><p class="ra-myth-q">«Поставишь крупно — придут плохие карты»</p><p class="ra-myth-a"><span class="ra-verdict">Не влияет</span>Шуз полностью перетасован ещё до приёма ставок. Ни в тасовании, ни в раздаче нет входа для размера ставки или того, кто ставил.</p></div>
+<div class="ra-myth"><p class="ra-myth-q">«Дилер смотрит на вашу руку и меняет, как берёт карты»</p><p class="ra-myth-a"><span class="ra-verdict">Не меняет</span>Берёт ли дилер карту, зависит только от суммы его собственных карт. Стоп на 17 и больше, на мягких 17 берёт. Ни руки игроков, ни ставки не используются.</p></div>
+<div class="ra-myth"><p class="ra-myth-q">«Шансы зависят от времени суток или числа игроков на сервере»</p><p class="ra-myth-a"><span class="ra-verdict">Не зависят</span>Случайные числа используются в одном месте — при тасовании, и берутся из криптографического генератора ОС. Ни время, ни число игроков туда не входят.</p></div>
+<div class="ra-myth"><p class="ra-myth-q">«Закрытую карту дилера можно подсмотреть программой»</p><p class="ra-myth-a"><span class="ra-verdict">Не передаётся</span>Во время раунда сервер не отправляет клиенту, что за закрытая карта. С чужими карманными картами в покере то же самое. Как ни исследуйте клиент, того, чего там нет, вы не увидите.</p></div>
+<div class="ra-myth"><p class="ra-myth-q">«Страховка — это защита, с хорошей рукой её надо брать»</p><p class="ra-myth-a"><span class="ra-verdict">Брать невыгодно</span>Страховка — отдельная от основной ставка, и её среднее — −7.9%. От того, хороша ли ваша рука, это не меняется.</p></div>
+<div class="ra-myth"><p class="ra-myth-q">«Удваивай ставку после каждого проигрыша — и в итоге выиграешь»</p><p class="ra-myth-a"><span class="ra-verdict">Среднее не меняется</span>Каждый результат не связан с прошлыми раундами, поэтому порядок размеров ставок на среднее не влияет. Предел — 500, так что даже если начать с 5, после 7 проигрышей подряд следующую удвоенную ставку (640) уже не сделать.</p></div>
+<div class="ra-myth"><p class="ra-myth-q">«От места зависит, какие карты придут»</p><p class="ra-myth-a"><span class="ra-verdict">Только на одну карту</span>Карты раздаются в порядке номеров мест, а у тасования есть описанное выше отклонение в одну карту. Ниже мы это проверяем. На то, кто выиграет, разница не влияет.</p></div>
+<div class="ra-myth"><p class="ra-myth-q">«В покере стол сталкивает сильные руки, чтобы было интереснее»</p><p class="ra-myth-a"><span class="ra-verdict">Не сталкивает</span>Он просто тасует 52 карты и раздаёт сверху. Кода, который выбирал бы, кому что дать, нет. Стол ничего не забирает себе, так что и причин подогревать игру у него нет.</p></div>
+<h2 class="ra-section">Места и отклонение тасования</h2>
+<p>Карты всегда раздаются начиная с места с наименьшим номером, где бы ни был баттон. Отклонение тасования (первая карта никогда не туз треф) прямо сказывается на этом месте.</p>
+<p>Для покера вдвоём мы за 1 млн раздач посчитали, как часто туз треф оказывается у каждого места.</p>
+<ol class="ra-gbars ra-plain" style="--max:4" aria-label="Как часто туз треф оказывается у каждого места в покере вдвоём"><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Место, которому раздают первым (тасование этого автомата)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:1.97"></span></span><span class="ra-gbar-n">1.97%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Место, которому раздают вторым (тасование этого автомата)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:3.91"></span></span><span class="ra-gbar-n">3.91%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Любое место (равномерное тасование)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:3.85"></span></span><span class="ra-gbar-n">3.85%</span></span></li></ol>
+<p>Месту, которому раздают первым, туз треф достаётся вдвое реже. Первой картой он туда не придёт никогда, только второй. Точно так же у места, которому раздают вторым, есть позиция, куда никогда не попадает король треф, а у общих карт — позиции, куда не попадают 10, 9 и 8 треф.</p>
+<p>Влияет ли это на исход? Почти нет.</p>
+<ul><li><strong>Покер:</strong> если считать, что никто не сбрасывает карты до конца, 1 млн испытаний вдвоём не показал заметной разницы в доле банка (49.97% и 50.03%, погрешность ±0.05). Вшестером первое место получило 16.57% — всего на 0.1 пункта меньше ровной доли 16.67% (погрешность ±0.04).</li><li><strong>Блэкджек:</strong> здесь это 1 карта из 520, так что эффект ещё меньше. По расчёту, для одного игрока доля казино растёт на 0.09 пункта. Если за автоматом сидят трое, для места с наименьшим номером — на 0.15 пункта, для остальных — на 0.03–0.04 пункта. Всё это только расчёт: симуляций на троих мы не запускали. Цифры для троих получены отдельной одноразовой программой, не той, что в статье.</li></ul>
+<p>Этой разницы мало, чтобы сказать «на этом месте не выиграть». Мы записываем это как факт: в коде есть отклонение на одну карту.</p>
+<h2 class="ra-section">Чего мы не знаем</h2>
+<ul><li><strong>Какое место имеет наименьший номер.</strong> Какое место за столом нулевое, мы не проверяли.</li><li><strong>Как определяются комбинации.</strong> Сравнение комбинаций отдано компоненту, устроенному как известный открытый оценщик рук. Его внутренности мы не читали.</li><li><strong>Олл-ин при 3 и более игроках.</strong> Если игрок с меньшим стеком идёт олл-ин и выигрывает, делятся ли побочные банки по обычным правилам — неизвестно. По коду есть места, где выплата, похоже, может идти не так, как обычно. Игрой мы это не проверяли.</li><li><strong>Точные знаки доли казино.</strong> Около 0.8% — оценка нашей собственной программы. Расчёт приближённый, с бесконечным шузом, а у симуляций погрешность ±0.05–0.1 пункта.</li><li><strong>К чему относится статья.</strong> К серверу PC-версии сборки 2026-11-07 с пределом ставки по умолчанию 500. Предел на каждом сервере можно изменить, а правила могут поменяться в будущих обновлениях.</li></ul>
+<h2 class="ra-section">Как мы проверяли</h2>
+<p>Мы читали код самого сервера (промежуточный код классов блэкджека и покера), а настройки автомата и стола — из файлов данных. Сервер мы не запускали. Размер шуза, правило взятия карт дилером, множители выплат, диапазон ставок, блайнды и таймеры — всё это прочитанные значения.</p>
+<p>Долю казино, таблицы базовой стратегии и доли по местам мы посчитали и смоделировали программой, в которой заново записали прочитанные правила. <a class="ra-link" href="card-games.py">card-games.py</a> выдаёт всё вплоть до того, как часто у места оказывается туз треф. Доли банка в покере и разницу по местам в блэкджеке на троих дала отдельная одноразовая программа.</p>
+<p>Это не результаты, подсчитанные игрой в самой игре. Это подтверждение того, что так написано в коде.</p><h2 class="ra-section">Источники</h2><ul><li><a class="ra-link" href="https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.randomnumbergenerator.getint32" rel="noopener">.NET documentation, RandomNumberGenerator.GetInt32</a></li><li><a class="ra-link" href="https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle" rel="noopener">Wikipedia, Fisher–Yates shuffle (section on Sattolo&#x27;s algorithm)</a></li></ul></article></main>
+<footer class="ra-foot"><p>Неофициальный сайт, сделанный одним человеком и не связанный с Facepunch Studios. Значения взяты из данных и кода игрового сервера; их точность не гарантируется.</p>
+<p>Часть иконок взята из <a class="ra-link" href="https://lucide.dev/" rel="noopener">Lucide</a> (ISC License).</p></footer>
+<script>document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('[data-lang]');if(a)try{localStorage.setItem('ra-lang',a.dataset.lang)}catch(_){}})</script></body></html>

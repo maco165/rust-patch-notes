@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<script>(()=>{try{if(/bot|crawl|spider|slurp|lighthouse|inspection/i.test(navigator.userAgent))return;const A={"ja":"../../columns/wheel-myths.html","en":"../../en/columns/wheel-myths.html","zh":"../../zh/columns/wheel-myths.html","ko":"../../ko/columns/wheel-myths.html","ru":"../../ru/columns/wheel-myths.html"},S=["ja","en","zh","ko","ru"];let w=localStorage.getItem('ra-lang');if(!w){for(const l of navigator.languages||[navigator.language||'']){const c=String(l).toLowerCase().split('-')[0];if(S.includes(c)){w=c;break}}w=w||'en'}if(!A[w])w=A.en?'en':null;if(w&&w!=='ko')location.replace(A[w]+location.search+location.hash)}catch(_){}})()</script><title>Big Wheel에 필승 패턴이 있을까? | Rust Analysis</title>
+<meta name="description" content="Bandit Camp의 Big Wheel에 얽힌 7가지 이야기를 서버 코드를 읽은 결과로 하나씩 확인합니다. 지금은 패턴이 없습니다. 2024년 5월 이전에는 이전 당첨을 보면 다음에 잘 나올 칸을 알 수 있었고, 평균적으로 늘어나는 베팅법도 있었습니다.">
+<meta name="theme-color" content="#f2f4f5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15181a" media="(prefers-color-scheme: dark)">
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+<link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rust Analysis">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:title" content="Big Wheel에 필승 패턴이 있을까? | Rust Analysis">
+<meta property="og:description" content="Bandit Camp의 Big Wheel에 얽힌 7가지 이야기를 서버 코드를 읽은 결과로 하나씩 확인합니다. 지금은 패턴이 없습니다. 2024년 5월 이전에는 이전 당첨을 보면 다음에 잘 나올 칸을 알 수 있었고, 평균적으로 늘어나는 베팅법도 있었습니다.">
+<meta property="og:url" content="https://maco165.github.io/rust-patch-notes/ko/columns/wheel-myths.html">
+<meta property="og:image" content="https://maco165.github.io/rust-patch-notes/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://maco165.github.io/rust-patch-notes/ko/columns/wheel-myths.html">
+<link rel="alternate" hreflang="ja" href="https://maco165.github.io/rust-patch-notes/columns/wheel-myths.html">
+<link rel="alternate" hreflang="en" href="https://maco165.github.io/rust-patch-notes/en/columns/wheel-myths.html">
+<link rel="alternate" hreflang="zh" href="https://maco165.github.io/rust-patch-notes/zh/columns/wheel-myths.html">
+<link rel="alternate" hreflang="ko" href="https://maco165.github.io/rust-patch-notes/ko/columns/wheel-myths.html">
+<link rel="alternate" hreflang="ru" href="https://maco165.github.io/rust-patch-notes/ru/columns/wheel-myths.html">
+<link rel="alternate" hreflang="x-default" href="https://maco165.github.io/rust-patch-notes/columns/wheel-myths.html">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Big Wheel에 필승 패턴이 있을까?", "description": "Bandit Camp의 Big Wheel에 얽힌 7가지 이야기를 서버 코드를 읽은 결과로 하나씩 확인합니다. 지금은 패턴이 없습니다. 2024년 5월 이전에는 이전 당첨을 보면 다음에 잘 나올 칸을 알 수 있었고, 평균적으로 늘어나는 베팅법도 있었습니다.", "inLanguage": "ko", "datePublished": "2026-11-12", "dateModified": "2026-11-12", "url": "https://maco165.github.io/rust-patch-notes/ko/columns/wheel-myths.html", "mainEntityOfPage": "https://maco165.github.io/rust-patch-notes/ko/columns/wheel-myths.html", "image": "https://maco165.github.io/rust-patch-notes/assets/og.png", "author": {"@type": "Organization", "name": "Rust Analysis", "url": "https://maco165.github.io/rust-patch-notes/"}, "publisher": {"@type": "Organization", "name": "Rust Analysis", "url": "https://maco165.github.io/rust-patch-notes/"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Rust Analysis", "item": "https://maco165.github.io/rust-patch-notes/ko/tools.html"}, {"@type": "ListItem", "position": 2, "name": "칼럼", "item": "https://maco165.github.io/rust-patch-notes/ko/columns.html"}, {"@type": "ListItem", "position": 3, "name": "Big Wheel에 필승 패턴이 있을까?", "item": "https://maco165.github.io/rust-patch-notes/ko/columns/wheel-myths.html"}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+JP:wght@400;600&display=swap&family=Noto+Sans+KR:wght@400;600">
+<style>html:lang(ko){--font-sans:"Noto Sans KR","IBM Plex Sans JP",system-ui,sans-serif;--font-display:"Big Shoulders Display","Noto Sans KR",sans-serif}</style>
+<link rel="stylesheet" href="../../assets/style.css">
+</head><body>
+<header class="ra-site">
+  <a class="ra-site-name" href="../tools.html"><b>Rust</b> Analysis</a>
+  <nav class="ra-nav" aria-label="페이지"><a href="../columns.html" aria-current="page"><i class="ra-ico ra-ico-columns" aria-hidden="true"></i>칼럼</a><a href="../tools.html"><i class="ra-ico ra-ico-tools" aria-hidden="true"></i>도구</a></nav>
+  <span class="ra-site-meta">2026-11-05</span>
+  <span class="ra-site-lang"><a href="../../columns/wheel-myths.html" lang="ja" hreflang="ja" data-lang="ja">日本語</a><a href="../../en/columns/wheel-myths.html" lang="en" hreflang="en" data-lang="en">English</a><a href="../../zh/columns/wheel-myths.html" lang="zh" hreflang="zh" data-lang="zh">简体中文</a><a href="../../ru/columns/wheel-myths.html" lang="ru" hreflang="ru" data-lang="ru">Русский</a></span><a class="ra-site-link" href="https://github.com/maco165/rust-patch-notes" rel="noopener"><i class="ra-ico ra-ico-github" aria-hidden="true"></i>GitHub</a>
+</header>
+<script>(()=>{const n=document.querySelector('.ra-nav'),a=n&&n.querySelector('[aria-current]');if(a&&n.scrollWidth>n.clientWidth)n.scrollLeft=a.offsetLeft-(n.clientWidth-a.offsetWidth)/2})()</script>
+<main class="ra-page"><article class="ra-prose"><p class="ra-patch-meta"><a class="ra-link" href="../columns.html">칼럼</a><time datetime="2026-11-12">2026-11-12</time><span><i class="ra-ico ra-ico-economy" aria-hidden="true"></i> 경제, 상점</span><span class="ra-src ra-src-export"><i class="ra-ico ra-ico-export" aria-hidden="true"></i>게임 빌드 2026-11-07</span></p><div class="ra-tp-head"><span class="ra-ti ra-ti-page" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke-linecap="round" stroke-linejoin="round">
+<path d="M33.5 14.5C45.9 14.1 55.9 24.1 55.5 36.9C55.1 49.3 45.5 58.9 33.1 58.5C20.9 58.1 11.1 48.3 11.5 36.1C11.9 23.9 21.1 14.9 33.5 14.5Z" fill="#d6eee3"/>
+<path d="M32 35L54 35A22 22 0 0 1 47.56 50.56ZM32 35L32 57A22 22 0 0 1 16.44 50.56ZM32 35L10 35A22 22 0 0 1 16.44 19.44ZM32 35L32 13A22 22 0 0 1 47.56 19.44Z" fill="#ffd77a"/>
+<path d="M32 13C44.4 12.6 54.4 22.6 54 35.4C53.6 47.8 44 57.4 31.6 57C19.4 56.6 9.6 46.8 10 34.6C10.4 22.4 19.6 13.4 32.6 13" stroke="#0b6649" stroke-width="3.2"/>
+<path d="M32 13.6Q32.6 35 32 56.6M10.6 35Q32 34.4 53.6 35.2M16.8 19.8Q32.5 34.5 47.2 50.2M47.2 19.8Q31.5 35.5 16.8 50.2" stroke="#0b6649" stroke-width="2.4"/>
+<path d="M27.8 35Q27.8 30.8 32.2 30.8Q36.2 31 36.2 35.2Q36 39.2 32 39.2Q27.8 39 27.8 35Z" fill="#0b6649" stroke="#0b6649" stroke-width="2"/>
+<path d="M26.4 4.8Q32 4.2 37.6 4.8L32.2 16.4Z" fill="#9c1b3d" stroke="#9c1b3d" stroke-width="2.6"/>
+</svg></span><h1 class="ra-prose-title">Big Wheel에 필승 패턴이 있을까?</h1></div><p class="ra-prose-lead">Bandit Camp의 Big Wheel에 얽힌 7가지 이야기를 서버 코드를 읽은 결과로 하나씩 확인합니다. 지금은 패턴이 없습니다. 2024년 5월 이전에는 이전 당첨을 보면 다음에 잘 나올 칸을 알 수 있었고, 평균적으로 늘어나는 베팅법도 있었습니다.</p><div class="ra-callout">
+<p class="ra-callout-label">결론</p>
+<p class="ra-callout-main">지금은 패턴이 없습니다</p>
+<p>당첨 칸은 돌기 시작하는 순간 25칸 중에서 같은 확률로 하나가 골라집니다. 이전 결과도, 시각도, 베팅한 사람이나 금액도 쓰이지 않습니다. 다만 2024년 5월 이전에는 구조가 달라서, 이전 당첨을 보면 다음에 잘 나올 칸을 알 수 있었고, 평균적으로 늘어나는 베팅법도 있었습니다 ("2024년 5월 이전에는" 참고).</p>
+</div>
+<ul class="ra-facts">
+<li><span class="ra-facts-n">1/25</span><span class="ra-facts-l">어느 칸이든 같은 확률</span></li>
+<li><span class="ra-facts-n">−4%</span><span class="ra-facts-l">1, 3, 5에 걸었을 때의 기댓값</span></li>
+<li><span class="ra-facts-n">−16%</span><span class="ra-facts-l">20에 걸었을 때의 기댓값</span></li>
+</ul>
+<p>어느 숫자에 걸든 계속할수록 줄어듭니다. 손해를 가장 작게 하려면 1입니다.</p>
+<p>이 글에서는 Big Wheel의 칸을 게임 안의 표시와 같은 <strong>1, 3, 5, 10, 20</strong>의 숫자로 부릅니다. 숫자는 당첨되었을 때의 배율입니다.</p>
+<h2 class="ra-section">Big Wheel은 이렇게 움직입니다</h2>
+<h3>1회의 흐름</h3>
+<ol class="ra-timeline" aria-label="Big Wheel 1회의 흐름">
+<li style="--w:45"><strong>베팅 접수</strong><span>45초</span><small>Scrap을 놓을 수 있는 것은 이 동안뿐</small></li>
+<li class="ra-timeline-hot" style="--w:14"><strong>돌기 시작</strong><span>순식간</span><small>당첨이 정해지고, 동시에 베팅을 마감한다</small></li>
+<li style="--w:22"><strong>회전</strong><span>13~18초 + 감속</span><small>정해진 칸을 향해 돌 뿐</small></li>
+<li style="--w:14"><strong>배당</strong><span>순식간</span><small>당첨은 돌아오고, 꽝은 사라진다</small></li>
+</ol>
+<p>당첨이 정해지는 것은 바퀴가 돌기 시작하기 <strong>전</strong>입니다. 도는 동안에는 더 이상 결과가 바뀌지 않습니다.</p>
+<h3>당첨을 정할 때 쓰는 것, 쓰지 않는 것</h3>
+<div class="ra-uses">
+<div><p class="ra-uses-head ra-uses-yes">쓰는 것</p><ul><li>칸의 수 (25)</li><li>그 자리에서 새로 만든 난수</li></ul></div>
+<div><p class="ra-uses-head ra-uses-no">쓰지 않는 것</p><ul><li>이전 회차의 결과</li><li>시각, 회차 번호</li><li>서버 인원</li><li>베팅한 금액</li><li>베팅한 사람</li><li>바퀴가 도는 모습</li></ul></div>
+</div>
+<p>돌기 시작할 때의 처리를 말로 쓰면 이렇습니다.</p>
+<pre class="ra-code">돌기 시작할 때:
+  새 시드를 하나 만들고, 그 시드로 난수를 새로 만든다
+  당첨 칸 = 0번부터 24번 중에서 같은 확률로 하나
+  멈출 각도와 도는 시간의 길이를 정한다
+  베팅을 마감한다</pre>
+<h3>실제 코드가 호출하는 난수</h3>
+<p>돌기 시작할 때의 처리는 난수를 다음 순서로 호출합니다. 모두 Unity와 .NET에 기본으로 있는 메서드이며, Rust가 독자적으로 만든 난수가 아닙니다.</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">순서</th><th scope="col">호출하는 메서드</th><th scope="col">무엇을 정하는가</th></tr></thead><tbody><tr><td>1</td><td><code>UnityEngine.Random.Range(int.MinValue, int.MaxValue)</code></td><td>시드. Unity의 난수에서 정수를 하나 뽑는다</td></tr><tr><td>2</td><td><code>new System.Random(시드)</code></td><td>그 시드로 .NET의 난수를 새로 만든다</td></tr><tr><td>3</td><td><code>Next(0, 칸의 수)</code></td><td>당첨 칸. 0 이상 25 미만의 정수, 즉 0~24</td></tr><tr><td>4</td><td><code>NextDouble()</code></td><td>멈출 각도의 오차 (±6도). 0 이상 1 미만의 소수로 만든다</td></tr><tr><td>5</td><td><code>NextDouble()</code></td><td>도는 시간의 길이 (13~18초)</td></tr></tbody></table></div>
+<p>각각의 성질은 공식 문서에 쓰여 있습니다.</p>
+<ul><li><strong><code>UnityEngine.Random</code></strong>은 Xorshift 128이라는 방식이며, 상태는 게임 전체에서 하나를 공유합니다. 서버 안의 다른 처리도 같은 난수를 쓰므로, Big Wheel이 시드를 뽑는 시점의 상태는 다른 처리가 그때까지 몇 번 호출했는지에 따라 달라집니다.</li><li><strong><code>System.Random(시드)</code></strong>는 같은 시드에서는 같은 수열을 만듭니다. Big Wheel은 돌릴 때마다 새 시드로 다시 만들므로, 이전 회차 수열의 뒤를 잇지 않습니다.</li><li><strong><code>Next(최소, 최대)</code></strong>는 최솟값을 포함하고 최댓값을 포함하지 않습니다. <code>Next(0, 25)</code>가 돌려주는 것은 0~24이며, 25칸 중 하나가 그대로 골라집니다.</li><li><strong><code>NextDouble()</code></strong>은 0 이상 1 미만의 소수를 돌려줍니다. 각도의 오차와 도는 시간에 쓰일 뿐, 당첨 칸과는 관계가 없습니다.</li></ul>
+<p>당첨 칸을 정하는 것은 3번의 한 줄뿐입니다. 그 앞뒤에 이전 결과나 베팅 내용을 섞는 처리는 없습니다.</p>
+<h3>25칸의 배열</h3>
+<div class="ra-strip" role="img" aria-label="25칸의 배열. 1이 12칸, 3이 6칸, 5가 4칸, 10이 2칸, 20이 1칸"><span>3</span><span>1</span><span>10</span><span>1</span><span>3</span><span>1</span><span>5</span><span>1</span><span>5</span><span>3</span><span>1</span><span>10</span><span>1</span><span>3</span><span>1</span><span>5</span><span>1</span><span>3</span><span>1</span><span class="ra-strip-hot">20</span><span>1</span><span>3</span><span>1</span><span>5</span><span>1</span></div>
+<p>1은 한 칸 걸러 들어가고, 20은 1칸뿐입니다. 조사한 7대는 모두 같은 배열이었습니다.</p>
+<h3>숫자별 당첨 확률</h3>
+<ol class="ra-gbars ra-plain" style="--max:48" aria-label="숫자별 당첨 확률"><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">1 (12칸)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:48"></span></span><span class="ra-gbar-n">48%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">3 (6칸)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:24"></span></span><span class="ra-gbar-n">24%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">5 (4칸)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:16"></span></span><span class="ra-gbar-n">16%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">10 (2칸)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:8"></span></span><span class="ra-gbar-n">8%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">20 (1칸)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:4"></span></span><span class="ra-gbar-n">4%</span></span></li></ol>
+<p>당첨되기 쉬운 정도를 정하는 것은 그 숫자의 칸 수뿐입니다.</p>
+<h2 class="ra-section">똑같이 움직이는 프로그램</h2>
+<p>읽어서 알아낸 동작을 직접 처음부터 쓴 프로그램입니다. 게임 코드는 베끼지 않았습니다. 당첨을 정하는 부분과 배당 부분은 이것뿐입니다.</p>
+<pre class="ra-code ra-code-src">import random
+
+# 25칸의 배열. 숫자는 당첨되었을 때의 배율
+SEGMENTS = [3, 1, 10, 1, 3, 1, 5, 1, 5, 3, 1, 10, 1, 3, 1, 5, 1, 3, 1, 20, 1, 3, 1, 5, 1]
+
+def spin(source):
+    """1회분. 새 시드로 난수를 다시 만들고, 25칸 중에서 같은 확률로 하나를 고른다"""
+    fresh = random.Random(source.getrandbits(32))
+    return fresh.randrange(len(SEGMENTS))
+
+def payout(bets, segment):
+    """bets는 {숫자: 건 금액}. 당첨된 숫자의 베팅만 (1 + 숫자)배로 돌아온다"""
+    number = SEGMENTS[segment]
+    return bets.get(number, 0) * (1 + number)</pre>
+<p>위의 표와의 대응은 <code>source.getrandbits(32)</code>가 1번 (시드를 뽑는다), <code>random.Random(...)</code>이 2번 (난수를 다시 만든다), <code>randrange(25)</code>가 3번 (칸을 고른다)입니다. 난수 방식은 Python의 것이므로 나오는 수열은 게임과 같지 않지만, 고르는 방법은 같습니다.</p>
+<p><code>spin</code> 안에는 이전 회차의 결과, 시각, 베팅 내용을 받는 자리가 없습니다. 들어오는 것은 난수의 원천뿐입니다. 패턴이 생길 여지가 없다는 것을 형태로도 알 수 있습니다.</p>
+<h3>10만 번 돌린 결과</h3>
+<p>이 프로그램을 10만 번 돌리며 숫자마다 100씩 계속 건 결과입니다 (난수 시드는 1).</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table ra-prose-short"><thead><tr><th scope="col">숫자</th><th scope="col">당첨 확률 (계산)</th><th scope="col">당첨된 비율 (10만 번)</th><th scope="col">기댓값 (계산)</th><th scope="col">기댓값 (10만 번)</th></tr></thead><tbody><tr><td>1</td><td>48%</td><td>48.17%</td><td>−4</td><td>−3.67</td></tr><tr><td>3</td><td>24%</td><td>23.83%</td><td>−4</td><td>−4.66</td></tr><tr><td>5</td><td>16%</td><td>16.10%</td><td>−4</td><td>−3.43</td></tr><tr><td>10</td><td>8%</td><td>7.88%</td><td>−12</td><td>−13.31</td></tr><tr><td>20</td><td>4%</td><td>4.02%</td><td>−16</td><td>−15.52</td></tr></tbody></table></div>
+<p>당첨된 비율은 계산한 확률과 거의 같아졌습니다. 기댓값은 회차마다 흔들림이 크기 때문에 10만 번으로도 계산에서 조금 벗어납니다. 시드를 바꿔도 벗어나는 방식이 달라질 뿐 경향은 같습니다.</p>
+<p>이 10만 번 중에서 20이 나오지 않는 연속은 최장 230번이었습니다. 치우침이 아니라 확률대로 돌린 결과입니다.</p>
+<p>프로그램 전체는 <a class="ra-link" href="wheel-myths.py">wheel-myths.py</a>에 있습니다. <code>python3 wheel-myths.py</code>로 같은 숫자가 나옵니다.</p>
+<h2 class="ra-section">자주 듣는 이야기를 확인한다</h2>
+<div class="ra-myth"><p class="ra-myth-q">"한동안 20이 안 나왔으니 슬슬 20이 온다"</p><p class="ra-myth-a"><span class="ra-verdict">성립하지 않는다</span>이전 회차의 결과는 어디에도 쓰이지 않습니다. 난수도 돌릴 때마다 새로 만들어집니다. 20이 100번 나오지 않았어도, 다음에 20이 나올 확률은 4% 그대로입니다.</p></div>
+<div class="ra-myth"><p class="ra-myth-q">"바퀴가 도는 모습을 보면 멈출 곳을 읽을 수 있다"</p><p class="ra-myth-a"><span class="ra-verdict">읽어도 걸 수 없다</span>멈출 곳은 돌기 시작한 시점에 정해져 있고, 그 시점에 베팅은 마감됩니다. 도중의 속도나 감속이 들어가는 방식은 결과를 바꾸지 않습니다. 멈추는 각도는 ±6도 흔들리고 칸의 폭도 고르지 않아서, 겉보기에 바늘에 가장 가까운 칸과 지급되는 칸이 다른 경우가 평균 0.35% (20 옆의 좁은 1 칸에서는 8%) 있습니다. 지급되는 것은 먼저 정해진 칸입니다.</p></div>
+<div class="ra-myth"><p class="ra-myth-q">"시간대나 서버 인원에 따라 잘 나오는 숫자가 달라진다"</p><p class="ra-myth-a"><span class="ra-verdict">달라지지 않는다</span>당첨을 정하는 처리가 쓰는 것은 칸의 수 (25)뿐입니다. 시각도 플레이어 수도 들어가지 않습니다.</p></div>
+<div class="ra-myth"><p class="ra-myth-q">"크게 걸면 잘 빗나간다"</p><p class="ra-myth-a"><span class="ra-verdict">관계없다</span>당첨을 정하는 처리는 건 금액도, 누가 걸었는지도 보지 않습니다. 베팅 내용이 읽히는 것은 당첨이 정해진 뒤의 배당 때뿐입니다.</p></div>
+<div class="ra-myth"><p class="ra-myth-q">"20 옆은 잘 나온다. 칸의 배열에 의미가 있다"</p><p class="ra-myth-a"><span class="ra-verdict">관계없다</span>당첨은 "칸 번호"로 골라지며, 어느 번호든 1/25입니다. 배열도 칸 폭의 차이도 당첨 확률과 관계없습니다. 2024-05-01까지는 멈춘 곳에서 당첨이 정해졌기 때문에, 폭이 넓은 20 칸은 4.45% 나왔습니다.</p></div>
+<div class="ra-myth"><p class="ra-myth-q">"빗나가면 두 배로 다시 걸면 결국 이긴다"</p><p class="ra-myth-a"><span class="ra-verdict">기댓값은 달라지지 않는다</span>매번의 결과가 이전 결과와 관계없으므로, 거는 금액의 순서를 바꿔도 기댓값은 같습니다. 꽝이 이어지면 베팅액만 급격히 늘어납니다. 1이라도 10번 연속으로 빗나가는 일이 1,000번에 1번 정도 일어납니다.</p></div>
+<div class="ra-myth"><p class="ra-myth-q">"모든 숫자에 걸면 지지 않는다"</p><p class="ra-myth-a"><span class="ra-verdict">반드시 맞지만 평균적으로 줄어든다</span>5개 숫자에 1씩 걸면, 5를 걸고 평균 4.6이 돌아옵니다 (−8%). 당첨된 숫자 이외의 베팅은 그 회차에 사라지기 때문입니다.</p></div>
+<h2 class="ra-section">숫자별 확률과 환수</h2>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table ra-prose-short"><thead><tr><th scope="col">숫자</th><th scope="col">칸</th><th scope="col">당첨 확률</th><th scope="col">당첨되었을 때의 환수</th><th scope="col">기댓값</th><th scope="col">10번 연속으로 빗나갈 확률</th></tr></thead><tbody><tr><td>1</td><td>12</td><td>48%</td><td>건 금액의 2배</td><td>−4%</td><td>0.1%</td></tr><tr><td>3</td><td>6</td><td>24%</td><td>4배</td><td>−4%</td><td>6.4%</td></tr><tr><td>5</td><td>4</td><td>16%</td><td>6배</td><td>−4%</td><td>17.5%</td></tr><tr><td>10</td><td>2</td><td>8%</td><td>11배</td><td>−12%</td><td>43.4%</td></tr><tr><td>20</td><td>1</td><td>4%</td><td>21배</td><td>−16%</td><td>66.5%</td></tr></tbody></table></div>
+<p>당첨되면 "건 금액 × (1 + 숫자)"가 돌아옵니다. 기댓값은 "당첨 확률 × 환수 배수 − 1"이며, 1이라면 12/25 × 2 − 1 = −0.04입니다.</p>
+<h3>100 Scrap을 걸었을 때 평균적으로 줄어드는 양</h3>
+<ol class="ra-gbars ra-loss" style="--max:16" aria-label="100 Scrap을 걸었을 때 평균적으로 줄어드는 양"><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">1</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:4"></span></span><span class="ra-gbar-n">−4</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">3</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:4"></span></span><span class="ra-gbar-n">−4</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">5</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:4"></span></span><span class="ra-gbar-n">−4</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">10</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:12"></span></span><span class="ra-gbar-n">−12</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">20</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:16"></span></span><span class="ra-gbar-n">−16</span></span></li></ol>
+<p>10과 20은 같은 금액을 걸었을 때 평균적으로 줄어드는 양이 1, 3, 5의 3~4배입니다.</p>
+<h2 class="ra-section">그래도 치우쳐 보이는 이유</h2>
+<ul class="ra-facts">
+<li><span class="ra-facts-n">36%</span><span class="ra-facts-l">25번 연속으로 20이 나오지 않을 확률</span></li>
+<li><span class="ra-facts-n">2.5%</span><span class="ra-facts-l">1이 5번 연속으로 나올 확률 (40번에 1번 정도)</span></li>
+</ul>
+<p>확률대로여도 결과는 치우쳐 보입니다. 3번에 1번은 "25번 돌려도 20이 오지 않는" 것이 확률대로의 모습입니다. 사람은 연속이나 치우침에서 이유를 찾지만, 여기에는 이유가 없습니다.</p>
+<h2 class="ra-section">2024년 5월 이전에는</h2>
+<p>2024-05-02 업데이트에서 공식은 "Bandit Camp Big Wheel의 난수 처리를 다시 만들었다"고 썼습니다. 당시의 코드를 읽으면, 다시 만들기 전에는 당첨을 정하는 방식이 지금과 달라서, 이전 당첨을 보면 다음에 잘 나올 칸을 알 수 있는 구조였습니다.</p>
+<h3>시기별 비교</h3>
+<p>Big Wheel이 들어온 2018-08-02부터 지금까지를, 읽을 수 있었던 범위에서 나열합니다. 환수는 1을 걸었을 때의 평균으로, 1을 넘으면 계속할수록 늘어납니다. 숫자별 환수는 아래의 "당시 1을 걸었을 때의 평균 환수"에 있습니다.</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">시기</th><th scope="col">당첨이 정해지는 곳</th><th scope="col">이전 결과</th><th scope="col">이전을 보고 걸었을 때의 최대 환수</th><th scope="col">다음 당첨을 예측할 수 있었나</th></tr></thead><tbody><tr><td>2018-08~2018-12</td><td>읽지 못함</td><td>읽지 못함</td><td>알 수 없음</td><td>알 수 없음</td></tr><tr><td>2018-12~2020-04</td><td>멈춘 곳으로 추정 (당첨을 읽는 처리는 게임 본체에서 확인)</td><td>다음 시기와 같다고 추정</td><td>알 수 없음</td><td>알 수 없음 (다음 시기와 같다면 가능했음)</td></tr><tr><td>2020-04~2023-05-03</td><td>멈춘 곳</td><td>쓴다</td><td>5는 1.158, 10은 1.179, 20은 1.247</td><td>가능했음</td></tr><tr><td>2023-05-04~2024-05-01</td><td>멈춘 곳</td><td>쓴다 (치우침은 약함)</td><td>5는 1.044, 20은 1.039</td><td>가능했음</td></tr><tr><td>2024-05-02~현재</td><td>돌기 시작할 때 먼저 정한다</td><td>쓰지 않는다</td><td>이전을 봐도 달라지지 않음 (최대 0.96)</td><td>불가능</td></tr></tbody></table></div>
+<p>2018-12~2020-04는 게임 본체에 들어 있는 "당첨을 읽는 처리"와 바퀴의 설정이 다음 시기와 같았습니다. 돌리는 처리는 서버에만 있고, 그 시기의 서버는 읽지 못했으므로 추정입니다.</p>
+<h3>당시의 구조</h3>
+<ul><li><strong>당첨을 먼저 정하지 않았다.</strong> 돌기 시작할 때 바퀴에 난수로 정한 속도를 줄 뿐이었습니다. 속도는 저절로 떨어지고, 멈춘 곳에서 바늘에 가장 가까운 칸이 당첨입니다.</li><li><strong>이전 당첨이 다음 출발점이었다.</strong> 바퀴는 멈춘 방향 그대로 다음 회차를 시작합니다. 1회에 도는 각도는 "180 × 속도 + 약 212도"이므로, 출발점에서 본 멈출 곳은 속도 난수의 폭으로 정해집니다.</li><li><strong>폭이 모자라 반 바퀴만큼 치우쳤다.</strong> 속도가 7~10이면 도는 각도의 폭은 540도 (1.5바퀴)입니다. 1바퀴분은 어느 칸에든 똑같이 당첨되지만, 나머지 반 바퀴분은 이전 당첨에서 3~14칸 앞쪽에만 당첨됩니다. 그래서 그 12칸은 2배 정도 당첨되기 쉬웠습니다. 2023-05-04부터 속도는 7~16이 되어 폭이 4.5바퀴로 넓어졌고, 치우침은 작아졌습니다.</li><li><strong>칸의 폭이 달랐다.</strong> 바늘에 가장 가까운 칸이 당첨이므로, 칸마다 당첨되는 각도의 폭이 11.6~16.2도로 달랐습니다. 20 칸은 16.0도로 넓어서, 이전을 보지 않고 걸어도 4.45% 당첨되었습니다 (지금은 4%). 칸의 위치는 읽을 수 있었던 5개 버전 (2018-12, 2020-11, 2021-08, 2024-04의 게임 본체와 지금의 서버)에서 같았습니다.</li></ul>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">시기</th><th scope="col">돌기 시작할 때의 속도</th><th scope="col">이전 당첨에서 3~14칸 앞</th><th scope="col">다른 칸</th></tr></thead><tbody><tr><td>2020-04~2023-05-03</td><td>7~10의 난수</td><td>1칸 5.3%</td><td>1칸 2.7%</td></tr><tr><td>2023-05-04~2024-05-01</td><td>7~16의 난수</td><td>1칸 4.4%</td><td>1칸 3.6%</td></tr><tr><td>2024-05-02~현재</td><td>(당첨을 먼저 정한다)</td><td>1칸 4.0%</td><td>1칸 4.0%</td></tr></tbody></table></div>
+<p>이 표는 칸의 폭을 고르게 했을 때의 형태입니다. 칸은 바퀴가 도는 방향으로 셉니다. 2칸 앞과 15칸 앞은 그 사이의 값입니다. 2023-05에 속도의 폭이 넓어진 것은 공식 변경 사항에 쓰여 있지 않습니다.</p>
+<h3>당시 1을 걸었을 때의 평균 환수</h3>
+<p>칸의 실제 위치로 계산한 값입니다. "이전을 봤을 때의 최대"는 이전 당첨 칸이 가장 유리할 때의 값입니다.</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">숫자</th><th scope="col">지금 (언제나)</th><th scope="col">당시, 이전을 보지 않고</th><th scope="col">2023-05-03까지, 이전을 봤을 때의 최대</th><th scope="col">2023-05-04~2024-05-01, 이전을 봤을 때의 최대</th></tr></thead><tbody><tr><td>1</td><td>0.96</td><td>0.949</td><td>0.967</td><td>0.955</td></tr><tr><td>3</td><td>0.96</td><td>0.943</td><td>0.977</td><td>0.954</td></tr><tr><td>5</td><td>0.96</td><td>0.988</td><td>1.158 (25칸 중 9칸 뒤에서 1 초과)</td><td>1.044 (9칸 뒤에서 1 초과)</td></tr><tr><td>10</td><td>0.88</td><td>0.885</td><td>1.179 (3칸 뒤에서 1 초과)</td><td>0.983</td></tr><tr><td>20</td><td>0.84</td><td>0.935</td><td>1.247 (12칸 뒤에서 1 초과)</td><td>1.039 (12칸 뒤에서 1 초과)</td></tr></tbody></table></div>
+<p>표는 서버의 1틱을 1/30초로 했을 때의 값입니다. 5의 값은 1틱의 길이 (1/30~1/256초)에 따라 1.158~1.161, 1.044~1.045로 조금 움직이며, 1/256초에서는 2023-05-04부터의 1 초과가 8칸이 됩니다. 10과 20은 달라지지 않습니다.</p>
+<p>2023-05-03까지는 이전 당첨을 보고 5, 10, 20에 걸면 평균적으로 늘어나는 베팅법이 있었습니다. 2023-05-04부터도 5와 20에는 최대 1.04 정도의 베팅법이 남아 있었습니다. 2024-05-02의 재작업으로 둘 다 없어졌습니다.</p>
+<h3>예측할 수 있었는지의 확실성</h3>
+<ul><li><strong>코드에서 말할 수 있는 것.</strong> 2024-05-01까지는 멈춘 방향이 다음 회차에 그대로 남았고, 도는 각도의 난수 폭은 1.5바퀴 (2023-05-04부터는 4.5바퀴)밖에 되지 않았습니다. 그래서 이전 당첨을 알면 다음에 잘 나올 칸이 정해집니다. 2024-05-02부터는 당첨이 돌릴 때마다 새로 만든 난수로 25칸 중에서 고르게 골라지며, 이전 결과도 바퀴의 방향도 쓰이지 않습니다.</li><li><strong>계산으로 낸 것.</strong> 환수 값은 칸의 실제 위치, 도는 방향, 1틱의 길이를 쓴 계산입니다. 칸의 위치는 게임 데이터에서 읽었고, 도는 방향은 그 위치에서 구했습니다. 게임 안에서 돌려서 센 값이 아닙니다.</li></ul>
+<h3>재작업 후의 변경</h3>
+<p>2024-05 재작업 후 지금 (2026-11)까지, 당첨을 정하는 방식, 도는 방식, 바늘을 읽는 방식, 배율은 바뀌지 않았습니다. 바뀐 것은 배당 때 베팅 단말기가 없는지 확인하는 처리가 추가된 것과, 처리를 호출하는 방식의 세세한 차이뿐이며, 당첨 확률과는 관계가 없습니다.</p>
+<h2 class="ra-section">알 수 없는 것</h2>
+<ul><li><strong>2018-08~2018-12.</strong> Big Wheel이 들어온 뒤 처음 4개월은 게임 본체도 서버도 읽지 못했습니다.</li><li><strong>서버의 2018-12~2020-04와 2020-11~2021-04.</strong> 이 시기 서버의 코드는 읽지 못했으므로, 돌기 시작할 때 속도의 폭은 알 수 없습니다. 2020-11과 2021-04 양 끝이 같으므로, 2020-11~2021-04도 같았다고 보고 있습니다.</li><li><strong>도는 방향.</strong> 칸의 위치로부터, 돌면 바늘 아래의 칸이 번호가 작은 쪽으로 나아가는 방향이라고 구했습니다. 화면에서 시계 방향인지 반시계 방향인지는 확인하지 않았습니다.</li><li><strong>시드를 밖에서 맞힐 수 있는지.</strong> 시드는 서버 안의 난수로 만들어지며 플레이어에게 전송되지 않습니다. 밖에서 맞힐 수는 없다고 보고 있지만, 이것은 추정입니다.</li><li><strong>이 글의 대상.</strong> 2026-11-07 버전의 PC판 서버입니다. 앞으로의 업데이트에서 바뀔 수 있습니다.</li></ul>
+<h2 class="ra-section">조사 방법</h2>
+<p>서버 본체의 코드 (Big Wheel 클래스의 중간 코드)를 읽고, Big Wheel과 단말기의 설정값을 데이터 파일에서 읽었습니다. 서버는 실행하지 않았습니다. 배율 (1, 3, 5, 10, 20), 칸의 수, 접수 45초, 도는 시간 13~18초는 모두 읽은 값입니다. 확률과 기댓값은 거기서 계산한 것입니다.</p>
+<p>2024년 5월 이전의 코드는 MOD 프레임워크 Oxide의 배포물에 들어 있는 당시 서버의 코드를 읽었습니다. 2021-04부터는 GitHub의 릴리스, 2020-04~2020-11은 Wayback Machine에 보존된 배포물입니다. Oxide는 게임 코드에 자신의 호출을 끼워 넣어 배포합니다. 현재 버전에서 Oxide의 것과 게임의 것의 Big Wheel 코드가 끼워 넣은 부분을 빼면 같다는 것을 확인했습니다. 2020-04부터 2026-11까지의 배포물을 비교해 읽고, 바뀐 시점을 좁혔습니다. 칸의 위치와 당첨을 읽는 방식은 게임 본체의 2018-12, 2020-11, 2021-08, 2024-04 버전에서도 확인했습니다. 당시의 치우침과 환수는 똑같이 움직이는 프로그램 (<a class="ra-link" href="wheel-myths.py">wheel-myths.py</a>의 <code>old</code>)으로, 돌기 시작할 때의 속도와 멈춰 있던 위치를 잘게 나누어 더한 값입니다.</p>
+<p>게임 안에서 실제로 돌려서 센 결과가 아닙니다. 코드가 그렇게 쓰여 있다는 확인입니다. 글 안의 10만 번의 결과는 똑같이 움직이는 직접 만든 프로그램을 돌린 것입니다.</p><h2 class="ra-section">출처</h2><ul><li><a class="ra-link" href="https://rust.facepunch.com/changes/6" rel="noopener">Official changes 2024-05-02 (Wheel randomness rebuilt)</a></li><li><a class="ra-link" href="https://commits.facepunch.com/r/rust_reboot" rel="noopener">Development commit log</a></li><li><a class="ra-link" href="https://github.com/OxideMod/Oxide.Rust/releases" rel="noopener">Oxide.Rust releases (server code from 2021 to 2024 was read)</a></li><li><a class="ra-link" href="https://web.archive.org/" rel="noopener">Wayback Machine (archived Oxide.Rust builds from 2020)</a></li><li><a class="ra-link" href="https://rust.facepunch.com/changes/21" rel="noopener">Official changes 2018-08-02 (casino added to Bandit Town)</a></li><li><a class="ra-link" href="https://docs.unity3d.com/ScriptReference/Random.html" rel="noopener">Unity documentation UnityEngine.Random</a></li><li><a class="ra-link" href="https://learn.microsoft.com/en-us/dotnet/api/system.random.next" rel="noopener">.NET documentation System.Random.Next</a></li><li><a class="ra-link" href="https://learn.microsoft.com/en-us/dotnet/api/system.random.-ctor" rel="noopener">.NET documentation System.Random constructor</a></li></ul></article></main>
+<footer class="ra-foot"><p>Facepunch Studios와 관계없이 개인이 분석해서 만든 비공식 사이트입니다. 값은 게임 서버의 데이터와 코드에서 읽은 것이며, 정확성은 보증하지 않습니다.</p>
+<p>일부 아이콘은 <a class="ra-link" href="https://lucide.dev/" rel="noopener">Lucide</a> (ISC License)입니다.</p></footer>
+<script>document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('[data-lang]');if(a)try{localStorage.setItem('ra-lang',a.dataset.lang)}catch(_){}})</script></body></html>

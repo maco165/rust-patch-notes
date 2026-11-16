@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<script>(()=>{try{if(/bot|crawl|spider|slurp|lighthouse|inspection/i.test(navigator.userAgent))return;const A={"ja":"../../columns/wheel-myths.html","en":"../../en/columns/wheel-myths.html","zh":"../../zh/columns/wheel-myths.html","ko":"../../ko/columns/wheel-myths.html","ru":"../../ru/columns/wheel-myths.html"},S=["ja","en","zh","ko","ru"];let w=localStorage.getItem('ra-lang');if(!w){for(const l of navigator.languages||[navigator.language||'']){const c=String(l).toLowerCase().split('-')[0];if(S.includes(c)){w=c;break}}w=w||'en'}if(!A[w])w=A.en?'en':null;if(w&&w!=='zh')location.replace(A[w]+location.search+location.hash)}catch(_){}})()</script><title>Big Wheel 转盘有必胜规律吗？ | Rust Analysis</title>
+<meta name="description" content="我们根据阅读服务器代码的结果，逐一检验关于 Bandit Camp 转盘的 7 种说法。现在没有任何规律。2024 年 5 月之前，看上一次开出的格就能知道下一次更容易开出哪些格，也存在平均下来能赚的下注方式。">
+<meta name="theme-color" content="#f2f4f5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15181a" media="(prefers-color-scheme: dark)">
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+<link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rust Analysis">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:title" content="Big Wheel 转盘有必胜规律吗？ | Rust Analysis">
+<meta property="og:description" content="我们根据阅读服务器代码的结果，逐一检验关于 Bandit Camp 转盘的 7 种说法。现在没有任何规律。2024 年 5 月之前，看上一次开出的格就能知道下一次更容易开出哪些格，也存在平均下来能赚的下注方式。">
+<meta property="og:url" content="https://maco165.github.io/rust-patch-notes/zh/columns/wheel-myths.html">
+<meta property="og:image" content="https://maco165.github.io/rust-patch-notes/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://maco165.github.io/rust-patch-notes/zh/columns/wheel-myths.html">
+<link rel="alternate" hreflang="ja" href="https://maco165.github.io/rust-patch-notes/columns/wheel-myths.html">
+<link rel="alternate" hreflang="en" href="https://maco165.github.io/rust-patch-notes/en/columns/wheel-myths.html">
+<link rel="alternate" hreflang="zh" href="https://maco165.github.io/rust-patch-notes/zh/columns/wheel-myths.html">
+<link rel="alternate" hreflang="ko" href="https://maco165.github.io/rust-patch-notes/ko/columns/wheel-myths.html">
+<link rel="alternate" hreflang="ru" href="https://maco165.github.io/rust-patch-notes/ru/columns/wheel-myths.html">
+<link rel="alternate" hreflang="x-default" href="https://maco165.github.io/rust-patch-notes/columns/wheel-myths.html">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Big Wheel 转盘有必胜规律吗？", "description": "我们根据阅读服务器代码的结果，逐一检验关于 Bandit Camp 转盘的 7 种说法。现在没有任何规律。2024 年 5 月之前，看上一次开出的格就能知道下一次更容易开出哪些格，也存在平均下来能赚的下注方式。", "inLanguage": "zh", "datePublished": "2026-11-12", "dateModified": "2026-11-12", "url": "https://maco165.github.io/rust-patch-notes/zh/columns/wheel-myths.html", "mainEntityOfPage": "https://maco165.github.io/rust-patch-notes/zh/columns/wheel-myths.html", "image": "https://maco165.github.io/rust-patch-notes/assets/og.png", "author": {"@type": "Organization", "name": "Rust Analysis", "url": "https://maco165.github.io/rust-patch-notes/"}, "publisher": {"@type": "Organization", "name": "Rust Analysis", "url": "https://maco165.github.io/rust-patch-notes/"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Rust Analysis", "item": "https://maco165.github.io/rust-patch-notes/zh/tools.html"}, {"@type": "ListItem", "position": 2, "name": "文章", "item": "https://maco165.github.io/rust-patch-notes/zh/columns.html"}, {"@type": "ListItem", "position": 3, "name": "Big Wheel 转盘有必胜规律吗？", "item": "https://maco165.github.io/rust-patch-notes/zh/columns/wheel-myths.html"}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+JP:wght@400;600&display=swap&family=Noto+Sans+SC:wght@400;600">
+<style>html:lang(zh){--font-sans:"Noto Sans SC","IBM Plex Sans JP",system-ui,sans-serif;--font-display:"Big Shoulders Display","Noto Sans SC",sans-serif}</style>
+<link rel="stylesheet" href="../../assets/style.css">
+</head><body>
+<header class="ra-site">
+  <a class="ra-site-name" href="../tools.html"><b>Rust</b> Analysis</a>
+  <nav class="ra-nav" aria-label="页面"><a href="../columns.html" aria-current="page"><i class="ra-ico ra-ico-columns" aria-hidden="true"></i>文章</a><a href="../tools.html"><i class="ra-ico ra-ico-tools" aria-hidden="true"></i>工具</a></nav>
+  <span class="ra-site-meta">2026-11-05</span>
+  <span class="ra-site-lang"><a href="../../columns/wheel-myths.html" lang="ja" hreflang="ja" data-lang="ja">日本語</a><a href="../../en/columns/wheel-myths.html" lang="en" hreflang="en" data-lang="en">English</a><a href="../../ko/columns/wheel-myths.html" lang="ko" hreflang="ko" data-lang="ko">한국어</a><a href="../../ru/columns/wheel-myths.html" lang="ru" hreflang="ru" data-lang="ru">Русский</a></span><a class="ra-site-link" href="https://github.com/maco165/rust-patch-notes" rel="noopener"><i class="ra-ico ra-ico-github" aria-hidden="true"></i>GitHub</a>
+</header>
+<script>(()=>{const n=document.querySelector('.ra-nav'),a=n&&n.querySelector('[aria-current]');if(a&&n.scrollWidth>n.clientWidth)n.scrollLeft=a.offsetLeft-(n.clientWidth-a.offsetWidth)/2})()</script>
+<main class="ra-page"><article class="ra-prose"><p class="ra-patch-meta"><a class="ra-link" href="../columns.html">文章</a><time datetime="2026-11-12">2026-11-12</time><span><i class="ra-ico ra-ico-economy" aria-hidden="true"></i> 经济与商店</span><span class="ra-src ra-src-export"><i class="ra-ico ra-ico-export" aria-hidden="true"></i>游戏版本 2026-11-07</span></p><div class="ra-tp-head"><span class="ra-ti ra-ti-page" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke-linecap="round" stroke-linejoin="round">
+<path d="M33.5 14.5C45.9 14.1 55.9 24.1 55.5 36.9C55.1 49.3 45.5 58.9 33.1 58.5C20.9 58.1 11.1 48.3 11.5 36.1C11.9 23.9 21.1 14.9 33.5 14.5Z" fill="#d6eee3"/>
+<path d="M32 35L54 35A22 22 0 0 1 47.56 50.56ZM32 35L32 57A22 22 0 0 1 16.44 50.56ZM32 35L10 35A22 22 0 0 1 16.44 19.44ZM32 35L32 13A22 22 0 0 1 47.56 19.44Z" fill="#ffd77a"/>
+<path d="M32 13C44.4 12.6 54.4 22.6 54 35.4C53.6 47.8 44 57.4 31.6 57C19.4 56.6 9.6 46.8 10 34.6C10.4 22.4 19.6 13.4 32.6 13" stroke="#0b6649" stroke-width="3.2"/>
+<path d="M32 13.6Q32.6 35 32 56.6M10.6 35Q32 34.4 53.6 35.2M16.8 19.8Q32.5 34.5 47.2 50.2M47.2 19.8Q31.5 35.5 16.8 50.2" stroke="#0b6649" stroke-width="2.4"/>
+<path d="M27.8 35Q27.8 30.8 32.2 30.8Q36.2 31 36.2 35.2Q36 39.2 32 39.2Q27.8 39 27.8 35Z" fill="#0b6649" stroke="#0b6649" stroke-width="2"/>
+<path d="M26.4 4.8Q32 4.2 37.6 4.8L32.2 16.4Z" fill="#9c1b3d" stroke="#9c1b3d" stroke-width="2.6"/>
+</svg></span><h1 class="ra-prose-title">Big Wheel 转盘有必胜规律吗？</h1></div><p class="ra-prose-lead">我们根据阅读服务器代码的结果，逐一检验关于 Bandit Camp 转盘的 7 种说法。现在没有任何规律。2024 年 5 月之前，看上一次开出的格就能知道下一次更容易开出哪些格，也存在平均下来能赚的下注方式。</p><div class="ra-callout">
+<p class="ra-callout-label">结论</p>
+<p class="ra-callout-main">现在，没有任何规律</p>
+<p>开出的格在开始转动的那一刻，从 25 个格中以相等的概率选出 1 个。上一次的结果、时间、下注的人和金额都不会被用到。不过在 2024 年 5 月之前，机制不同：看上一次开出的格就能知道下一次更容易开出哪些格，也存在平均下来能赚的下注方式（见“2024 年 5 月之前”）。</p>
+</div>
+<ul class="ra-facts">
+<li><span class="ra-facts-n">1/25</span><span class="ra-facts-l">每个格的概率都相同</span></li>
+<li><span class="ra-facts-n">−4%</span><span class="ra-facts-l">押 1、3、5 时的平均返还</span></li>
+<li><span class="ra-facts-n">−16%</span><span class="ra-facts-l">押 20 时的平均返还</span></li>
+</ul>
+<p>无论押哪个数字，玩得越久亏得越多。想让亏损最小，就押 1。</p>
+<p>本文用与游戏内显示相同的数字 <strong>1、3、5、10、20</strong> 来称呼转盘上的格。数字就是开中时的赔付倍率。</p>
+<h2 class="ra-section">转盘是这样运作的</h2>
+<h3>一轮的流程</h3>
+<ol class="ra-timeline" aria-label="转盘一轮的流程">
+<li style="--w:45"><strong>接受下注</strong><span>45 秒</span><small>只有这段时间可以放 Scrap</small></li>
+<li class="ra-timeline-hot" style="--w:14"><strong>开始转动</strong><span>一瞬间</span><small>决定开出的格，同时截止下注</small></li>
+<li style="--w:22"><strong>转动</strong><span>13～18 秒 + 减速</span><small>只是朝着已经决定的格转过去</small></li>
+<li style="--w:14"><strong>赔付</strong><span>一瞬间</span><small>押中的返还，没押中的消失</small></li>
+</ol>
+<p>开出的格在转盘开始转动<strong>之前</strong>就已决定。转动期间，结果已经不会再变。</p>
+<h3>决定开出的格时用到的和没用到的</h3>
+<div class="ra-uses">
+<div><p class="ra-uses-head ra-uses-yes">用到的</p><ul><li>格的数量（25）</li><li>当场重新生成的随机数</li></ul></div>
+<div><p class="ra-uses-head ra-uses-no">没用到的</p><ul><li>上一轮的结果</li><li>时间、轮次编号</li><li>服务器的人数</li><li>下注金额</li><li>下注的人</li><li>转盘的转法</li></ul></div>
+</div>
+<p>把开始转动时的代码用文字写出来，就是这样。</p>
+<pre class="ra-code">开始转动时:
+  生成 1 个新的种子，用这个种子重新生成随机数
+  开出的格 = 从 0 号到 24 号中以相等的概率选 1 个
+  决定停下的角度和转动时间的长短
+  截止下注</pre>
+<h3>实际代码调用的随机数</h3>
+<p>开始转动时的代码按以下顺序调用随机数。全部是 Unity 和 .NET 自带的方法，并不是 Rust 自己写的随机数。</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">顺序</th><th scope="col">调用的方法</th><th scope="col">决定什么</th></tr></thead><tbody><tr><td>1</td><td><code>UnityEngine.Random.Range(int.MinValue, int.MaxValue)</code></td><td>种子。从 Unity 的随机数取 1 个整数</td></tr><tr><td>2</td><td><code>new System.Random(种子)</code></td><td>用这个种子新建一个 .NET 的随机数</td></tr><tr><td>3</td><td><code>Next(0, 格数)</code></td><td>开出的格。大于等于 0、小于 25 的整数，即 0～24</td></tr><tr><td>4</td><td><code>NextDouble()</code></td><td>停下角度的偏移（±6 度）。由大于等于 0、小于 1 的小数生成</td></tr><tr><td>5</td><td><code>NextDouble()</code></td><td>转动时间的长短（13～18 秒）</td></tr></tbody></table></div>
+<p>各自的性质都写在官方文档里。</p>
+<ul><li><strong><code>UnityEngine.Random</code></strong> 采用名为 Xorshift 128 的方式，整个游戏共用 1 个状态。服务器里的其他代码也用同一个随机数，所以转盘取种子时的状态，取决于其他代码在此之前调用了多少次。</li><li><strong><code>System.Random(种子)</code></strong> 从同一个种子会生成同样的数列。转盘每转一次都用新的种子重新生成，所以不会接着上一轮的数列往下走。</li><li><strong><code>Next(最小, 最大)</code></strong> 包含最小值，不包含最大值。<code>Next(0, 25)</code> 返回 0～24，25 个格中的某一个被直接选中。</li><li><strong><code>NextDouble()</code></strong> 返回大于等于 0、小于 1 的小数。只用于角度偏移和转动时间，与开出的格无关。</li></ul>
+<p>决定开出的格的，只有第 3 行。在它前后，没有任何混入上一次结果或下注内容的处理。</p>
+<h3>25 个格的排列</h3>
+<div class="ra-strip" role="img" aria-label="25 个格的排列。1 有 12 格，3 有 6 格，5 有 4 格，10 有 2 格，20 有 1 格"><span>3</span><span>1</span><span>10</span><span>1</span><span>3</span><span>1</span><span>5</span><span>1</span><span>5</span><span>3</span><span>1</span><span>10</span><span>1</span><span>3</span><span>1</span><span>5</span><span>1</span><span>3</span><span>1</span><span class="ra-strip-hot">20</span><span>1</span><span>3</span><span>1</span><span>5</span><span>1</span></div>
+<p>1 每隔一格出现一次，20 只有 1 格。调查的 7 台转盘全部是同样的排列。</p>
+<h3>各数字开中的概率</h3>
+<ol class="ra-gbars ra-plain" style="--max:48" aria-label="各数字开中的概率"><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">1（12 格）</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:48"></span></span><span class="ra-gbar-n">48%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">3（6 格）</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:24"></span></span><span class="ra-gbar-n">24%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">5（4 格）</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:16"></span></span><span class="ra-gbar-n">16%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">10（2 格）</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:8"></span></span><span class="ra-gbar-n">8%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">20（1 格）</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:4"></span></span><span class="ra-gbar-n">4%</span></span></li></ol>
+<p>决定一个数字开中难易的，只有这个数字占的格数。</p>
+<h2 class="ra-section">行为相同的程序</h2>
+<p>这是根据读代码弄清的行为、自己从零写的程序，没有照抄游戏代码。决定开出的格的部分和赔付的部分就只有这些。</p>
+<pre class="ra-code ra-code-src">import random
+
+# 25 个格的排列。数字是开中时的倍率
+SEGMENTS = [3, 1, 10, 1, 3, 1, 5, 1, 5, 3, 1, 10, 1, 3, 1, 5, 1, 3, 1, 20, 1, 3, 1, 5, 1]
+
+def spin(source):
+    """一轮。用新的种子重新生成随机数，从 25 个格中以相等的概率选 1 个"""
+    fresh = random.Random(source.getrandbits(32))
+    return fresh.randrange(len(SEGMENTS))
+
+def payout(bets, segment):
+    """bets 是 {数字: 下注金额}。只有押中数字的赌注会以 (1 + 数字) 倍返还"""
+    number = SEGMENTS[segment]
+    return bets.get(number, 0) * (1 + number)</pre>
+<p>与上面表格的对应关系是：<code>source.getrandbits(32)</code> 是第 1 步（取种子），<code>random.Random(...)</code> 是第 2 步（重新生成随机数），<code>randrange(25)</code> 是第 3 步（选格）。随机数的方式是 Python 的，所以生成的数列与游戏不同，但选法相同。</p>
+<p><code>spin</code> 里没有接收上一轮结果、时间或下注内容的地方，传进来的只有随机数的来源。从结构上也能看出，规律没有产生的余地。</p>
+<h3>转 10 万次的结果</h3>
+<p>这是让这个程序转 10 万次、每轮在每个数字上各押 100 的结果（随机数种子为 1）。</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table ra-prose-short"><thead><tr><th scope="col">数字</th><th scope="col">开中概率（计算）</th><th scope="col">开中比例（10 万次）</th><th scope="col">平均返还（计算）</th><th scope="col">平均返还（10 万次）</th></tr></thead><tbody><tr><td>1</td><td>48%</td><td>48.17%</td><td>−4</td><td>−3.67</td></tr><tr><td>3</td><td>24%</td><td>23.83%</td><td>−4</td><td>−4.66</td></tr><tr><td>5</td><td>16%</td><td>16.10%</td><td>−4</td><td>−3.43</td></tr><tr><td>10</td><td>8%</td><td>7.88%</td><td>−12</td><td>−13.31</td></tr><tr><td>20</td><td>4%</td><td>4.02%</td><td>−16</td><td>−15.52</td></tr></tbody></table></div>
+<p>开中比例与计算出的概率几乎相同。平均返还每轮的波动很大，所以即使转 10 万次，也会与计算值有少许偏差。换一个种子，只是偏差的方式变了，趋势不变。</p>
+<p>在这 10 万次中，20 连续不出最长达到 230 次。这不是偏差，而是按概率转出来的结果。</p>
+<p>完整程序放在 <a class="ra-link" href="wheel-myths.py">wheel-myths.py</a>。运行 <code>python3 wheel-myths.py</code> 会得到同样的数字。</p>
+<h2 class="ra-section">检验常见说法</h2>
+<div class="ra-myth"><p class="ra-myth-q">“20 好久没出了，差不多该出 20 了”</p><p class="ra-myth-a"><span class="ra-verdict">不成立</span>上一轮的结果在任何地方都没有被用到。随机数也是每转一次就重新生成。即使 20 已经 100 次没出，下一次出 20 的概率仍然是 4%。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">“看转盘的转法，就能读出它停在哪里”</p><p class="ra-myth-a"><span class="ra-verdict">读得出也押不了</span>停下的位置在开始转动时就已决定，而那一刻下注已经截止。转动途中的速度和减速方式都不会改变结果。停下的角度会有 ±6 度的摆动，格的宽度也不一致，所以平均有 0.35% 的情况（20 旁边那条窄的 1 格为 8%），看上去离指针最近的格与实际赔付的格不同。赔付的是事先决定的那一格。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">“不同时间段或服务器人数不同，容易开出的数字会变”</p><p class="ra-myth-a"><span class="ra-verdict">不会变</span>决定开出的格的代码只用到格的数量（25）。时间和玩家人数都不在其中。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">“押得大就容易不中”</p><p class="ra-myth-a"><span class="ra-verdict">没有关系</span>决定开出的格的代码既不看下注金额，也不看是谁下的注。下注内容只在开出的格决定之后的赔付时才会被读取。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">“20 旁边的格容易出。格的排列有讲究”</p><p class="ra-myth-a"><span class="ra-verdict">没有关系</span>开出的格是按“格的编号”选的，每个编号都是 1/25。排列和格宽的不同都与开中难易无关。到 2024-05-01 为止，开出的格由停下的位置决定，所以较宽的 20 格开出的比例是 4.45%。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">“没中就加倍再押，最后总能赢”</p><p class="ra-myth-a"><span class="ra-verdict">平均返还不变</span>每次的结果都与上一次无关，所以改变下注金额的顺序，平均返还也一样。连续不中时，只有赌注会急剧增加。即使押 1，连续 10 次不中的情况大约每 1,000 次就会发生 1 次。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">“所有数字都押，就不会输”</p><p class="ra-myth-a"><span class="ra-verdict">一定会中，但平均会亏</span>在 5 个数字上各押 1，押了 5，平均返还 4.6（−8%）。因为除了开中的数字以外，其余赌注在那一轮都会消失。</p></div>
+<h2 class="ra-section">各数字的概率与返还</h2>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">数字</th><th scope="col">格数</th><th scope="col">开中概率</th><th scope="col">开中时的返还</th><th scope="col">平均返还</th><th scope="col">连续 10 次不中的概率</th></tr></thead><tbody><tr><td>1</td><td>12</td><td>48%</td><td>下注金额的 2 倍</td><td>−4%</td><td>0.1%</td></tr><tr><td>3</td><td>6</td><td>24%</td><td>4 倍</td><td>−4%</td><td>6.4%</td></tr><tr><td>5</td><td>4</td><td>16%</td><td>6 倍</td><td>−4%</td><td>17.5%</td></tr><tr><td>10</td><td>2</td><td>8%</td><td>11 倍</td><td>−12%</td><td>43.4%</td></tr><tr><td>20</td><td>1</td><td>4%</td><td>21 倍</td><td>−16%</td><td>66.5%</td></tr></tbody></table></div>
+<p>开中时返还“下注金额 × (1 + 数字)”。平均返还是“开中概率 × 返还倍数 − 1”，押 1 的话就是 12/25 × 2 − 1 = −0.04。</p>
+<h3>押 100 Scrap 时平均亏掉的量</h3>
+<ol class="ra-gbars ra-loss" style="--max:16" aria-label="押 100 Scrap 时平均亏掉的量"><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">1</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:4"></span></span><span class="ra-gbar-n">−4</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">3</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:4"></span></span><span class="ra-gbar-n">−4</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">5</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:4"></span></span><span class="ra-gbar-n">−4</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">10</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:12"></span></span><span class="ra-gbar-n">−12</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">20</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:16"></span></span><span class="ra-gbar-n">−16</span></span></li></ol>
+<p>押同样的金额，10 和 20 平均亏掉的量是 1、3、5 的 3～4 倍。</p>
+<h2 class="ra-section">为什么看起来仍然有偏差</h2>
+<ul class="ra-facts">
+<li><span class="ra-facts-n">36%</span><span class="ra-facts-l">连续 25 次都不出 20 的概率</span></li>
+<li><span class="ra-facts-n">2.5%</span><span class="ra-facts-l">1 连出 5 次的概率（大约 40 次中有 1 次）</span></li>
+</ul>
+<p>即使完全按概率来，结果看起来也会有偏差。大约每 3 次就有 1 次“转了 25 次都没来 20”，这正是概率本来的样子。人们会为连出和偏差寻找原因，但这里没有原因。</p>
+<h2 class="ra-section">2024 年 5 月之前</h2>
+<p>在 2024-05-02 的更新中，官方写道“重做了 Bandit Camp 转盘随机数的处理方式”。阅读当时的代码可以发现，重做之前决定开出的格的方式与现在不同，看上一次开出的格就能知道下一次更容易开出哪些格。</p>
+<h3>各时期的比较</h3>
+<p>下面把从转盘加入的 2018-08-02 到现在，在能读到的范围内列出来。返还是押 1 时的平均值，超过 1 就意味着玩得越久赚得越多。各数字的返还见下面的“当时押 1 的平均返还”。</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">时期</th><th scope="col">开出的格在哪里决定</th><th scope="col">上一次的结果</th><th scope="col">看上一次结果下注时的最大返还</th><th scope="col">能否预测下一次开出的格</th></tr></thead><tbody><tr><td>2018-08 至 2018-12</td><td>未能读到</td><td>未能读到</td><td>不清楚</td><td>不清楚</td></tr><tr><td>2018-12 至 2020-04</td><td>推定为停下的位置（读取开出格的代码已在游戏客户端中确认）</td><td>推定与下一时期相同</td><td>不清楚</td><td>不清楚（若与下一时期相同，则可以）</td></tr><tr><td>2020-04 至 2023-05-03</td><td>停下的位置</td><td>用到</td><td>5 为 1.158，10 为 1.179，20 为 1.247</td><td>可以</td></tr><tr><td>2023-05-04 至 2024-05-01</td><td>停下的位置</td><td>用到（偏差较弱）</td><td>5 为 1.044，20 为 1.039</td><td>可以</td></tr><tr><td>2024-05-02 至今</td><td>开始转动时事先决定</td><td>不用</td><td>看上一次结果也没有变化（最大 0.96）</td><td>不能</td></tr></tbody></table></div>
+<p>2018-12 至 2020-04 期间，游戏客户端里的“读取开出格的代码”和转盘的设置都与下一时期相同。转动的代码只存在于服务器上，而那个时期的服务器代码未能读到，所以这是推定。</p>
+<h3>当时的机制</h3>
+<ul><li><strong>开出的格并不是事先决定的。</strong> 开始转动时，代码只是给转盘一个随机的速度。速度会自然下降，停下时离指针最近的格就是开出的格。</li><li><strong>上一次开出的格就是下一次的起点。</strong> 转盘保持停下时的朝向开始下一轮。一轮转过的角度是“180 × 速度 + 约 212 度”，所以从起点看停下的位置，取决于速度随机数的范围。</li><li><strong>范围不够，半圈产生了偏差。</strong> 速度为 7～10 时，转过角度的范围是 540 度（1.5 圈）。其中 1 整圈平均落在每个格上，但剩下的半圈只会落在上一次开出的格往前 3～14 格的那一侧。所以这 12 个格开中的概率大约是 2 倍。从 2023-05-04 起速度变为 7～16，范围扩大到 4.5 圈，偏差变小了。</li><li><strong>格的宽度不同。</strong> 由于离指针最近的格算开中，各格对应的开中角度范围从 11.6 到 16.2 度不等。20 的格宽达 16.0 度，即使不看上一次结果下注，开中比例也有 4.45%（现在是 4%）。格的位置在能读到的 5 个版本（2018-12、2020-11、2021-08、2024-04 的游戏客户端，以及现在的服务器）中都相同。</li></ul>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">时期</th><th scope="col">开始转动时的速度</th><th scope="col">上一次开出的格往前 3～14 格</th><th scope="col">其他格</th></tr></thead><tbody><tr><td>2020-04 至 2023-05-03</td><td>7～10 的随机数</td><td>每格 5.3%</td><td>每格 2.7%</td></tr><tr><td>2023-05-04 至 2024-05-01</td><td>7～16 的随机数</td><td>每格 4.4%</td><td>每格 3.6%</td></tr><tr><td>2024-05-02 至今</td><td>（事先决定开出的格）</td><td>每格 4.0%</td><td>每格 4.0%</td></tr></tbody></table></div>
+<p>这张表是假设格宽一致时的形态。格按转盘转动的方向计数。往前 2 格和往前 15 格的值介于两者之间。2023-05 速度范围扩大这件事，官方更新日志中没有写。</p>
+<h3>当时押 1 的平均返还</h3>
+<p>这些是用格的实际位置计算的值。“看上一次结果时的最大”是上一次开出的格处于最有利位置时的值。</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">数字</th><th scope="col">现在（任何时候）</th><th scope="col">当时，不看上一次结果</th><th scope="col">到 2023-05-03 为止，看上一次结果时的最大</th><th scope="col">2023-05-04 至 2024-05-01，看上一次结果时的最大</th></tr></thead><tbody><tr><td>1</td><td>0.96</td><td>0.949</td><td>0.967</td><td>0.955</td></tr><tr><td>3</td><td>0.96</td><td>0.943</td><td>0.977</td><td>0.954</td></tr><tr><td>5</td><td>0.96</td><td>0.988</td><td>1.158（25 格中有 9 格之后超过 1）</td><td>1.044（9 格之后超过 1）</td></tr><tr><td>10</td><td>0.88</td><td>0.885</td><td>1.179（3 格之后超过 1）</td><td>0.983</td></tr><tr><td>20</td><td>0.84</td><td>0.935</td><td>1.247（12 格之后超过 1）</td><td>1.039（12 格之后超过 1）</td></tr></tbody></table></div>
+<p>表中是把服务器的 1 帧（tick）当作 1/30 秒时的值。5 的值会随 1 帧的长度（1/30 至 1/256 秒）在 1.158～1.161、1.044～1.045 之间略有变动；取 1/256 秒时，从 2023-05-04 起超过 1 的格变为 8 格。10 和 20 不变。</p>
+<p>到 2023-05-03 为止，看上一次开出的格再押 5、10、20，存在平均下来能赚的下注方式。从 2023-05-04 起，5 和 20 仍留有最大约 1.04 的下注方式。2024-05-02 的重做让这两者都消失了。</p>
+<h3>能否预测的可信度</h3>
+<ul><li><strong>从代码能说明的。</strong> 到 2024-05-01 为止，停下时的朝向会原样保留到下一轮，而转过角度的随机数范围只有 1.5 圈（2023-05-04 起为 4.5 圈）。所以只要知道上一次开出的格，下一次更容易开出的格就确定了。从 2024-05-02 起，开出的格用每转一次就重新生成的随机数从 25 个格中等概率选出，上一次的结果和转盘的朝向都不会被用到。</li><li><strong>通过计算得出的。</strong> 返还的值是用格的实际位置、转动方向和 1 帧的长度计算出来的。格的位置从游戏数据中读取，转动方向由这些位置推算得出。这些不是在游戏里实际转动后数出来的值。</li></ul>
+<h3>重做之后的变化</h3>
+<p>2024-05 重做之后，到现在（2026-11）为止，决定开出的格的方式、转法、读取指针的方式和倍率都没有变。变化的只有：赔付时增加了确认下注终端是否存在的处理，以及代码调用方式上的细微差别，都与开中难易无关。</p>
+<h2 class="ra-section">尚不清楚的地方</h2>
+<ul><li><strong>2018-08 至 2018-12。</strong> 转盘加入后的最初 4 个月，游戏客户端和服务器代码都未能读到。</li><li><strong>服务器的 2018-12 至 2020-04 和 2020-11 至 2021-04。</strong> 这些时期的服务器代码未能读到，所以不清楚开始转动时速度的范围。由于 2020-11 和 2021-04 两端相同，我们认为 2020-11 至 2021-04 期间也相同。</li><li><strong>转动方向。</strong> 根据格的位置，推算出转动时指针下方的格朝编号较小的一侧移动。在画面上是顺时针还是逆时针，尚未确认。</li><li><strong>种子能否从外部猜中。</strong> 种子由服务器内部的随机数生成，不会发送给玩家。我们认为无法从外部猜中，但这是推定。</li><li><strong>本文的对象。</strong> 2026-11-07 版本的 PC 版服务器。今后的更新可能会改变这些内容。</li></ul>
+<h2 class="ra-section">调查方法</h2>
+<p>我们阅读了服务器本体的代码（转盘类的中间代码），并从数据文件中读取了转盘和下注终端的设置值。没有启动服务器。倍率（1、3、5、10、20）、格数、45 秒的下注时间、13～18 秒的转动时间，都是读到的值。概率和平均返还是由此计算出来的。</p>
+<p>2024 年 5 月之前的代码，读的是 MOD 框架 Oxide 的发布包中所含的当时服务器代码。2021-04 起来自 GitHub 的 Releases，2020-04 至 2020-11 来自 Wayback Machine 保存的发布包。Oxide 会在游戏代码中插入自己的调用后再发布。我们在当前版本中确认了，除插入的部分外，Oxide 包中和游戏本体中的转盘代码相同。我们对比了 2020-04 到 2026-11 的发布包，缩小了发生变化的时间点。格的位置和读取开出格的方式，也在 2018-12、2020-11、2021-08、2024-04 版本的游戏客户端中确认过。当时的偏差和返还，是用行为相同的程序（<a class="ra-link" href="wheel-myths.py">wheel-myths.py</a> 中的 <code>old</code>），把开始转动时的速度和停下的位置细分后累加得出的值。</p>
+<p>这些不是在游戏中实际转动后数出来的结果，而是对代码如何编写的确认。文中 10 万次的结果，是运行自己编写的、行为相同的程序得到的。</p><h2 class="ra-section">出处</h2><ul><li><a class="ra-link" href="https://rust.facepunch.com/changes/6" rel="noopener">Official changes 2024-05-02 (Wheel randomness rebuilt)</a></li><li><a class="ra-link" href="https://commits.facepunch.com/r/rust_reboot" rel="noopener">Development commit log</a></li><li><a class="ra-link" href="https://github.com/OxideMod/Oxide.Rust/releases" rel="noopener">Oxide.Rust releases (server code from 2021 to 2024 was read)</a></li><li><a class="ra-link" href="https://web.archive.org/" rel="noopener">Wayback Machine (archived Oxide.Rust builds from 2020)</a></li><li><a class="ra-link" href="https://rust.facepunch.com/changes/21" rel="noopener">Official changes 2018-08-02 (casino added to Bandit Town)</a></li><li><a class="ra-link" href="https://docs.unity3d.com/ScriptReference/Random.html" rel="noopener">Unity documentation UnityEngine.Random</a></li><li><a class="ra-link" href="https://learn.microsoft.com/en-us/dotnet/api/system.random.next" rel="noopener">.NET documentation System.Random.Next</a></li><li><a class="ra-link" href="https://learn.microsoft.com/en-us/dotnet/api/system.random.-ctor" rel="noopener">.NET documentation System.Random constructor</a></li></ul></article></main>
+<footer class="ra-foot"><p>本站为个人分析制作的非官方网站，与 Facepunch Studios 无关。数值读取自游戏服务器的数据与代码，不保证准确。</p>
+<p>部分图标来自 <a class="ra-link" href="https://lucide.dev/" rel="noopener">Lucide</a> (ISC License)。</p></footer>
+<script>document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('[data-lang]');if(a)try{localStorage.setItem('ra-lang',a.dataset.lang)}catch(_){}})</script></body></html>

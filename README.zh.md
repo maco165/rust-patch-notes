@@ -59,23 +59,23 @@ flowchart LR
 | [history.html](history.html) · [genres.html](genres.html) · [numbers.html](numbers.html) (仅日语) | 所有补丁（可按类别、年份、种类筛选）；各类别的数量；写有数值的改动 | 同一份更新日志；类别划分是本站自己的规则 |
 | [items.html](items.html) · [spec.html](spec.html) (仅日语) | 每个物品的设置、掉落位置与概率；所有数值的表格 | 从服务器版本导出的数值，以及根据掉落表算出的概率 |
 | [diffs.html](diffs.html) (仅日语) | 两个版本之间物品设置的变化 | 客户端每月版本的物品文件 |
-| [columns.html](en/columns.html) (English) | 根据服务器代码和数据验证玩家说法的文章 | 服务器的代码 (IL) 与数据；出处在每篇文章末尾 |
-| [tools/raid.html](en/tools/raid.html) (English) | Raid Planner：同时摧毁墙、门和设施所需的炸药、硫磺、材料和熔炉时间 | 服务器数据，以及从服务器代码读出的伤害与冶炼规则 |
-| [tools/craft.html](en/tools/craft.html) (English) | Craft Planner：根据要制作的东西、持有的物资和熔炉，算出还缺什么、熔炉要多久 | 与 Raid Planner 相同的数据 |
-| [tools/gene.html](en/tools/gene.html) (English) | Gene Planner：用手上的幼苗种出接近 GGGYYY 等目标基因的种法，以及基因的效果 | 服务器数据，以及从服务器代码读出的杂交规则 |
-| [tools/buff.html](en/tools/buff.html) (English) | Buff Planner：茶和派的效果有多强、持续到何时，哪个会被替换，熊肉派会让哪些变短 | 服务器数据，以及从服务器代码读出的叠加规则 |
+| [columns.html](zh/columns.html) | 根据服务器代码和数据验证玩家说法的文章 | 服务器的代码 (IL) 与数据；出处在每篇文章末尾 |
+| [tools/raid.html](zh/tools/raid.html) | Raid Planner：同时摧毁墙、门和设施所需的炸药、硫磺、材料和熔炉时间 | 服务器数据，以及从服务器代码读出的伤害与冶炼规则 |
+| [tools/craft.html](zh/tools/craft.html) | Craft Planner：根据要制作的东西、持有的物资和熔炉，算出还缺什么、熔炉要多久 | 与 Raid Planner 相同的数据 |
+| [tools/gene.html](zh/tools/gene.html) | Gene Planner：用手上的幼苗种出接近 GGGYYY 等目标基因的种法，以及基因的效果 | 服务器数据，以及从服务器代码读出的杂交规则 |
+| [tools/buff.html](zh/tools/buff.html) | Buff Planner：茶和派的效果有多强、持续到何时，哪个会被替换，熊肉派会让哪些变短 | 服务器数据，以及从服务器代码读出的叠加规则 |
 
 ## 语言
 
-工具和文章有日语和英语版本，其他页面只有日语。更新日志是把官方英文改写成日语的，因此不会再译回英文：请阅读 https://rust.facepunch.com/changes 。
+工具和文章有日语、英语、简体中文、韩语和俄语版本，其他页面只有日语。第一次打开工具和文章时，会跳转到浏览器语言的版本（用语言链接选择后，会记住所选语言）。物品名称在所有语言中都使用游戏的英文名称。更新日志是把官方英文改写成日语的，因此不会再译回其他语言：请阅读 https://rust.facepunch.com/changes 。
 
 | 语言 | 状态 |
 |---|---|
 | 日本語 | 全部页面 |
-| English | 工具、文章和本 README |
-| 简体中文 | 本 README；页面计划支持 |
-| 한국어 | 本 README；页面计划支持 |
-| Русский | 本 README；页面计划支持 |
+| English | 工具、文章和 README |
+| 简体中文 | 工具、文章和本 README |
+| 한국어 | 工具、文章和 README |
+| Русский | 工具、文章和 README |
 
 ## 须知
 

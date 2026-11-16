@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<script>(()=>{try{if(/bot|crawl|spider|slurp|lighthouse|inspection/i.test(navigator.userAgent))return;const A={"ja":"../../columns/slot-machine.html","en":"../../en/columns/slot-machine.html","zh":"../../zh/columns/slot-machine.html","ko":"../../ko/columns/slot-machine.html","ru":"../../ru/columns/slot-machine.html"},S=["ja","en","zh","ko","ru"];let w=localStorage.getItem('ra-lang');if(!w){for(const l of navigator.languages||[navigator.language||'']){const c=String(l).toLowerCase().split('-')[0];if(S.includes(c)){w=c;break}}w=w||'en'}if(!A[w])w=A.en?'en':null;if(w&&w!=='zh')location.replace(A[w]+location.search+location.hash)}catch(_){}})()</script><title>老虎机越转越亏，平均返还率 91.8% | Rust Analysis</title>
+<meta name="description" content="我们从服务器代码和数据中读出了老虎机图案的决定方式和赔付。下注 2 Scrap，平均只返还 1.84。既没有容易出奖的机器，也没有容易出奖的时间段。">
+<meta name="theme-color" content="#f2f4f5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15181a" media="(prefers-color-scheme: dark)">
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+<link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rust Analysis">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:title" content="老虎机越转越亏，平均返还率 91.8% | Rust Analysis">
+<meta property="og:description" content="我们从服务器代码和数据中读出了老虎机图案的决定方式和赔付。下注 2 Scrap，平均只返还 1.84。既没有容易出奖的机器，也没有容易出奖的时间段。">
+<meta property="og:url" content="https://maco165.github.io/rust-patch-notes/zh/columns/slot-machine.html">
+<meta property="og:image" content="https://maco165.github.io/rust-patch-notes/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://maco165.github.io/rust-patch-notes/zh/columns/slot-machine.html">
+<link rel="alternate" hreflang="ja" href="https://maco165.github.io/rust-patch-notes/columns/slot-machine.html">
+<link rel="alternate" hreflang="en" href="https://maco165.github.io/rust-patch-notes/en/columns/slot-machine.html">
+<link rel="alternate" hreflang="zh" href="https://maco165.github.io/rust-patch-notes/zh/columns/slot-machine.html">
+<link rel="alternate" hreflang="ko" href="https://maco165.github.io/rust-patch-notes/ko/columns/slot-machine.html">
+<link rel="alternate" hreflang="ru" href="https://maco165.github.io/rust-patch-notes/ru/columns/slot-machine.html">
+<link rel="alternate" hreflang="x-default" href="https://maco165.github.io/rust-patch-notes/columns/slot-machine.html">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "老虎机越转越亏，平均返还率 91.8%", "description": "我们从服务器代码和数据中读出了老虎机图案的决定方式和赔付。下注 2 Scrap，平均只返还 1.84。既没有容易出奖的机器，也没有容易出奖的时间段。", "inLanguage": "zh", "datePublished": "2026-11-12", "dateModified": "2026-11-12", "url": "https://maco165.github.io/rust-patch-notes/zh/columns/slot-machine.html", "mainEntityOfPage": "https://maco165.github.io/rust-patch-notes/zh/columns/slot-machine.html", "image": "https://maco165.github.io/rust-patch-notes/assets/og.png", "author": {"@type": "Organization", "name": "Rust Analysis", "url": "https://maco165.github.io/rust-patch-notes/"}, "publisher": {"@type": "Organization", "name": "Rust Analysis", "url": "https://maco165.github.io/rust-patch-notes/"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Rust Analysis", "item": "https://maco165.github.io/rust-patch-notes/zh/tools.html"}, {"@type": "ListItem", "position": 2, "name": "文章", "item": "https://maco165.github.io/rust-patch-notes/zh/columns.html"}, {"@type": "ListItem", "position": 3, "name": "老虎机越转越亏，平均返还率 91.8%", "item": "https://maco165.github.io/rust-patch-notes/zh/columns/slot-machine.html"}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+JP:wght@400;600&display=swap&family=Noto+Sans+SC:wght@400;600">
+<style>html:lang(zh){--font-sans:"Noto Sans SC","IBM Plex Sans JP",system-ui,sans-serif;--font-display:"Big Shoulders Display","Noto Sans SC",sans-serif}</style>
+<link rel="stylesheet" href="../../assets/style.css">
+</head><body>
+<header class="ra-site">
+  <a class="ra-site-name" href="../tools.html"><b>Rust</b> Analysis</a>
+  <nav class="ra-nav" aria-label="页面"><a href="../columns.html" aria-current="page"><i class="ra-ico ra-ico-columns" aria-hidden="true"></i>文章</a><a href="../tools.html"><i class="ra-ico ra-ico-tools" aria-hidden="true"></i>工具</a></nav>
+  <span class="ra-site-meta">2026-11-05</span>
+  <span class="ra-site-lang"><a href="../../columns/slot-machine.html" lang="ja" hreflang="ja" data-lang="ja">日本語</a><a href="../../en/columns/slot-machine.html" lang="en" hreflang="en" data-lang="en">English</a><a href="../../ko/columns/slot-machine.html" lang="ko" hreflang="ko" data-lang="ko">한국어</a><a href="../../ru/columns/slot-machine.html" lang="ru" hreflang="ru" data-lang="ru">Русский</a></span><a class="ra-site-link" href="https://github.com/maco165/rust-patch-notes" rel="noopener"><i class="ra-ico ra-ico-github" aria-hidden="true"></i>GitHub</a>
+</header>
+<script>(()=>{const n=document.querySelector('.ra-nav'),a=n&&n.querySelector('[aria-current]');if(a&&n.scrollWidth>n.clientWidth)n.scrollLeft=a.offsetLeft-(n.clientWidth-a.offsetWidth)/2})()</script>
+<main class="ra-page"><article class="ra-prose"><p class="ra-patch-meta"><a class="ra-link" href="../columns.html">文章</a><time datetime="2026-11-12">2026-11-12</time><span><i class="ra-ico ra-ico-economy" aria-hidden="true"></i> 经济与商店</span><span class="ra-src ra-src-export"><i class="ra-ico ra-ico-export" aria-hidden="true"></i>游戏版本 2026-11-07</span></p><div class="ra-tp-head"><span class="ra-ti ra-ti-page" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke-linecap="round" stroke-linejoin="round">
+<path d="M11.5 57.5Q10.9 37.5 11.9 21.5Q12.5 12.1 21.5 11.7L37.5 11.5Q46.9 12.1 47.5 21.5Q48.3 39.5 47.5 57.5Z" fill="#ffd77a"/>
+<path d="M10 56Q9.4 36 10.4 20Q11 10.6 20 10.2L36 10Q45.4 10.6 46 20Q46.8 38 46 56Q28 57 10 56Z" stroke="#1a1f23" stroke-width="3"/>
+<path d="M15 22.4Q28 21.6 41 22.2Q41.6 29 41.2 36Q28 36.8 15.2 36.2Q14.4 29 15 22.4Z" fill="#f8e1d5" stroke="#1a1f23" stroke-width="2.6"/>
+<path d="M23.6 22.6Q24 29 23.6 36M32.4 22.4Q32.8 29 32.4 36" stroke="#1a1f23" stroke-width="2.2"/>
+<path d="M19.4 29.2h.01M28 29h.01" stroke="#9c1b3d" stroke-width="4.6"/>
+<path d="M36.8 29.2h.01" stroke="#1a1f23" stroke-width="4.6"/>
+<path d="M17 45.4Q28 44.8 39 45.4L38.6 50Q28 50.6 17.4 50Z" fill="#1a1f23" stroke="#1a1f23" stroke-width="2.2"/>
+<path d="M46.4 36Q52.8 36.6 53.4 33Q54.2 24 53.8 17" stroke="#1a1f23" stroke-width="3"/>
+<path d="M49.8 12.6Q49.8 8.6 53.8 8.6Q57.8 8.8 57.6 12.8Q57.4 16.6 53.6 16.6Q49.8 16.4 49.8 12.6Z" fill="#9c1b3d" stroke="#9c1b3d" stroke-width="2.2"/>
+</svg></span><h1 class="ra-prose-title">老虎机越转越亏，平均返还率 91.8%</h1></div><p class="ra-prose-lead">我们从服务器代码和数据中读出了老虎机图案的决定方式和赔付。下注 2 Scrap，平均只返还 1.84。既没有容易出奖的机器，也没有容易出奖的时间段。</p><div class="ra-callout">
+<p class="ra-callout-label">结论</p>
+<p class="ra-callout-main">下注 2 Scrap，平均返还 1.84</p>
+<p>平均返还是赌注的 91.8%。拉下拉杆的一瞬间，3 个图案就全部定好了，不会用到之前的结果、时间、机器，也不会用到下注倍率。转得越多，平均亏得越多。</p>
+</div>
+<ul class="ra-facts">
+<li><span class="ra-facts-n">−8.2%</span><span class="ra-facts-l">平均盈亏（相对于赌注）</span></li>
+<li><span class="ra-facts-n">12.4%</span><span class="ra-facts-l">有任何返还的次数（8 次里 1 次）</span></li>
+<li><span class="ra-facts-n">1/4,406</span><span class="ra-facts-l">3 个 7 连成一线的概率</span></li>
+</ul>
+<p>没有容易出奖的机器，没有容易出奖的时间，也没有容易出奖的转法。会带来差别的只有“转多少次”和“下注多少”，两者越多，平均亏损就越大。</p>
+<h2 class="ra-section">老虎机是这样运作的</h2>
+<h3>一次的流程</h3>
+<ol class="ra-timeline" aria-label="老虎机一次的流程">
+<li style="--w:30"><strong>投入 Scrap</strong><span>任意数量</span><small>只有坐在座位上的人才能投入。可选择 1～5 倍的倍率</small></li>
+<li class="ra-timeline-hot" style="--w:18"><strong>拉下拉杆</strong><span>一瞬间</span><small>扣除赌注，同时决定 3 个图案</small></li>
+<li style="--w:30"><strong>转轴转动</strong><span>2.5 秒</span><small>只是把已经定好的图案展示出来</small></li>
+<li style="--w:18"><strong>赔付</strong><span>一瞬间</span><small>中奖时，Scrap 会放进领取栏</small></li>
+</ol>
+<p>一次下注是 2 Scrap。把倍率提高到 2～5，赌注就变成 4、6、8、10，赔付也按同样的倍数增加。</p>
+<p>图案是在转轴开始转动<strong>之前</strong>决定的。转动期间，结果已经不会再变。也没有让转轴停下的操作。老虎机特有的操作只有“转动”“投入或取出 Scrap”“更改倍率”这 3 种（其他是坐下、站起等通用操作）。</p>
+<h3>决定图案时用到的和用不到的</h3>
+<div class="ra-uses">
+<div><p class="ra-uses-head ra-uses-yes">用到的</p><ul><li>每种图案的权重（所有机器共用的同一套设置）</li><li>当场重新生成的随机数</li></ul></div>
+<div><p class="ra-uses-head ra-uses-no">用不到的</p><ul><li>上一次的图案</li><li>转动次数、未中奖次数</li><li>时间、服务器人数</li><li>坐着的是谁</li><li>是哪一台机器</li><li>下注倍率</li></ul></div>
+</div>
+<p>用文字描述决定图案的处理，就是下面这样。3 个转轴各执行一次同样的操作。</p>
+<pre class="ra-code">一个转轴:
+  从 0 到 999 中取 1 个数作为种子
+  用这个种子新建一个随机数生成器，只用它的第 1 个数决定 0 到 329 之间的位置
+  把位置套进按各图案权重划分的表，返回 1 个图案</pre>
+<h3>实际调用的随机数</h3>
+<p>每个转轴按下面的顺序调用。它们都是 Unity 和 .NET 自带的方法，并不是 Rust 自己做的随机数。</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">顺序</th><th scope="col">调用的方法</th><th scope="col">决定什么</th></tr></thead><tbody><tr><td>1</td><td><code>UnityEngine.Random.Range(0, 1000)</code></td><td>种子。0～999 中的 1 个整数</td></tr><tr><td>2</td><td><code>new System.Random(种子)</code></td><td>用这个种子新建一个 .NET 随机数生成器</td></tr><tr><td>3</td><td><code>Next(0, 330)</code></td><td>停下的位置。0～329 的整数</td></tr></tbody></table></div>
+<ul><li><strong><code>UnityEngine.Random.Range(最小值, 最大值)</code></strong> 的整数版本包含最小值、不包含最大值。返回的是 0～999。</li><li><strong><code>System.Random(种子)</code></strong> 用同一个种子总是生成同样的数列。老虎机只用新建的生成器的第 1 个数，下一个转轴又会重新生成。不会接着上一次的数列继续。</li><li><strong><code>Next(0, 330)</code></strong> 返回 0～329。330 是图案权重的总和。</li></ul>
+<h2 class="ra-section">一个转轴只有 1,000 种结果</h2>
+<p>种子是 0～999 共 1,000 个，同一个种子一定出同一个图案。也就是说，一个转轴就等于“1,000 张的抽签”，每种图案的张数是固定的。我们自己重写了 Microsoft 公开的 <code>System.Random</code> 算法，把 1,000 个种子逐个算出并做了统计。</p>
+<h3>每种图案的张数（1,000 张中）</h3>
+<ol class="ra-gbars ra-plain" style="--max:304" aria-label="一个转轴上出现各图案的种子数（1,000 个中）"><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Wood</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:304"></span></span><span class="ra-gbar-n">304</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Charcoal</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:303"></span></span><span class="ra-gbar-n">303</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Bandage</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:122"></span></span><span class="ra-gbar-n">122</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Rope</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:121"></span></span><span class="ra-gbar-n">121</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">7</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:61"></span></span><span class="ra-gbar-n">61</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Scrap</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:24"></span></span><span class="ra-gbar-n">24</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Sulfur</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:23"></span></span><span class="ra-gbar-n">23</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Low Grade Fuel</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:22"></span></span><span class="ra-gbar-n">22</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">没有赔付的图案（6 种）</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:20"></span></span><span class="ra-gbar-n">20</span></span></li></ol>
+<p>Wood 和 Charcoal 合计占 6 成。没有赔付的图案是 Apple、Gun Powder、Hammer 等 6 种，合计 20 张。图案的名称是把游戏数据中的名字换成了物品名。</p>
+<h3>设置的权重与实际出现率略有不同</h3>
+<p>设置中，每种图案都定了“330 中占多少”的权重。但种子只有 1,000 个，而 1,000 不能被 330 整除，所以实际出现率会和权重略有偏差。</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">图案</th><th scope="col">设置的权重（330 中）</th><th scope="col">按权重计算</th><th scope="col">实际（1,000 张中）</th></tr></thead><tbody><tr><td>Wood</td><td>100</td><td>30.3%</td><td>304 张（30.4%）</td></tr><tr><td>Charcoal</td><td>100</td><td>30.3%</td><td>303 张（30.3%）</td></tr><tr><td>Bandage</td><td>40</td><td>12.1%</td><td>122 张（12.2%）</td></tr><tr><td>Rope</td><td>40</td><td>12.1%</td><td>121 张（12.1%）</td></tr><tr><td>7</td><td>20</td><td>6.1%</td><td>61 张（6.1%）</td></tr><tr><td>Scrap</td><td>8</td><td>2.4%</td><td>24 张（2.4%）</td></tr><tr><td>Sulfur</td><td>8</td><td>2.4%</td><td>23 张（2.3%）</td></tr><tr><td>Low Grade Fuel</td><td>8</td><td>2.4%</td><td>22 张（2.2%）</td></tr></tbody></table></div>
+<p>影响最大的是 Low Grade Fuel。按权重应该有 24 张左右，实际只有 22 张，而正如后面所见，这个图案承担了返还中很大的一部分。结果是，按权重本应为 92.9% 的平均返还率，实际上是 91.8%。</p>
+<p>把种子限制为 1,000 个是否是有意为之，从代码中看不出来。</p>
+<h2 class="ra-section">赔付表</h2>
+<p>中奖有 2 种：同一图案 3 个连成一线，以及每出现 1 个 Low Grade Fuel 的额外奖励。2 个相同没有赔付。数字是下注 2 Scrap（倍率 1）时的 Scrap 数量。</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">中奖</th><th scope="col">赔付</th><th scope="col">概率</th><th scope="col">平均几次出 1 次</th></tr></thead><tbody><tr><td>3 个 7</td><td>1,000</td><td>0.023%</td><td>4,406 次</td></tr><tr><td>3 个 Scrap</td><td>400</td><td>0.0014%</td><td>72,338 次</td></tr><tr><td>3 个 Sulfur</td><td>100</td><td>0.0012%</td><td>82,190 次</td></tr><tr><td>3 个 Low Grade Fuel</td><td>80 + 额外奖励 15 = 95</td><td>0.0011%</td><td>93,914 次</td></tr><tr><td>3 个 Bandage</td><td>45</td><td>0.18%</td><td>551 次</td></tr><tr><td>3 个 Rope</td><td>40</td><td>0.18%</td><td>564 次</td></tr><tr><td>3 个 Wood</td><td>25</td><td>2.81%</td><td>36 次</td></tr><tr><td>3 个 Charcoal</td><td>15</td><td>2.78%</td><td>36 次</td></tr><tr><td>每出现 1 个 Low Grade Fuel（任意转轴）</td><td>5</td><td>6.46%（出现 1 个以上）</td><td>15～16 次</td></tr></tbody></table></div>
+<p>赔付全部是 Scrap，会累积在领取栏里。即使中奖，下注的 2 Scrap 本身也不会退回，返还的只有赔付。</p>
+<p>赔付表中最大的是 3 个 7 的 1,000。没有随次数累积的头奖（Jackpot），也没有特别的奖励回合。</p>
+<h3>平均返还率 91.8% 来自哪些中奖</h3>
+<ol class="ra-gbars ra-plain" style="--max:351" aria-label="平均返还率 91.8% 的构成（占赌注的比例）"><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">3 个 Wood（25）</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:351"></span></span><span class="ra-gbar-n">35.1%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">3 个 Charcoal（15）</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:209"></span></span><span class="ra-gbar-n">20.9%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Low Grade Fuel 的额外奖励（5）</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:165"></span></span><span class="ra-gbar-n">16.5%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">3 个 7（1,000）</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:113"></span></span><span class="ra-gbar-n">11.3%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">3 个 Bandage（45）</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:41"></span></span><span class="ra-gbar-n">4.1%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">3 个 Rope（40）</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:35"></span></span><span class="ra-gbar-n">3.5%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">3 个 Scrap、Sulfur 或 Low Grade Fuel</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:4"></span></span><span class="ra-gbar-n">0.4%</span></span></li></ol>
+<p>返还的近 8 成来自小奖：3 个 Wood、3 个 Charcoal，以及 Low Grade Fuel 的 5。3 个 7 的 1,000 虽然显眼，但在平均返还中只占 11.3%，而且 4,406 次才出现 1 次。去掉 3 个 7，平均返还是赌注的 80.5%。</p>
+<h2 class="ra-section">行为相同的程序</h2>
+<p>这是根据读出的行为，我们从零自己写的程序，没有照抄游戏代码。转动部分和赔付部分就只有这些。</p>
+<pre class="ra-code ra-code-src"># REEL 是 1,000 个种子各自对应的图案表（一个转轴的全部）
+def spin(source):
+    """一次。每个转轴取 1 个种子，给出该种子的图案"""
+    return tuple(REEL[source.randrange(1000)] for _ in range(3))
+
+TRIPLES = {"charcoal": 15, "wood": 25, "rope": 40, "bandage": 45,
+           "lowgrade": 80, "sulfur": 100, "scrap": 400, "seven": 1000}
+
+def payout(faces, multiplier=1):
+    """返还的 Scrap。每个 Low Grade Fuel 计 5，3 个相同再加上对应赔付，最后乘以倍率"""
+    total = 5 * faces.count("lowgrade")
+    if faces[0] == faces[1] == faces[2]:
+        total += TRIPLES.get(faces[0], 0)
+    return total * multiplier</pre>
+<p><code>REEL</code> 表是重写 Microsoft 公开的 <code>System.Random</code> 算法（由种子算出第 1 个数的计算），从种子 0～999 逐个生成的。取种子的部分（<code>source.randrange</code>）用的是 Python 的随机数，所以出现的顺序和游戏中不同，但从种子到图案的对应关系是一样的。</p>
+<p><code>spin</code> 里没有接收上一次结果、时间、机器或倍率的地方。传进来的只有随机数的来源。</p>
+<h3>计算与实际转动的结果</h3>
+<p>平均返还用 2 种方法求出。一种是把 3 个转轴所有图案组合全部加总的计算（用分数精确计算）。另一种是实际运行这个程序的结果。</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">方法</th><th scope="col">平均返还（相对于赌注 2）</th><th scope="col">比例</th><th scope="col">有任何返还的次数</th><th scope="col">3 个 7</th></tr></thead><tbody><tr><td>计算（实际的 1,000 种）</td><td>1.8368</td><td>91.84%</td><td>12.43%</td><td>每 4,406 次 1 次</td></tr><tr><td>计算（完全按设置权重时）</td><td>1.8589</td><td>92.95%</td><td>13.04%</td><td>每 4,492 次 1 次</td></tr><tr><td>转 100 万次的结果（随机数种子为 1）</td><td>1.8438</td><td>92.19%</td><td>12.45%</td><td>231 次</td></tr><tr><td>转 1,000 万次的结果（随机数种子为 7）</td><td>1.8369</td><td>91.85%</td><td>12.45%</td><td>2,257 次</td></tr></tbody></table></div>
+<p>即使转了 100 万次，也和计算值相差 0.35 个百分点。这是因为 3 个 7 的 1,000 多出几次或少出几次，平均值就会变动。波动的大致范围（标准误差）在 100 万次时为 ±0.8 个百分点，到 1,000 万次也还有 ±0.25 个百分点。种子 7 的 1,000 万次几乎和计算值重合，纯属巧合（种子 1 转 1,000 万次是 91.61%）。几百次、几千次的体感中觉得“这台机器容易出”“今天不出”，感受到的正是这种波动。</p>
+<p>在 100 万次中，连续没有任何返还的最长纪录是 115 次。</p>
+<p>完整程序放在 <a class="ra-link" href="slot-machine.py">slot-machine.py</a>。<code>python3 slot-machine.py</code> 给出 100 万次的数字，<code>python3 slot-machine.py 10000000 7</code> 给出 1,000 万次的数字。</p>
+<h2 class="ra-section">验证常见说法</h2>
+<div class="ra-myth"><p class="ra-myth-q">“有容易出奖的机器，也有不出奖的机器”</p><p class="ra-myth-a"><span class="ra-verdict">没有</span>数据中的老虎机共有 32 台，全部使用同一套赔付设置。转动时间等数值也相同。决定图案的处理不会看是哪一台机器。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">“一直连续转，差不多该中了”</p><p class="ra-myth-a"><span class="ra-verdict">不成立</span>任何地方都没有统计转动次数或未中奖次数。由种子生成的随机数，也是每个转轴、每次都重新生成。给出种子的 Unity 随机数在整个服务器共用一个，它的推进与老虎机未中奖的次数无关。即使连续 50 次没中，下一次有任何返还的概率仍然是 12.4%。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">“提高倍率更容易中（或者更难中）”</p><p class="ra-myth-a"><span class="ra-verdict">没有变化</span>倍率只是同样地乘在赌注和赔付上，不参与决定图案的处理。倍率 5 平均来说等于把 5 次倍率 1 合在一起下注，只是波动变大。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">“拉杆的时机会改变结果”</p><p class="ra-myth-a"><span class="ra-verdict">无法瞄准</span>种子取自服务器内部的随机数。我们认为它的状态不会发送给玩家（推测）。拉下的一瞬间 3 个图案就全部定好，也没有让转轴停下的操作，所以无法靠眼力看准时机停轴。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">“停了 2 个 7，差一点，下次就会来”</p><p class="ra-myth-a"><span class="ra-verdict">没有关系</span>3 个转轴是分别决定的，2 个相同没有赔付。上一次的图案只是为了显示而保存下来，不会传给决定下一次图案的处理。下一次 3 个 7 连成一线的概率永远是每 4,406 次 1 次。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">“出奖情况会随时间段或服务器人数变化”</p><p class="ra-myth-a"><span class="ra-verdict">没有变化</span>决定图案的处理只用图案权重和随机数，不包含时间，也不包含玩家人数。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">“服务器管理员可以操控结果”</p><p class="ra-myth-a"><span class="ra-verdict">标准设置下只能固定中奖</span>服务器有一个管理员用的设置 <code>slotmachine.forcepayoutindex</code>。默认值是 −1（无效），设为 0～7 时，该服务器所有机器每次都会给出赔付表中该编号的中奖。能选的只是中奖的种类，并不是让人更容易不中的设置。用插件改写了处理的服务器不在本文范围内。各服务器如何设置这个值，从外部无法确认。</p></div>
+<h2 class="ra-section">会亏多少</h2>
+<p>平均来说，会亏掉下注金额的 8.2%。</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table ra-prose-short"><thead><tr><th scope="col">转法</th><th scope="col">赌注合计</th><th scope="col">平均亏损</th></tr></thead><tbody><tr><td>倍率 1 转 100 次</td><td>200</td><td>16</td></tr><tr><td>倍率 1 转 1,000 次</td><td>2,000</td><td>163</td></tr><tr><td>倍率 5 转 100 次</td><td>1,000</td><td>82</td></tr><tr><td>倍率 5 转 1,000 次</td><td>10,000</td><td>816</td></tr></tbody></table></div>
+<p>这是平均值，实际结果会因为是否出现 3 个 7 而大幅波动。即使转 1,000 次，一次也没出现 3 个 7 的概率是 80%。</p>
+<h3>连续不中的概率</h3>
+<ul class="ra-facts">
+<li><span class="ra-facts-n">27%</span><span class="ra-facts-l">连续 10 次没有任何返还的概率</span></li>
+<li><span class="ra-facts-n">7%</span><span class="ra-facts-l">连续 20 次没有任何返还的概率</span></li>
+<li><span class="ra-facts-n">80%</span><span class="ra-facts-l">转 1,000 次没出现 3 个 7 的概率</span></li>
+</ul>
+<p>连续 10 次不中很正常，4 次里就会发生 1 次。</p>
+<h3>与转盘相比</h3>
+<p>把同一版本转盘的平均返还并列比较（下注 100 Scrap 时平均亏损的数量）。</p>
+<ol class="ra-gbars ra-plain" style="--max:160" aria-label="下注 100 Scrap 时平均亏损的数量。转盘与老虎机"><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">转盘的 1/3/5</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:40"></span></span><span class="ra-gbar-n">−4</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">老虎机</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:82"></span></span><span class="ra-gbar-n">−8.2</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">转盘的 10</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:120"></span></span><span class="ra-gbar-n">−12</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">转盘的 20</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:160"></span></span><span class="ra-gbar-n">−16</span></span></li></ol>
+<p>下注同样的金额，老虎机亏损的速度是转盘 1/3/5 的 2 倍。而且一次最短只要 2.5 秒，单位时间内下注的次数很容易变多。</p>
+<h2 class="ra-section">尚不清楚的地方</h2>
+<ul><li><strong>Unity 随机数的内部。</strong> 取种子的 <code>UnityEngine.Random.Range</code> 位于 Unity 引擎内部，这次没有阅读。0～999 几乎等概率出现，依据的是 Unity 文档的说明。连续取出的 3 个种子彼此无关，文档中并没有写，这是基于伪随机数性质的前提。本文的概率和平均返还都是在这个前提下计算的。</li><li><strong>画面显示。</strong> 我们没有看过图案的图片和游戏画面上显示的赔付表。图案的名称是根据数据中的名字起的。</li><li><strong>留在下注栏里的 Scrap。</strong> 赔付会在离开座位时移到背包里。一直放在下注栏里的 Scrap 在离开座位时会怎样，还没有确认。</li><li><strong>这套赔付从何时开始。</strong> 老虎机加入以来的变更经过没有调查。</li><li><strong>本文的对象。</strong> 2026-11-07 版本的 PC 版服务器。今后的更新可能会带来变化。</li></ul>
+<h2 class="ra-section">调查方法</h2>
+<p>我们阅读了服务器本体的代码（老虎机类的中间代码），并从数据文件中读取了赔付设置和老虎机的数值。没有启动服务器。赌注 2、倍率 1～5、转动时间 2.5 秒、图案权重、赔付表，都是读出的数值。</p>
+<p>每种图案的张数（1,000 张中）是重写公开的 .NET 随机数算法后，逐个种子计算得出的。重写的算法是否正确，通过与广为人知的数值一致来确认（种子 0 的第 1 个数是 1559595546，种子 42 是 1434747710）。概率和平均返还是由这些张数计算出来的。</p>
+<p>这不是在游戏中实际转动统计得到的结果，而是确认代码就是这样写的。文中 100 万次、1,000 万次的结果，是运行我们自己写的、行为相同的程序得到的。</p><h2 class="ra-section">出处</h2><ul><li><a class="ra-link" href="https://docs.unity3d.com/ScriptReference/Random.Range.html" rel="noopener">Unity docs, UnityEngine.Random.Range</a></li><li><a class="ra-link" href="https://docs.unity3d.com/ScriptReference/Random.html" rel="noopener">Unity docs, UnityEngine.Random</a></li><li><a class="ra-link" href="https://learn.microsoft.com/en-us/dotnet/api/system.random" rel="noopener">.NET docs, System.Random</a></li><li><a class="ra-link" href="https://learn.microsoft.com/en-us/dotnet/api/system.random.-ctor" rel="noopener">.NET docs, System.Random constructors</a></li><li><a class="ra-link" href="https://learn.microsoft.com/en-us/dotnet/api/system.random.next" rel="noopener">.NET docs, System.Random.Next</a></li><li><a class="ra-link" href="https://github.com/microsoft/referencesource/blob/master/mscorlib/system/random.cs" rel="noopener">System.Random source published by Microsoft</a></li></ul></article></main>
+<footer class="ra-foot"><p>本站为个人分析制作的非官方网站，与 Facepunch Studios 无关。数值读取自游戏服务器的数据与代码，不保证准确。</p>
+<p>部分图标来自 <a class="ra-link" href="https://lucide.dev/" rel="noopener">Lucide</a> (ISC License)。</p></footer>
+<script>document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('[data-lang]');if(a)try{localStorage.setItem('ra-lang',a.dataset.lang)}catch(_){}})</script></body></html>

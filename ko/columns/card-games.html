@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<script>(()=>{try{if(/bot|crawl|spider|slurp|lighthouse|inspection/i.test(navigator.userAgent))return;const A={"ja":"../../columns/card-games.html","en":"../../en/columns/card-games.html","zh":"../../zh/columns/card-games.html","ko":"../../ko/columns/card-games.html","ru":"../../ru/columns/card-games.html"},S=["ja","en","zh","ko","ru"];let w=localStorage.getItem('ra-lang');if(!w){for(const l of navigator.languages||[navigator.language||'']){const c=String(l).toLowerCase().split('-')[0];if(S.includes(c)){w=c;break}}w=w||'en'}if(!A[w])w=A.en?'en':null;if(w&&w!=='ko')location.replace(A[w]+location.search+location.hash)}catch(_){}})()</script><title>블랙잭과 포커, 카드를 세면 이길 수 있을까? | Rust Analysis</title>
+<meta name="description" content="블랙잭 머신과 Card Table을 서버 코드를 읽은 결과로 확인합니다. 덱은 매번 새로 만들어지므로 카드를 세어도 유리해지지 않습니다. 하우스 엣지는 약 0.8%입니다.">
+<meta name="theme-color" content="#f2f4f5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15181a" media="(prefers-color-scheme: dark)">
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+<link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rust Analysis">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:title" content="블랙잭과 포커, 카드를 세면 이길 수 있을까? | Rust Analysis">
+<meta property="og:description" content="블랙잭 머신과 Card Table을 서버 코드를 읽은 결과로 확인합니다. 덱은 매번 새로 만들어지므로 카드를 세어도 유리해지지 않습니다. 하우스 엣지는 약 0.8%입니다.">
+<meta property="og:url" content="https://maco165.github.io/rust-patch-notes/ko/columns/card-games.html">
+<meta property="og:image" content="https://maco165.github.io/rust-patch-notes/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://maco165.github.io/rust-patch-notes/ko/columns/card-games.html">
+<link rel="alternate" hreflang="ja" href="https://maco165.github.io/rust-patch-notes/columns/card-games.html">
+<link rel="alternate" hreflang="en" href="https://maco165.github.io/rust-patch-notes/en/columns/card-games.html">
+<link rel="alternate" hreflang="zh" href="https://maco165.github.io/rust-patch-notes/zh/columns/card-games.html">
+<link rel="alternate" hreflang="ko" href="https://maco165.github.io/rust-patch-notes/ko/columns/card-games.html">
+<link rel="alternate" hreflang="ru" href="https://maco165.github.io/rust-patch-notes/ru/columns/card-games.html">
+<link rel="alternate" hreflang="x-default" href="https://maco165.github.io/rust-patch-notes/columns/card-games.html">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "블랙잭과 포커, 카드를 세면 이길 수 있을까?", "description": "블랙잭 머신과 Card Table을 서버 코드를 읽은 결과로 확인합니다. 덱은 매번 새로 만들어지므로 카드를 세어도 유리해지지 않습니다. 하우스 엣지는 약 0.8%입니다.", "inLanguage": "ko", "datePublished": "2026-11-12", "dateModified": "2026-11-12", "url": "https://maco165.github.io/rust-patch-notes/ko/columns/card-games.html", "mainEntityOfPage": "https://maco165.github.io/rust-patch-notes/ko/columns/card-games.html", "image": "https://maco165.github.io/rust-patch-notes/assets/og.png", "author": {"@type": "Organization", "name": "Rust Analysis", "url": "https://maco165.github.io/rust-patch-notes/"}, "publisher": {"@type": "Organization", "name": "Rust Analysis", "url": "https://maco165.github.io/rust-patch-notes/"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Rust Analysis", "item": "https://maco165.github.io/rust-patch-notes/ko/tools.html"}, {"@type": "ListItem", "position": 2, "name": "칼럼", "item": "https://maco165.github.io/rust-patch-notes/ko/columns.html"}, {"@type": "ListItem", "position": 3, "name": "블랙잭과 포커, 카드를 세면 이길 수 있을까?", "item": "https://maco165.github.io/rust-patch-notes/ko/columns/card-games.html"}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+JP:wght@400;600&display=swap&family=Noto+Sans+KR:wght@400;600">
+<style>html:lang(ko){--font-sans:"Noto Sans KR","IBM Plex Sans JP",system-ui,sans-serif;--font-display:"Big Shoulders Display","Noto Sans KR",sans-serif}</style>
+<link rel="stylesheet" href="../../assets/style.css">
+</head><body>
+<header class="ra-site">
+  <a class="ra-site-name" href="../tools.html"><b>Rust</b> Analysis</a>
+  <nav class="ra-nav" aria-label="페이지"><a href="../columns.html" aria-current="page"><i class="ra-ico ra-ico-columns" aria-hidden="true"></i>칼럼</a><a href="../tools.html"><i class="ra-ico ra-ico-tools" aria-hidden="true"></i>도구</a></nav>
+  <span class="ra-site-meta">2026-11-05</span>
+  <span class="ra-site-lang"><a href="../../columns/card-games.html" lang="ja" hreflang="ja" data-lang="ja">日本語</a><a href="../../en/columns/card-games.html" lang="en" hreflang="en" data-lang="en">English</a><a href="../../zh/columns/card-games.html" lang="zh" hreflang="zh" data-lang="zh">简体中文</a><a href="../../ru/columns/card-games.html" lang="ru" hreflang="ru" data-lang="ru">Русский</a></span><a class="ra-site-link" href="https://github.com/maco165/rust-patch-notes" rel="noopener"><i class="ra-ico ra-ico-github" aria-hidden="true"></i>GitHub</a>
+</header>
+<script>(()=>{const n=document.querySelector('.ra-nav'),a=n&&n.querySelector('[aria-current]');if(a&&n.scrollWidth>n.clientWidth)n.scrollLeft=a.offsetLeft-(n.clientWidth-a.offsetWidth)/2})()</script>
+<main class="ra-page"><article class="ra-prose"><p class="ra-patch-meta"><a class="ra-link" href="../columns.html">칼럼</a><time datetime="2026-11-12">2026-11-12</time><span><i class="ra-ico ra-ico-economy" aria-hidden="true"></i> 경제, 상점</span><span class="ra-src ra-src-export"><i class="ra-ico ra-ico-export" aria-hidden="true"></i>게임 빌드 2026-11-07</span></p><div class="ra-tp-head"><span class="ra-ti ra-ti-page" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke-linecap="round" stroke-linejoin="round">
+<path d="M8 16.8Q20.4 13 33.2 10.4Q38 27.6 42 45.2Q29.6 49 16.8 51.6Q12 34.4 8 16.8Z" fill="#1d4f91" stroke="#1d4f91" stroke-width="3"/>
+<path d="M13.6 20.4Q21.6 17.8 30 16.2" stroke="#dbe6f6" stroke-width="2.2"/>
+<path d="M29.4 15Q42 16.8 55 19.6Q52.4 37.4 48.6 55Q35.8 53.2 23 50.4Q25.8 32.6 29.4 15Z" fill="#dbe6f6" stroke="#1d4f91" stroke-width="3"/>
+<path d="M40.4 26.2L46 36L37.8 44L32.2 34.2Z" fill="#9c1b3d" stroke="#9c1b3d" stroke-width="2.2"/>
+<path d="M32.6 21.4h.01M45.4 48.6h.01" stroke="#9c1b3d" stroke-width="4"/>
+</svg></span><h1 class="ra-prose-title">블랙잭과 포커, 카드를 세면 이길 수 있을까?</h1></div><p class="ra-prose-lead">블랙잭 머신과 Card Table을 서버 코드를 읽은 결과로 확인합니다. 덱은 매번 새로 만들어지므로 카드를 세어도 유리해지지 않습니다. 하우스 엣지는 약 0.8%입니다.</p><div class="ra-callout">
+<p class="ra-callout-label">결론</p>
+<p class="ra-callout-main">카드를 세어도 유리해지지 않습니다</p>
+<p>덱은 라운드가 시작될 때마다 새로 만들어 다시 섞습니다. 블랙잭은 10덱 520장, 포커는 1덱 52장입니다. 이전 라운드에 나온 카드는 다음 라운드에 아무것도 남기지 않습니다.</p>
+</div>
+<ul class="ra-facts">
+<li><span class="ra-facts-n">520장</span><span class="ra-facts-l">블랙잭의 덱. 매번 새로 만든다</span></li>
+<li><span class="ra-facts-n">약 −0.8%</span><span class="ra-facts-l">블랙잭을 기본 전략으로 쳤을 때의 평균 (추정)</span></li>
+<li><span class="ra-facts-n">0</span><span class="ra-facts-l">포커에서 하우스가 가져가는 몫. 전액이 플레이어에게 돌아간다</span></li>
+</ul>
+<p>블랙잭은 정석대로 치면 Big Wheel (가장 좋은 베팅으로 −4%)보다 훨씬 덜 잃는 게임입니다. 그래도 평균적으로는 줄어듭니다. 포커는 하우스의 몫이 없고, 손익은 상대와의 승패만으로 정해집니다.</p>
+<p>이 글에서는 Bandit Camp 등에 있는 블랙잭 머신 (클래스 이름은 <code>BlackjackMachine</code>)과 Card Table (<code>CardTable</code>. 즐길 수 있는 게임은 텍사스 홀덤)을 다룹니다.</p>
+<h2 class="ra-section">블랙잭은 이렇게 움직입니다</h2>
+<h3>한 라운드의 흐름</h3>
+<ol class="ra-timeline" aria-label="블랙잭 한 라운드의 흐름">
+<li class="ra-timeline-hot" style="--w:14"><strong>덱을 만든다</strong><span>순식간</span><small>10덱 520장을 새로 늘어놓고 섞는다. 베팅보다 먼저</small></li>
+<li style="--w:30"><strong>베팅 접수</strong><span>최대 30초</span><small>5~500 Scrap</small></li>
+<li style="--w:14"><strong>카드 배분</strong><span>1초</span><small>좌석 번호 순으로 2장씩. 딜러는 1장을 엎어 둔다</small></li>
+<li style="--w:30"><strong>내 차례</strong><span>조작마다 30초</span><small>모두가 동시에 진행한다</small></li>
+<li style="--w:20"><strong>딜러 차례</strong><span>1초에 1장</span><small>합계만 보고 기계적으로 뽑는다</small></li>
+<li style="--w:14"><strong>배당</strong><span>1초 후</span><small>4초 후에 다음 라운드</small></li>
+</ol>
+<p>덱이 만들어지는 것은 베팅을 받기 <strong>전</strong>입니다. 베팅한 금액을 보고 나서 카드를 배열하는 코드는 없습니다.</p>
+<h3>규칙</h3>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">항목</th><th scope="col">이 머신의 규칙</th><th scope="col">플레이어에게는</th></tr></thead><tbody><tr><td>덱</td><td>10덱 520장. 라운드마다 새로 만든다</td><td>세어도 의미가 없다</td></tr><tr><td>딜러</td><td>17 이상에서 멈춘다. 단, 소프트 17 (A를 11로 세어 17)은 뽑는다</td><td>약간 불리</td></tr><tr><td>블랙잭 (2장으로 21)</td><td>3:2. 베팅액의 2.5배가 돌아온다 (소수점 버림)</td><td>표준</td></tr><tr><td>딜러의 홀 카드</td><td>끝까지 확인하지 않는다. 딜러가 2장으로 21이면, 더블이나 스플릿으로 추가한 금액도 진다</td><td>약간 불리</td></tr><tr><td>더블</td><td>A가 없는 처음 2장이면 합계와 관계없이 가능. A가 있는 패는 불가</td><td>약간 불리</td></tr><tr><td>스플릿</td><td>1번만. 10과 그림 카드처럼 세는 값이 같으면 페어로 친다. A 스플릿은 1장씩 받고 끝</td><td>표준</td></tr><tr><td>스플릿한 패의 더블</td><td>가능 (A가 없으면)</td><td>유리</td></tr><tr><td>스플릿한 패의 2장 21</td><td>이것도 3:2</td><td>유리</td></tr><tr><td>인슈어런스</td><td>업카드가 A일 때. 베팅액의 절반을 내고, 맞으면 2:1</td><td>하면 손해</td></tr><tr><td>서렌더, 사이드 베팅</td><td>없다</td><td>—</td></tr><tr><td>베팅액</td><td>5~500 Scrap. 상한은 서버 설정 <code>blackjackmachine.maxbet</code> (25~1,000,000)으로 바꿀 수 있다</td><td>—</td></tr><tr><td>좌석</td><td>머신 1대에 3석</td><td>—</td></tr></tbody></table></div>
+<p>승패는 다음과 같습니다. 플레이어가 먼저 21을 넘으면 그 시점에 패배입니다. 나중에 딜러가 21을 넘어도 돌려받지 못합니다. 하우스 엣지는 여기서 생깁니다.</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">결과</th><th scope="col">환수</th></tr></thead><tbody><tr><td>2장 21로 승리 (딜러가 3장 이상으로 21이어도 승리)</td><td>베팅액의 2.5배</td></tr><tr><td>일반 승리</td><td>2배</td></tr><tr><td>무승부</td><td>베팅액 그대로</td></tr><tr><td>패배, 버스트</td><td>0</td></tr><tr><td>인슈어런스 적중 (딜러가 2장 21)</td><td>인슈어런스 금액의 3배</td></tr></tbody></table></div>
+<p>2.5배는 소수점을 버립니다. 5를 걸면 12.5가 아니라 12가 돌아오므로, <strong>베팅액을 짝수로</strong> 해 두면 손해가 없습니다.</p>
+<h3>카드를 정할 때 쓰는 것, 쓰지 않는 것</h3>
+<div class="ra-uses">
+<div><p class="ra-uses-head ra-uses-yes">쓰는 것</p><ul><li>그 라운드를 위해 새로 늘어놓은 덱</li><li>암호용 난수 (카드를 섞을 때만)</li><li>카드 합계 (딜러가 뽑을지 말지)</li></ul></div>
+<div><p class="ra-uses-head ra-uses-no">쓰지 않는 것</p><ul><li>이전 라운드의 카드와 결과</li><li>시각, 라운드 수</li><li>서버 인원</li><li>베팅한 금액</li><li>베팅한 사람, 승패 기록</li><li>머신이 지금까지 지급한 금액</li></ul></div>
+</div>
+<p>베팅한 Scrap은 라운드가 끝날 때 사라지고, 환수분은 새로 만들어집니다. 머신은 "쌓인 몫"을 가지고 있지 않으므로, "슬슬 토해 낼" 상태라는 것이 애초에 없습니다.</p>
+<h2 class="ra-section">덱을 섞는 방법</h2>
+<p>카드를 섞는 코드가 부르는 난수는 .NET에 기본으로 있는 <code>System.Security.Cryptography.RandomNumberGenerator.GetInt32</code>뿐입니다. OS의 암호용 난수로, 시드도 게임 안의 상태도 갖지 않습니다. Big Wheel이 쓰는 Unity의 난수와는 다른 것입니다.</p>
+<p>섞는 방법을 말로 쓰면 이렇습니다.</p>
+<pre class="ra-code">새 덱을 만들 때:
+  스페이드 2부터 클럽 A까지, 덱 수만큼 순서대로 늘어놓는다
+  덱의 맨 위 위치부터 차례로 아래쪽으로:
+    그 위치보다 "아래"의 어딘가 한 곳을 같은 확률로 골라 카드를 맞바꾼다
+카드를 나눠 줄 때:
+  맨 위에서 1장씩 가져간다</pre>
+<h3>딱 1장만큼 균등에서 벗어나 있다</h3>
+<p>교과서적인 섞기 (Fisher–Yates)는 맞바꿀 상대에 "그 위치 자신"도 포함합니다. 카드가 우연히 움직이지 않는 일도 일어나도 되기 때문입니다. 이 머신의 섞기는 상대를 "그 위치보다 아래"에서만 고릅니다. Sattolo 방식이라고 불리는 형태로, <strong>어떤 카드도 섞기 전에 있던 자리에는 절대로 남지 않습니다.</strong></p>
+<p>새 덱의 위에서 13장은 섞기 전에 이 순서입니다 (모두 클럽).</p>
+<div class="ra-strip" role="img" aria-label="섞기 전 덱의 위에서 13장. 클럽 A, K, Q, J, 10, 9, 8, 7, 6, 5, 4, 3, 2"><span class="ra-strip-hot">A</span><span>K</span><span>Q</span><span>J</span><span>10</span><span>9</span><span>8</span><span>7</span><span>6</span><span>5</span><span>4</span><span>3</span><span>2</span></div>
+<p>섞은 뒤 맨 위에 오는 카드는 "원래 맨 위에 있던 클럽 A"를 뺀 나머지 전부에서 같은 확률로 골라집니다. 2번째는 "원래 2번째에 있던 클럽 K"를 뺀 나머지에서 고르는 식으로 이어집니다. 즉, <strong>처음 나눠 주는 1장은 그 클럽 A만은 절대 되지 않습니다.</strong></p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">덱</th><th scope="col">첫 1장이 A일 확률</th><th scope="col">균등하게 섞은 경우</th></tr></thead><tbody><tr><td>블랙잭 (520장)</td><td>39/519 = 7.51%</td><td>40/520 = 7.69%</td></tr><tr><td>포커 (52장)</td><td>3/51 = 5.88%</td><td>4/52 = 7.69%</td></tr></tbody></table></div>
+<p>차이는 1장 분량입니다. 블랙잭의 하우스 엣지를 0.1포인트 정도 늘린다고 계산했습니다 (뒤의 절). 라운드를 넘어 치우침이 쌓이는 일은 없습니다. 덱은 매번 새로 만들어지기 때문입니다.</p>
+<h2 class="ra-section">하우스 엣지</h2>
+<h3>100 Scrap을 걸었을 때 평균적으로 줄어드는 양</h3>
+<ol class="ra-gbars ra-loss" style="--max:16" aria-label="100 Scrap을 걸었을 때 평균적으로 줄어드는 양"><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">기본 전략</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:0.8"></span></span><span class="ra-gbar-n">−0.8</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Big Wheel (1, 3, 5)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:4"></span></span><span class="ra-gbar-n">−4</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">딜러와 같은 방식으로 뽑기</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:5.9"></span></span><span class="ra-gbar-n">−5.9</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">12 이상이면 무조건 멈추기</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:6"></span></span><span class="ra-gbar-n">−6.0</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">인슈어런스</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:7.9"></span></span><span class="ra-gbar-n">−7.9</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Big Wheel (20)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:16"></span></span><span class="ra-gbar-n">−16</span></span></li></ol>
+<p>블랙잭의 숫자는 뒤에서 설명하는 직접 만든 프로그램으로 낸 <strong>추정치</strong>입니다. Big Wheel의 숫자는 칼럼 "Big Wheel에 필승 패턴이 있을까?"에서 가져왔습니다.</p>
+<p>같은 머신이라도 치는 방법에 따라 7배 이상 차이가 납니다. "감으로" 치면 Big Wheel보다 나빠집니다.</p>
+<h3>인슈어런스는 하지 않는다</h3>
+<p>업카드가 A일 때 홀 카드가 10이나 그림 카드일 확률은 159/518 = 30.7%입니다 (홀 카드 자리에는 섞기 전에 그 자리에 있던 그림 카드 1장이 오지 않으므로, 균등하게 섞었을 때의 160/519보다 조금 낮아집니다). 맞으면 3배가 돌아오므로 평균은 3 × 0.307 − 1 = <strong>−7.9%</strong>. 본 베팅보다 10배 정도 효율이 나쁜 베팅입니다. 내 패가 좋든 나쁘든 하지 않는 편이 이득입니다.</p>
+<h3>기본 전략</h3>
+<p>이 머신의 규칙에 맞춰, 패마다 평균이 가장 좋은 조작을 계산한 표입니다. H는 히트, S는 스탠드, D는 더블, P는 스플릿. 열은 딜러의 업카드입니다.</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table ra-prose-short"><thead><tr><th scope="col">내 패 (A 없음)</th><th scope="col">2</th><th scope="col">3</th><th scope="col">4</th><th scope="col">5</th><th scope="col">6</th><th scope="col">7</th><th scope="col">8</th><th scope="col">9</th><th scope="col">10</th><th scope="col">A</th></tr></thead><tbody><tr><td>8 이하</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td></tr><tr><td>9</td><td>H</td><td>D</td><td>D</td><td>D</td><td>D</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td></tr><tr><td>10, 11</td><td>D</td><td>D</td><td>D</td><td>D</td><td>D</td><td>D</td><td>D</td><td>D</td><td>H</td><td>H</td></tr><tr><td>12</td><td>H</td><td>H</td><td>S</td><td>S</td><td>S</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td></tr><tr><td>13~16</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td></tr><tr><td>17 이상</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td></tr></tbody></table></div>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table ra-prose-short"><thead><tr><th scope="col">내 패 (A를 11로 셈)</th><th scope="col">2</th><th scope="col">3</th><th scope="col">4</th><th scope="col">5</th><th scope="col">6</th><th scope="col">7</th><th scope="col">8</th><th scope="col">9</th><th scope="col">10</th><th scope="col">A</th></tr></thead><tbody><tr><td>13~17</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td></tr><tr><td>18</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>H</td><td>H</td><td>H</td></tr><tr><td>19 이상</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td></tr></tbody></table></div>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table ra-prose-short"><thead><tr><th scope="col">같은 숫자의 페어</th><th scope="col">2</th><th scope="col">3</th><th scope="col">4</th><th scope="col">5</th><th scope="col">6</th><th scope="col">7</th><th scope="col">8</th><th scope="col">9</th><th scope="col">10</th><th scope="col">A</th></tr></thead><tbody><tr><td>2, 3, 7</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>H</td><td>H</td><td>H</td><td>H</td></tr><tr><td>4</td><td>H</td><td>H</td><td>H</td><td>P</td><td>P</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td></tr><tr><td>5</td><td>D</td><td>D</td><td>D</td><td>D</td><td>D</td><td>D</td><td>D</td><td>D</td><td>H</td><td>H</td></tr><tr><td>6</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td></tr><tr><td>8</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>H</td><td>H</td></tr><tr><td>9</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>S</td><td>P</td><td>P</td><td>S</td><td>S</td></tr><tr><td>10, 그림 카드</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td></tr><tr><td>A</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td></tr></tbody></table></div>
+<p>잘 알려진 표와 다른 점은 2가지입니다. 하나는 <strong>A가 있는 패는 더블할 수 없다</strong>는 것으로, A를 11로 세는 패의 행은 H나 S뿐입니다. 다른 하나는 <strong>업카드가 10이나 A일 때</strong>입니다. 이 머신은 딜러의 2장 21을 끝까지 확인하지 않으므로, 추가한 베팅액까지 함께 잃을 수 있습니다. 그래서 11이어도 더블하지 않고, 8 페어도 스플릿하지 않습니다.</p>
+<h2 class="ra-section">똑같이 움직이는 프로그램</h2>
+<p>읽어서 알아낸 규칙을 직접 처음부터 쓴 프로그램입니다. 게임 코드는 베끼지 않았습니다. 덱, 딜러가 뽑는 방식, 배당 부분은 이것뿐입니다.</p>
+<pre class="ra-code ra-code-src">DECKS = 10
+VALUES = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11]  # 한 무늬. 2~K, 마지막이 A (11)
+SHOE = VALUES * 4 * DECKS                                # 순서대로 늘어놓은 520장. 끝이 덱의 맨 위
+
+class Shoe:
+    def __init__(self, rng, fair=False, cards=SHOE):
+        self.cards, self.n, self.rng, self.fair = cards[:], len(cards), rng, fair
+
+    def take(self):
+        """위에서 1장. 위치 n을 n보다 아래의 어딘가와 맞바꾼 뒤 가져간다 (n 자신은 고르지 않는다)"""
+        self.n -= 1
+        n = self.n
+        if n:
+            k = self.rng.randrange(n + 1 if self.fair else n)
+            self.cards[k], self.cards[n] = self.cards[n], self.cards[k]
+        return self.cards[n]
+
+def dealer_draws(hard, ace):
+    """hard는 A를 1로 센 합계. 17 이상과 소프트 18~21에서 멈춘다. 소프트 17은 뽑는다"""
+    return not (hard &gt;= 17 or (ace and 18 &lt;= hard + 10 &lt;= 21))
+
+def settle(cards, bet, dealer):
+    """패 하나의 환수. 2장 21은 2.5배 (버림), 승리는 2배, 무승부는 1배"""
+    mine, natural = best(*state(cards)), len(cards) == 2 and best(*state(cards)) == 21
+    if mine &gt; 21:
+        return 0
+    house = best(*state(dealer))
+    if len(dealer) == 2 and house == 21:
+        return bet if natural else 0
+    if house &gt; 21:
+        house = 0
+    if mine &gt; house or (mine == house and natural):
+        return bet * 5 // 2 if natural else bet * 2
+    return bet if mine == house else 0</pre>
+<p><code>state</code>는 패를 "A를 1로 센 합계"와 "A가 있는지"로 바꾸고, <code>best</code>는 A 1장을 11로 셀 수 있을 때 그렇게 센 합계를 돌려줍니다 (전체는 파일에 있습니다).</p>
+<p>섞기는 위치마다의 맞바꾸기를 "그 카드를 가져갈 때" 하는 형태로 했습니다. 위치 n은 자기 차례의 맞바꾸기 뒤로는 다시 움직이지 않으므로, 먼저 전부 섞은 뒤 가져가는 것과 결과가 같습니다. 난수 방식은 Python의 것이므로 나오는 카드 순서는 게임과 같지 않지만, 섞는 방법과 규칙은 같습니다.</p>
+<p><code>take</code>에도 <code>settle</code>에도 이전 라운드의 결과, 시각, 베팅한 사람을 받는 자리가 없습니다. 들어오는 것은 난수의 원천과 그 라운드의 카드뿐입니다.</p>
+<p>기본 전략은 같은 프로그램 안에서 계산합니다. 덱을 "어떤 숫자든 항상 13분의 1로 나온다"고 보고, 패마다 스탠드, 히트, 더블, 스플릿의 평균을 비교해 가장 좋은 것을 고릅니다. 위의 표가 그 출력입니다.</p>
+<h3>100만 라운드의 결과</h3>
+<p>혼자 앉아 매번 10 Scrap을 걸고 100만 라운드 (난수 시드는 1). 결과는 처음 베팅액에 대한 비율입니다.</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table ra-prose-short"><thead><tr><th scope="col">치는 방법</th><th scope="col">평균 (1라운드당)</th><th scope="col">오차</th><th scope="col">승리</th><th scope="col">무승부</th><th scope="col">패배</th></tr></thead><tbody><tr><td>기본 전략</td><td>−0.66%</td><td>±0.11</td><td>43.43%</td><td>8.63%</td><td>47.94%</td></tr><tr><td>딜러와 같은 방식으로 뽑기 (더블도 스플릿도 안 함)</td><td>−5.86%</td><td>±0.10</td><td>41.11%</td><td>9.70%</td><td>49.19%</td></tr><tr><td>12 이상이면 무조건 멈추기</td><td>−6.02%</td><td>±0.10</td><td>42.61%</td><td>6.51%</td><td>50.87%</td></tr></tbody></table></div>
+<p>같은 기본 전략을 시뮬레이션이 아니라 계산으로 내면 다음과 같습니다.</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">산출 방법</th><th scope="col">평균</th></tr></thead><tbody><tr><td>계산 (덱을 무한으로 간주)</td><td>−0.79%</td></tr><tr><td>계산 (위에 더해, 처음 4장을 이 머신의 섞기 방식에 따른 확률로)</td><td>−0.87%</td></tr><tr><td>시뮬레이션 100만 라운드</td><td>−0.66% (±0.11)</td></tr><tr><td>시뮬레이션 550만 라운드 (시드 1로 100만 라운드, 시드 2, 3, 4로 각 150만 라운드를 더한 것)</td><td>−0.77% (±0.05)</td></tr></tbody></table></div>
+<p>블랙잭은 라운드마다 흔들림이 커서, 100만 라운드로도 ±0.1포인트의 폭이 남습니다. 계산과 시뮬레이션을 종합해 <strong>하우스 엣지는 약 0.8% (0.7~0.9%)</strong>로 보고 있습니다.</p>
+<p>2장 21이 나온 비율은 4.69%였습니다. 균등하게 섞었을 때의 4.74%보다 조금 낮은데, 이것이 "첫 1장은 그 A만은 되지 않는다"는 몫입니다.</p>
+<p>프로그램 전체는 <a class="ra-link" href="card-games.py">card-games.py</a>에 있습니다. <code>python3 card-games.py</code>로 같은 숫자가 나옵니다 (1분 정도 걸립니다).</p>
+<h2 class="ra-section">포커 (텍사스 홀덤)</h2>
+<ul class="ra-facts">
+<li><span class="ra-facts-n">52장</span><span class="ra-facts-l">덱은 1덱. 핸드마다 새로 만든다</span></li>
+<li><span class="ra-facts-n">5 / 10</span><span class="ra-facts-l">블라인드. 앤티는 없다</span></li>
+<li><span class="ra-facts-n">100~1,000</span><span class="ra-facts-l">가지고 들어갈 수 있는 Scrap</span></li>
+</ul>
+<ol class="ra-timeline" aria-label="텍사스 홀덤 한 핸드의 흐름">
+<li class="ra-timeline-hot" style="--w:14"><strong>덱을 만든다</strong><span>순식간</span><small>52장을 새로 늘어놓고 섞는다</small></li>
+<li style="--w:20"><strong>블라인드와 핸드</strong><span>자동</span><small>5와 10이 나오고, 2장씩 나눠 준다</small></li>
+<li style="--w:36"><strong>베팅 4바퀴</strong><span>1인당 30초</span><small>사이에 플랍 3장, 턴, 리버</small></li>
+<li style="--w:16"><strong>승부</strong><span>순식간</span><small>핸드 2장 + 보드 5장으로 족보를 비교한다</small></li>
+<li style="--w:14"><strong>배당</strong><span>순식간</span><small>팟 전액이 승자에게. 8초 후 다음 핸드</small></li>
+</ol>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">항목</th><th scope="col">Card Table의 규칙</th></tr></thead><tbody><tr><td>인원</td><td>2명부터. 테이블은 2, 3, 4, 6석의 4종류</td></tr><tr><td>블라인드</td><td>버튼 다음 사람이 5, 그다음이 10 (2명일 때는 버튼인 사람이 5). 버튼은 핸드마다 옆으로</td></tr><tr><td>바이인</td><td>좌석 보관함에 100~1,000 Scrap. 10 미만이 되면 다음 핸드부터 빠진다</td></tr><tr><td>최소 레이즈</td><td>10 이상 (이전 레이즈 폭보다 작게는 못 한다)</td></tr><tr><td>시간 초과</td><td>30초면 폴드. 4분 동안 아무것도 하지 않으면 자리에서 내려진다</td></tr><tr><td>족보 판정</td><td>핸드 2장과 보드 5장, 7장으로 비교한다. 동점이면 팟을 균등하게 나눈다</td></tr><tr><td>하우스 몫 (레이크)</td><td><strong>없다</strong></td></tr></tbody></table></div>
+<p>배당 코드는 팟을 베팅액이 적은 층부터 차례로 승자에게 건네고, 마지막에 "팟이 비어 있어야 한다"고 확인하는 형태입니다. 테이블이 무언가를 떼어 가는 코드는 없습니다. <strong>걸린 Scrap은 전액이 플레이어 중 누군가에게 돌아갑니다.</strong></p>
+<p>그래서 포커에는 "하우스에 대한 평균 환수"가 없습니다. 테이블 전원의 손익을 더하면 항상 0입니다. 이길 수 있는지는 상대보다 잘하는지만으로 정해집니다.</p>
+<h2 class="ra-section">자주 듣는 이야기를 확인한다</h2>
+<div class="ra-myth"><p class="ra-myth-q">"나온 카드를 세어 두면 유리할 때 크게 걸 수 있다"</p><p class="ra-myth-a"><span class="ra-verdict">성립하지 않는다</span>카드 카운팅은 쓴 카드가 덱에 돌아가지 않은 채 다음 라운드로 넘어갈 때만 통합니다. 이 머신은 라운드마다 520장을 새로 만들므로, 센 정보를 다음 라운드로 가져갈 수 없습니다. 덱은 베팅 전에 만들어지므로, 그 라운드의 카드를 보고 나서 거는 것도 불가능합니다.</p></div>
+<div class="ra-myth"><p class="ra-myth-q">"계속 졌다. 머신이 쌓아 두고 있으니 슬슬 이긴다"</p><p class="ra-myth-a"><span class="ra-verdict">성립하지 않는다</span>머신은 지급한 금액도 받은 금액도 기억하지 않습니다. 베팅한 Scrap은 라운드가 끝날 때 사라지고, 환수분은 새로 만들어집니다. 라운드와 라운드 사이에 이어지는 것은 좌석과 가진 Scrap뿐입니다.</p></div>
+<div class="ra-myth"><p class="ra-myth-q">"크게 걸면 나쁜 카드가 온다"</p><p class="ra-myth-a"><span class="ra-verdict">관계없다</span>덱은 베팅을 받기 전에 다 섞여 있습니다. 섞는 코드에도 나눠 주는 코드에도 베팅액이나 사람을 보는 자리가 없습니다.</p></div>
+<div class="ra-myth"><p class="ra-myth-q">"딜러는 내 패를 보고 뽑는 방식을 바꾼다"</p><p class="ra-myth-a"><span class="ra-verdict">바꾸지 않는다</span>딜러가 뽑을지는 자기 카드의 합계만으로 정해집니다. 17 이상에서 멈추고, 소프트 17은 뽑습니다. 플레이어의 패도 베팅액도 쓰이지 않습니다.</p></div>
+<div class="ra-myth"><p class="ra-myth-q">"시간대나 서버 인원에 따라 이기기 쉬움이 달라진다"</p><p class="ra-myth-a"><span class="ra-verdict">달라지지 않는다</span>난수가 쓰이는 곳은 카드를 섞는 한 곳뿐이고, OS의 암호용 난수입니다. 시각도 인원도 들어가지 않습니다.</p></div>
+<div class="ra-myth"><p class="ra-myth-q">"딜러의 홀 카드는 툴로 엿볼 수 있다"</p><p class="ra-myth-a"><span class="ra-verdict">전송되지 않는다</span>라운드 도중에 서버는 홀 카드의 내용을 클라이언트에 보내지 않습니다. 포커에서 다른 사람의 핸드도 마찬가지입니다. 내 쪽을 아무리 조사해도 없는 것은 보이지 않습니다.</p></div>
+<div class="ra-myth"><p class="ra-myth-q">"인슈어런스는 보험이니까 좋은 패일 때는 해야 한다"</p><p class="ra-myth-a"><span class="ra-verdict">하면 손해</span>인슈어런스는 본 베팅과 별개의 베팅이고, 평균은 −7.9%입니다. 내 패가 좋은지 나쁜지로는 달라지지 않습니다.</p></div>
+<div class="ra-myth"><p class="ra-myth-q">"지면 두 배로 다시 걸면 결국 이긴다"</p><p class="ra-myth-a"><span class="ra-verdict">평균은 달라지지 않는다</span>매번의 결과는 이전 라운드와 관계가 없으므로, 거는 금액의 순서로 평균은 움직이지 않습니다. 상한이 500이므로 5에서 시작해도 7번 연속으로 지면 다음 두 배 (640)는 더 이상 걸 수 없습니다.</p></div>
+<div class="ra-myth"><p class="ra-myth-q">"앉는 자리에 따라 오는 카드가 달라진다"</p><p class="ra-myth-a"><span class="ra-verdict">1장 분량만 달라진다</span>카드는 좌석 번호 순으로 나눠 주고, 섞기에는 위에서 쓴 1장 분량의 치우침이 있습니다. 다음 절에서 확인합니다. 승패를 좌우할 만한 차이는 아닙니다.</p></div>
+<div class="ra-myth"><p class="ra-myth-q">"포커는 테이블이 강한 패끼리 붙여서 분위기를 띄운다"</p><p class="ra-myth-a"><span class="ra-verdict">하지 않는다</span>52장을 섞어서 위에서 나눠 줄 뿐입니다. 누구에게 무엇을 줄지 고르는 코드는 없습니다. 테이블은 몫을 가져가지 않으므로 분위기를 띄울 이유도 없습니다.</p></div>
+<h2 class="ra-section">좌석과 섞기의 치우침</h2>
+<p>카드는 버튼의 위치와 관계없이 항상 번호가 가장 작은 좌석부터 나눠 줍니다. 섞기의 치우침 (첫 1장은 클럽 A가 되지 않는다)은 그 좌석에 그대로 나타납니다.</p>
+<p>포커를 2명이 할 때, 각 좌석이 클럽 A를 가지는 비율을 100만 번 세었습니다.</p>
+<ol class="ra-gbars ra-plain" style="--max:4" aria-label="2인 포커에서 각 좌석이 클럽 A를 가지는 비율"><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">먼저 받는 좌석 (이 머신의 섞기)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:1.97"></span></span><span class="ra-gbar-n">1.97%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">나중에 받는 좌석 (이 머신의 섞기)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:3.91"></span></span><span class="ra-gbar-n">3.91%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">어느 좌석이든 (균등하게 섞은 경우)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:3.85"></span></span><span class="ra-gbar-n">3.85%</span></span></li></ol>
+<p>먼저 받는 좌석은 클럽 A를 가지는 일이 절반밖에 없습니다. 1번째 장으로는 절대 오지 않고, 2번째 장으로만 받을 수 있기 때문입니다. 마찬가지로 나중에 받는 좌석은 클럽 K가, 보드 카드는 클럽 10, 9, 8이 각각 한 곳씩 오지 않는 위치를 가지고 있습니다.</p>
+<p>그렇다면 승패에 영향이 있느냐 하면, 거의 없습니다.</p>
+<ul><li><strong>포커:</strong> 모두가 끝까지 폴드하지 않는다고 가정하고 100만 번 시험하면, 2명일 때는 팟 몫에 차이가 보이지 않았습니다 (49.97%와 50.03%, 오차 ±0.05). 6명일 때는 맨 앞 좌석이 16.57%로, 균등한 16.67%보다 0.1포인트 낮은 정도였습니다 (오차 ±0.04).</li><li><strong>블랙잭:</strong> 520장 중 1장이므로 더 작아집니다. 혼자 앉았을 때 하우스 엣지가 0.09포인트 늘어난다고 계산했습니다. 3명이 앉으면 번호가 가장 작은 좌석이 0.15포인트, 다른 좌석이 0.03~0.04포인트입니다. 모두 계산만으로 낸 숫자이고, 3명이 앉는 시뮬레이션은 하지 않았습니다. 3명의 숫자는 이 글의 프로그램과는 다른 일회용 프로그램으로 냈습니다.</li></ul>
+<p>"이 자리는 이길 수 없다"고 말할 만한 차이는 아닙니다. 코드를 읽으면 1장 분량의 치우침이 있다는 사실로 적어 둡니다.</p>
+<h2 class="ra-section">알 수 없는 것</h2>
+<ul><li><strong>번호가 가장 작은 좌석이 어느 위치인지.</strong> 테이블의 어느 좌석이 0번인지는 확인하지 않았습니다.</li><li><strong>족보 판정의 내부.</strong> 족보를 비교하는 부분은 잘 알려진 공개 평가기와 같은 형태의 부품에 맡겨져 있습니다. 그 내부까지는 읽지 않았습니다.</li><li><strong>3명 이상의 올인.</strong> 가진 돈이 적은 사람이 올인해서 이겼을 때, 사이드 팟이 일반 규칙대로 나뉘는지. 코드를 읽으면 일반과 다른 방식으로 나눌 것 같은 부분이 있습니다. 실제로 플레이해서 확인하지는 않았습니다.</li><li><strong>하우스 엣지의 세세한 자릿수.</strong> 약 0.8%는 직접 만든 프로그램으로 낸 추정치입니다. 계산은 덱을 무한으로 간주한 근사이고, 시뮬레이션에는 ±0.05~0.1포인트의 오차가 있습니다.</li><li><strong>이 글의 대상.</strong> 2026-11-07 버전의 PC판 서버에서, 베팅 상한이 기본값 500인 경우입니다. 상한은 서버마다 바꿀 수 있고, 규칙은 앞으로의 업데이트에서 바뀔 수 있습니다.</li></ul>
+<h2 class="ra-section">조사 방법</h2>
+<p>서버 본체의 코드 (블랙잭과 포커 클래스의 중간 코드)를 읽고, 머신과 테이블의 설정값을 데이터 파일에서 읽었습니다. 서버는 실행하지 않았습니다. 덱의 장수, 딜러가 뽑는 방식, 배당 배율, 베팅액 범위, 블라인드, 시간은 모두 읽은 값입니다.</p>
+<p>하우스 엣지, 기본 전략 표, 좌석별 비율은 읽은 규칙을 직접 다시 쓴 프로그램으로 계산하고 시뮬레이션한 것입니다. 클럽 A를 가지는 비율까지는 <a class="ra-link" href="card-games.py">card-games.py</a>가 냅니다. 포커의 팟 몫과 블랙잭 3명의 좌석별 차이는 별도의 일회용 프로그램으로 냈습니다.</p>
+<p>게임 안에서 실제로 플레이해서 센 결과가 아닙니다. 코드가 그렇게 쓰여 있다는 확인입니다.</p><h2 class="ra-section">출처</h2><ul><li><a class="ra-link" href="https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.randomnumbergenerator.getint32" rel="noopener">.NET documentation, RandomNumberGenerator.GetInt32</a></li><li><a class="ra-link" href="https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle" rel="noopener">Wikipedia, Fisher–Yates shuffle (section on Sattolo&#x27;s algorithm)</a></li></ul></article></main>
+<footer class="ra-foot"><p>Facepunch Studios와 관계없이 개인이 분석해서 만든 비공식 사이트입니다. 값은 게임 서버의 데이터와 코드에서 읽은 것이며, 정확성은 보증하지 않습니다.</p>
+<p>일부 아이콘은 <a class="ra-link" href="https://lucide.dev/" rel="noopener">Lucide</a> (ISC License)입니다.</p></footer>
+<script>document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('[data-lang]');if(a)try{localStorage.setItem('ra-lang',a.dataset.lang)}catch(_){}})</script></body></html>

@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<script>(()=>{try{if(/bot|crawl|spider|slurp|lighthouse|inspection/i.test(navigator.userAgent))return;const A={"ja":"../../columns/loot-containers.html","en":"../../en/columns/loot-containers.html","zh":"../../zh/columns/loot-containers.html","ko":"../../ko/columns/loot-containers.html","ru":"../../ru/columns/loot-containers.html"},S=["ja","en","zh","ko","ru"];let w=localStorage.getItem('ra-lang');if(!w){for(const l of navigator.languages||[navigator.language||'']){const c=String(l).toLowerCase().split('-')[0];if(S.includes(c)){w=c;break}}w=w||'en'}if(!A[w])w=A.en?'en':null;if(w&&w!=='zh')location.replace(A[w]+location.search+location.hash)}catch(_){}})()</script><title>箱子里的物品是什么时候决定的？ | Rust Analysis</title>
+<meta name="description" content="Barrel、Military Crate 和 Locked Crate 里的物品是何时、如何决定的？我们从服务器代码中确认：物品在箱子刷出时就已决定，不会因开箱的人或时间而改变。">
+<meta name="theme-color" content="#f2f4f5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15181a" media="(prefers-color-scheme: dark)">
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+<link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rust Analysis">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:title" content="箱子里的物品是什么时候决定的？ | Rust Analysis">
+<meta property="og:description" content="Barrel、Military Crate 和 Locked Crate 里的物品是何时、如何决定的？我们从服务器代码中确认：物品在箱子刷出时就已决定，不会因开箱的人或时间而改变。">
+<meta property="og:url" content="https://maco165.github.io/rust-patch-notes/zh/columns/loot-containers.html">
+<meta property="og:image" content="https://maco165.github.io/rust-patch-notes/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://maco165.github.io/rust-patch-notes/zh/columns/loot-containers.html">
+<link rel="alternate" hreflang="ja" href="https://maco165.github.io/rust-patch-notes/columns/loot-containers.html">
+<link rel="alternate" hreflang="en" href="https://maco165.github.io/rust-patch-notes/en/columns/loot-containers.html">
+<link rel="alternate" hreflang="zh" href="https://maco165.github.io/rust-patch-notes/zh/columns/loot-containers.html">
+<link rel="alternate" hreflang="ko" href="https://maco165.github.io/rust-patch-notes/ko/columns/loot-containers.html">
+<link rel="alternate" hreflang="ru" href="https://maco165.github.io/rust-patch-notes/ru/columns/loot-containers.html">
+<link rel="alternate" hreflang="x-default" href="https://maco165.github.io/rust-patch-notes/columns/loot-containers.html">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "箱子里的物品是什么时候决定的？", "description": "Barrel、Military Crate 和 Locked Crate 里的物品是何时、如何决定的？我们从服务器代码中确认：物品在箱子刷出时就已决定，不会因开箱的人或时间而改变。", "inLanguage": "zh", "datePublished": "2026-11-12", "dateModified": "2026-11-12", "url": "https://maco165.github.io/rust-patch-notes/zh/columns/loot-containers.html", "mainEntityOfPage": "https://maco165.github.io/rust-patch-notes/zh/columns/loot-containers.html", "image": "https://maco165.github.io/rust-patch-notes/assets/og.png", "author": {"@type": "Organization", "name": "Rust Analysis", "url": "https://maco165.github.io/rust-patch-notes/"}, "publisher": {"@type": "Organization", "name": "Rust Analysis", "url": "https://maco165.github.io/rust-patch-notes/"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Rust Analysis", "item": "https://maco165.github.io/rust-patch-notes/zh/tools.html"}, {"@type": "ListItem", "position": 2, "name": "文章", "item": "https://maco165.github.io/rust-patch-notes/zh/columns.html"}, {"@type": "ListItem", "position": 3, "name": "箱子里的物品是什么时候决定的？", "item": "https://maco165.github.io/rust-patch-notes/zh/columns/loot-containers.html"}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+JP:wght@400;600&display=swap&family=Noto+Sans+SC:wght@400;600">
+<style>html:lang(zh){--font-sans:"Noto Sans SC","IBM Plex Sans JP",system-ui,sans-serif;--font-display:"Big Shoulders Display","Noto Sans SC",sans-serif}</style>
+<link rel="stylesheet" href="../../assets/style.css">
+</head><body>
+<header class="ra-site">
+  <a class="ra-site-name" href="../tools.html"><b>Rust</b> Analysis</a>
+  <nav class="ra-nav" aria-label="页面"><a href="../columns.html" aria-current="page"><i class="ra-ico ra-ico-columns" aria-hidden="true"></i>文章</a><a href="../tools.html"><i class="ra-ico ra-ico-tools" aria-hidden="true"></i>工具</a></nav>
+  <span class="ra-site-meta">2026-11-05</span>
+  <span class="ra-site-lang"><a href="../../columns/loot-containers.html" lang="ja" hreflang="ja" data-lang="ja">日本語</a><a href="../../en/columns/loot-containers.html" lang="en" hreflang="en" data-lang="en">English</a><a href="../../ko/columns/loot-containers.html" lang="ko" hreflang="ko" data-lang="ko">한국어</a><a href="../../ru/columns/loot-containers.html" lang="ru" hreflang="ru" data-lang="ru">Русский</a></span><a class="ra-site-link" href="https://github.com/maco165/rust-patch-notes" rel="noopener"><i class="ra-ico ra-ico-github" aria-hidden="true"></i>GitHub</a>
+</header>
+<script>(()=>{const n=document.querySelector('.ra-nav'),a=n&&n.querySelector('[aria-current]');if(a&&n.scrollWidth>n.clientWidth)n.scrollLeft=a.offsetLeft-(n.clientWidth-a.offsetWidth)/2})()</script>
+<main class="ra-page"><article class="ra-prose"><p class="ra-patch-meta"><a class="ra-link" href="../columns.html">文章</a><time datetime="2026-11-12">2026-11-12</time><span><i class="ra-ico ra-ico-monuments" aria-hidden="true"></i> 遗迹与事件</span><span class="ra-src ra-src-export"><i class="ra-ico ra-ico-export" aria-hidden="true"></i>游戏版本 2026-11-07</span></p><div class="ra-tp-head"><span class="ra-ti ra-ti-page" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke-linecap="round" stroke-linejoin="round">
+<path d="M17.5 13.5Q12.1 33.5 17.9 55.5Q33.5 58.9 49.1 55.5Q54.9 33.5 49.5 13.5Z" fill="#f8e1d5"/>
+<path d="M16 12Q10.6 32 16.4 54Q32 57.4 47.6 54Q53.4 32 48 12" stroke="#a83a0c" stroke-width="3.2"/>
+<path d="M24.8 17Q22.6 34 25.2 55M39.2 17Q41.4 34 38.8 55" stroke="#a83a0c" stroke-width="2.2"/>
+<path d="M16 12C16.4 8.6 23 7.2 32 7.4C41 7.4 47.8 8.8 48 12C47.8 15.4 41 16.6 32 16.4C23 16.4 16.2 15.2 16 12Z" fill="#ffd77a" stroke="#a83a0c" stroke-width="3"/>
+<path d="M13.8 24.2Q32 28.8 50.2 24M14 42.2Q32 46.8 50 42" stroke="#6b757e" stroke-width="3.2"/>
+</svg></span><h1 class="ra-prose-title">箱子里的物品是什么时候决定的？</h1></div><p class="ra-prose-lead">Barrel、Military Crate 和 Locked Crate 里的物品是何时、如何决定的？我们从服务器代码中确认：物品在箱子刷出时就已决定，不会因开箱的人或时间而改变。</p><div class="ra-callout">
+<p class="ra-callout-label">结论</p>
+<p class="ra-callout-main">箱内物品在箱子刷出时就已决定</p>
+<p>而不是在打开时决定。箱子出现在服务器上的那一刻，抽取就已完成，实际的物品被放进箱子里。开箱的人、时间、地点和附近的玩家都不参与抽取。</p>
+</div>
+<ul class="ra-facts">
+<li><span class="ra-facts-n">0 次</span><span class="ra-facts-l">打开箱子时进行的抽取</span></li>
+<li><span class="ra-facts-n">60～120 分钟</span><span class="ra-facts-l">遗迹中 Barrel、Crate、Military Crate 的物品重置间隔</span></li>
+<li><span class="ra-facts-n">52%</span><span class="ra-facts-l">Elite Crate 里至少出 1 把枪的概率</span></li>
+</ul>
+<p>以下是阅读 2026-11-07 版本的服务器代码和数据得出的结果。</p>
+<h2 class="ra-section">箱子的一生</h2>
+<ol class="ra-timeline" aria-label="从箱子刷出到消失">
+<li class="ra-timeline-hot" style="--w:16"><strong>刷出</strong><span>一瞬间</span><small>抽取在此完成，物品放入箱中</small></li>
+<li style="--w:40"><strong>放置中</strong><span>60～120 分钟</span><small>箱内物品不变</small></li>
+<li style="--w:22"><strong>重置</strong><span>一瞬间</span><small>清空全部物品，重新抽取</small></li>
+<li style="--w:22"><strong>被搜空</strong><span>—</span><small>箱子消失，之后会刷出新的箱子</small></li>
+</ol>
+<ul><li><strong>打开</strong>这一步只记录第一个打开的人，不进行抽取。</li><li>重启后从存档恢复的箱子，不重新抽取，而是恢复原来的物品。</li></ul>
+<h3>抽取用到的和用不到的</h3>
+<div class="ra-uses">
+<div><p class="ra-uses-head ra-uses-yes">用到的</p><ul><li>每种箱子的设置（槽位列表、Scrap 的数量）</li><li>掉落表（权重和数量）</li><li>随机数</li><li>服务器的时代设定</li></ul></div>
+<div><p class="ra-uses-head ra-uses-no">用不到的</p><ul><li>开箱的人</li><li>时间、清档后的天数</li><li>箱子的位置</li><li>附近的玩家、服务器人数</li><li>之前出过的物品</li><li>打开或破坏的方式</li></ul></div>
+</div>
+<h2 class="ra-section">箱内物品的决定方式</h2>
+<p>抽取分为 2 级：每个箱子的“槽位”，以及槽位所抽取的“表”。</p>
+<pre class="ra-code">箱子刷出时：
+  从上到下依次查看箱子的槽位
+    每个槽位，重复固定次数：
+      若 0 到 1（含两端）的随机数不大于该槽位的概率，就从该槽位的表中抽取 1 次
+  按箱子固定的数量放入 Scrap
+
+从表中抽取 1 次：
+  若表中列的是下级表，按权重比例选 1 个，再从那个表中抽取（重复直到叶节点）
+  若表中列的是物品（叶节点），把列出的物品全部放入</pre>
+<h3>槽位：以 Military Crate 为例</h3>
+<p>Military Crate（<code>crate_normal</code>）有 8 个槽位。各槽位互不影响，独立抽取。</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">槽位</th><th scope="col">抽取次数</th><th scope="col">每次的概率</th><th scope="col">内容</th></tr></thead><tbody><tr><td>零件表</td><td>1</td><td>100%</td><td>SMG Body、Rifle Body、Tech Trash、Metal Pipe、High Quality Metal、炮塔零件中的一种</td></tr><tr><td>Workbench Level 2 物品</td><td>1</td><td>40%</td><td>96 种中的 1 种（Thompson、Semi-Automatic Rifle、Rocket Launcher 等）</td></tr><tr><td>Blueprint Page</td><td>1</td><td>10%</td><td>Blueprint Page 1 个</td></tr><tr><td>Heavy Fuse</td><td>1</td><td>6%</td><td>Heavy Fuse 1 个</td></tr><tr><td>Large Backpack</td><td>1</td><td>5%</td><td>Large Backpack 1 个</td></tr><tr><td>Metal Armor Insert</td><td>1</td><td>5%</td><td>Metal Armor Insert 1 个</td></tr><tr><td>Workbench Upgrade</td><td>1</td><td>5%</td><td>3 种中的 1 种</td></tr><tr><td>Supply Signal</td><td>1</td><td>1%</td><td>Supply Signal 1 个</td></tr></tbody></table></div>
+<p>此外必定放入 8 个 Scrap。</p>
+<h3>表：按权重选 1 个</h3>
+<p>表（<code>LootSpawn</code>）是树状结构。Military Crate 的“零件表”按权重从 6 个下级表中选 1 个，权重合计为 600。</p>
+<ol class="ra-gbars ra-plain" style="--max:20" aria-label="Military Crate 零件表中各项被选中的概率"><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">SMG Body</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:20"></span></span><span class="ra-gbar-n">20%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Tech Trash</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:16.7"></span></span><span class="ra-gbar-n">17%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Metal Pipe</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:16.7"></span></span><span class="ra-gbar-n">17%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">High Quality Metal</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:16.7"></span></span><span class="ra-gbar-n">17%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">炮塔零件</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:16.7"></span></span><span class="ra-gbar-n">17%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Rifle Body</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:13.3"></span></span><span class="ra-gbar-n">13%</span></span></li></ol>
+<p>“炮塔零件”本身又是一个下级表，从 Targeting Computer（权重 55）、CCTV Camera（45）、Auto Turret（5）中选 1 个。从零件表中出 Auto Turret 的概率为 100/600 × 5/105 = 0.79%。</p>
+<p>到达叶节点后，列出的物品会全部放入（“Uzi 和弹药”就是 Uzi 加 15 发 Pistol Bullet）。</p>
+<h3>调用的随机数</h3>
+<p>抽取使用的随机数只有 Unity 自带的 <code>UnityEngine.Random.Range</code>。</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">决定的内容</th><th scope="col">调用的方法</th><th scope="col">性质</th></tr></thead><tbody><tr><td>槽位是否命中</td><td><code>UnityEngine.Random.Range(0f, 1f)</code></td><td>0 到 1（含两端）的实数。不大于槽位的概率即为命中</td></tr><tr><td>选哪个下级表</td><td><code>UnityEngine.Random.Range(0, 权重合计)</code></td><td>整数版本。包含最小值，不包含最大值</td></tr><tr><td>数量</td><td><code>UnityEngine.Random.Range(最小, 最大)</code></td><td>实数版本。结果的小数部分舍去后使用</td></tr><tr><td>武器耐久度</td><td><code>UnityEngine.Random.Range(下限, 上限)</code></td><td>实数版本。乘以最大耐久度</td></tr><tr><td>距下次重置的秒数</td><td><code>UnityEngine.Random.Range(最小, 最大)</code></td><td>实数版本</td></tr></tbody></table></div>
+<p>随机数的状态由整个服务器共用，因此无法从外部读出。</p>
+<h2 class="ra-section">4 个意外发现</h2>
+<h3>数量的“最大值”不会出现</h3>
+<p>数量是“在最小值到最大值之间取实数再向下取整”，所以最大值几乎不会出现。</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">物品</th><th scope="col">表中写的数量</th><th scope="col">实际出的数量</th></tr></thead><tbody><tr><td>Tech Trash（Military Crate 的零件表）</td><td>2～4</td><td>2 或 3（各一半）</td></tr><tr><td>Metal Pipe（同上）</td><td>5～6</td><td>必定 5</td></tr><tr><td>High Quality Metal（同上）</td><td>15～25</td><td>15～24</td></tr><tr><td>MLRS Rocket（Elite Crate 的槽位）</td><td>1～2</td><td>必定 1</td></tr></tbody></table></div>
+<h3>不存在出蓝图的“概率”</h3>
+<p>是否以蓝图形式出现，是按物品固定的。以蓝图形式出现的只有 12 种（Barbeque、Wheelbarrow Piano、Minicopter 等）。</p>
+<h3>抽到相同物品不会重抽</h3>
+<p>同一物品命中 2 次，就会照样放入 2 个。超出箱子格数的物品会消失（Bradley Crate 中为 6%）。</p>
+<h3>有抽取次数为 0 的槽位</h3>
+<p>Crate 的“炮塔零件 4%”槽位抽取次数为 0，永远不会命中。</p>
+<h2 class="ra-section">各箱子的概率</h2>
+<p>以下是“1 个箱子里至少有 1 个的概率”。</p>
+<h3>至少有 1 把枪的概率</h3>
+<ol class="ra-gbars ra-plain ra-boxes" style="--max:100" aria-label="各箱子至少有 1 把枪的概率"><li><span class="ra-gbar"><i class="ra-ico ra-ii-lock" aria-hidden="true"></i><span class="ra-gbar-name">Locked Crate</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:100"></span></span><span class="ra-gbar-n">100%</span></span></li><li><span class="ra-gbar"><i class="ra-ico ra-ii-supply-drop" aria-hidden="true"></i><span class="ra-gbar-name">Supply Drop</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:100"></span></span><span class="ra-gbar-n">100%</span></span></li><li><span class="ra-gbar"><i class="ra-ico ra-ii-crate-elite" aria-hidden="true"></i><span class="ra-gbar-name">Elite Crate</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:51.9"></span></span><span class="ra-gbar-n">52%</span></span></li><li><span class="ra-gbar"><i class="ra-ico ra-ii-helicopter" aria-hidden="true"></i><span class="ra-gbar-name">Heli Crate</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:28.2"></span></span><span class="ra-gbar-n">28%</span></span></li><li><span class="ra-gbar"><i class="ra-ico ra-ii-tank" aria-hidden="true"></i><span class="ra-gbar-name">Bradley</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:25"></span></span><span class="ra-gbar-n">25%</span></span></li><li><span class="ra-gbar"><i class="ra-ico ra-ii-waves" aria-hidden="true"></i><span class="ra-gbar-name">水下（高级）</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:4.4"></span></span><span class="ra-gbar-n">4.4%</span></span></li><li><span class="ra-gbar"><i class="ra-ico ra-ii-crate-military" aria-hidden="true"></i><span class="ra-gbar-name">Military Crate</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:4.2"></span></span><span class="ra-gbar-n">4.2%</span></span></li><li><span class="ra-gbar"><i class="ra-ico ra-ii-crate" aria-hidden="true"></i><span class="ra-gbar-name">Crate</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:1.8"></span></span><span class="ra-gbar-n">1.8%</span></span></li><li><span class="ra-gbar"><i class="ra-ico ra-ii-barrel" aria-hidden="true"></i><span class="ra-gbar-name">Barrel</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:0"></span></span><span class="ra-gbar-n">0%</span></span></li><li><span class="ra-gbar"><i class="ra-ico ra-ii-toolbox" aria-hidden="true"></i><span class="ra-gbar-name">Tool Box</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:0"></span></span><span class="ra-gbar-n">0%</span></span></li></ol>
+<p>直升机（最多 4 箱）和 Bradley（最多 3 箱）是每箱的数值。</p>
+<h3>有 Timed Explosive Charge（C4）的概率</h3>
+<ol class="ra-gbars ra-plain ra-boxes" style="--max:36" aria-label="各箱子至少有 1 个 Timed Explosive Charge（C4）的概率"><li><span class="ra-gbar"><i class="ra-ico ra-ii-tank" aria-hidden="true"></i><span class="ra-gbar-name">Bradley</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:35.7"></span></span><span class="ra-gbar-n">36%</span></span></li><li><span class="ra-gbar"><i class="ra-ico ra-ii-supply-drop" aria-hidden="true"></i><span class="ra-gbar-name">Supply Drop</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:26.5"></span></span><span class="ra-gbar-n">27%</span></span></li><li><span class="ra-gbar"><i class="ra-ico ra-ii-helicopter" aria-hidden="true"></i><span class="ra-gbar-name">Heli Crate</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:25.7"></span></span><span class="ra-gbar-n">26%</span></span></li><li><span class="ra-gbar"><i class="ra-ico ra-ii-lock" aria-hidden="true"></i><span class="ra-gbar-name">Locked Crate</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:9.6"></span></span><span class="ra-gbar-n">9.6%</span></span></li><li><span class="ra-gbar"><i class="ra-ico ra-ii-crate-elite" aria-hidden="true"></i><span class="ra-gbar-name">Elite Crate</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:1.9"></span></span><span class="ra-gbar-n">1.9%</span></span></li><li><span class="ra-gbar"><i class="ra-ico ra-ii-crate-military" aria-hidden="true"></i><span class="ra-gbar-name">Military Crate</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:0"></span></span><span class="ra-gbar-n">0%</span></span></li><li><span class="ra-gbar"><i class="ra-ico ra-ii-crate" aria-hidden="true"></i><span class="ra-gbar-name">Crate</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:0"></span></span><span class="ra-gbar-n">0%</span></span></li></ol>
+<h3>路边和城镇的箱子</h3>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">箱子</th><th scope="col">预制体名</th><th scope="col">Scrap</th><th scope="col">主要物品（每箱至少 1 个的概率）</th></tr></thead><tbody><tr><td><i class="ra-ico ra-ii-barrel" aria-hidden="true"></i> Barrel</td><td><code>loot_barrel_1</code>、<code>loot_barrel_2</code></td><td>2</td><td>Blueprint Fragment 16.7%，Rope 15.4%，Metal Blade 15.4%，Empty Propane Tank、Tarp、Sewing Kit 各 8.0%，Gears、Metal Spring 等零件 各 1.4%</td></tr><tr><td><i class="ra-ico ra-ii-barrel-oil" aria-hidden="true"></i> Oil Barrel</td><td><code>oil_barrel</code></td><td>0</td><td>Crude Oil 15～19 和 Low Grade Fuel 5～9（必定两者都有）</td></tr><tr><td><i class="ra-ico ra-ii-box" aria-hidden="true"></i> Basic Crate</td><td><code>crate_basic</code></td><td>3</td><td>Blueprint Fragment 20%，无需工作台即可制作的物品 31 种 各 4.8%</td></tr><tr><td><i class="ra-ico ra-ii-crate" aria-hidden="true"></i> Crate</td><td><code>crate_normal_2</code></td><td>5</td><td>Blueprint Fragment 20%（2 个），Gears、Metal Pipe、Metal Spring、Road Signs、Sheet Metal、Semi Automatic Body、Electric Fuse 各 14.3%，Hazmat Suit 4.0%，Heavy Fuse 3.0%</td></tr><tr><td><i class="ra-ico ra-ii-toolbox" aria-hidden="true"></i> Tool Box</td><td><code>crate_tools</code></td><td>5</td><td>Hatchet 7.8%，Pickaxe 7.8%，Targeting Computer 3.1%，CCTV Camera 2.5%，Chainsaw 1.0%，Jackhammer 1.0%</td></tr><tr><td><i class="ra-ico ra-ii-medkit" aria-hidden="true"></i> Medical Crate</td><td><code>crate_normal_2_medical</code></td><td>0</td><td>Large Medkit 50%、Bandage 40%、Medical Syringe 10% 中的 1 个</td></tr><tr><td><i class="ra-ico ra-ii-car" aria-hidden="true"></i> Vehicle Parts Crate</td><td><code>vehicle_parts</code></td><td>8</td><td>Low Quality Pistons、Spark Plugs、Valves 各 40.8%，Carburetor、Crankshaft 各 28.4%</td></tr></tbody></table></div>
+<h3>Military Crate 和 Elite Crate</h3>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">物品</th><th scope="col"><i class="ra-ico ra-ii-crate-military" aria-hidden="true"></i> Military Crate（<code>crate_normal</code>）</th><th scope="col"><i class="ra-ico ra-ii-crate-elite" aria-hidden="true"></i> Elite Crate（<code>crate_elite</code>）</th></tr></thead><tbody><tr><td>Scrap</td><td>8（必定）</td><td>25（必定）</td></tr><tr><td>SMG Body</td><td>20.0%</td><td>32.6%</td></tr><tr><td>Rifle Body</td><td>13.3%</td><td>22.7%</td></tr><tr><td>Tech Trash</td><td>16.7%（2～3 个）</td><td>27.7%</td></tr><tr><td>High Quality Metal</td><td>16.7%（15～24 个）</td><td>27.7%</td></tr><tr><td>Targeting Computer</td><td>8.7%</td><td>15.3%</td></tr><tr><td>CCTV Camera</td><td>7.1%</td><td>12.6%</td></tr><tr><td>Auto Turret</td><td>1.2%</td><td>2.2%</td></tr><tr><td>Supply Signal</td><td>1.0%</td><td>3.7%</td></tr><tr><td>MLRS Rocket</td><td>不出</td><td>20.0%（1 发）</td></tr><tr><td>Blueprint Book</td><td>不出</td><td>10.0%</td></tr><tr><td>Uzi</td><td>不出</td><td>5.0%</td></tr><tr><td>Assault Rifle</td><td>不出</td><td>3.9%</td></tr><tr><td>Bolt Action Rifle</td><td>不出</td><td>3.9%</td></tr><tr><td>MP5A4</td><td>不出</td><td>3.9%</td></tr><tr><td>Thompson</td><td>0.42%</td><td>2.8%</td></tr><tr><td>Custom SMG</td><td>0.42%</td><td>2.8%</td></tr><tr><td>Semi-Automatic Rifle</td><td>0.42%</td><td>0.78%</td></tr><tr><td>Rocket Launcher</td><td>0.42%</td><td>0.78%</td></tr><tr><td>Timed Explosive Charge（C4）</td><td>不出</td><td>1.9%</td></tr><tr><td>Explosives</td><td>不出</td><td>1.9%</td></tr></tbody></table></div>
+<h3>事件箱子</h3>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">物品</th><th scope="col"><i class="ra-ico ra-ii-lock" aria-hidden="true"></i> Locked Crate（<code>codelockedhackablecrate</code>）</th><th scope="col"><i class="ra-ico ra-ii-supply-drop" aria-hidden="true"></i> Supply Drop（<code>supply_drop</code>）</th><th scope="col"><i class="ra-ico ra-ii-helicopter" aria-hidden="true"></i> Heli Crate（<code>heli_crate</code>）</th><th scope="col"><i class="ra-ico ra-ii-tank" aria-hidden="true"></i> Bradley Crate（<code>bradley_crate</code>）</th></tr></thead><tbody><tr><td>Assault Rifle</td><td>27.8%</td><td>不出</td><td>2.2%</td><td>0.9%</td></tr><tr><td>LR-300 Assault Rifle</td><td>17.6%</td><td>3.8%</td><td>0.9%</td><td>0.5%</td></tr><tr><td>Bolt Action Rifle</td><td>16.7%</td><td>不出</td><td>2.2%</td><td>0.8%</td></tr><tr><td>L96 Rifle</td><td>5.9%</td><td>不出</td><td>0.6%</td><td>8.8%</td></tr><tr><td>M249</td><td>不出</td><td>不出</td><td>10.0%</td><td>8.3%</td></tr><tr><td>Minigun</td><td>10.0%</td><td>不出</td><td>不出</td><td>不出</td></tr><tr><td>Rocket Launcher</td><td>7.1%</td><td>不出</td><td>不出</td><td>不出</td></tr><tr><td>Timed Explosive Charge（C4）</td><td>9.6%</td><td>26.5%</td><td>25.7%</td><td>35.7%</td></tr><tr><td>Rocket</td><td>5.6%</td><td>不出</td><td>25.0%（3 发）</td><td>不出</td></tr><tr><td>MLRS Rocket</td><td>不出</td><td>不出</td><td>15.0%（2 发）</td><td>97.6%</td></tr><tr><td>Explosive 5.56 Rifle Ammo</td><td>33.9%</td><td>12.6%</td><td>15.0%</td><td>18.7%</td></tr><tr><td>Satchel Charge</td><td>8.6%</td><td>49.0%</td><td>不出</td><td>不出</td></tr><tr><td>Auto Turret</td><td>15.9%</td><td>不出</td><td>不出</td><td>4.6%</td></tr><tr><td>Blueprint Book</td><td>100%（2 个）</td><td>不出</td><td>不出</td><td>不出</td></tr><tr><td>Blueprint Page</td><td>不出</td><td>100%（2 个）</td><td>不出</td><td>不出</td></tr></tbody></table></div>
+<ul><li><i class="ra-ico ra-ii-lock" aria-hidden="true"></i> <strong>Locked Crate</strong> 的好步枪槽位必定命中，所以必定有枪。</li><li><i class="ra-ico ra-ii-helicopter" aria-hidden="true"></i> <strong>Heli Crate</strong> 的 4 箱中至少 1 箱有 C4 的概率为 69.5%。</li></ul>
+<h2 class="ra-section">放着不管就会重置</h2>
+<ul class="ra-facts">
+<li><span class="ra-facts-n">15～30 分钟</span><span class="ra-facts-l">Food Box、垃圾堆</span></li>
+<li><span class="ra-facts-n">30～60 分钟</span><span class="ra-facts-l">Oil Barrel</span></li>
+<li><span class="ra-facts-n">60～120 分钟</span><span class="ra-facts-l">Barrel、Crate、Military Crate、Tool Box、水下箱子等</span></li>
+</ul>
+<ul><li>没人打开过的箱子，以及剩了一点东西的箱子，时间一到，物品都会全部重置。</li><li>路边的垃圾堆约 30 分钟后会连同箱子一起消失（拿走 1 件后，玩家离开 90 秒就消失）。</li><li>Elite Crate、Locked Crate、Supply Drop，以及直升机和 Bradley 的箱子不会重置。</li></ul>
+<h2 class="ra-section">捡到的武器的耐久度</h2>
+<p>从城镇和路边的箱子里出的武器，耐久度会重新随机。</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table ra-prose-short"><thead><tr><th scope="col">武器</th><th scope="col">耐久度（占最大值的比例）</th></tr></thead><tbody><tr><td>Assault Rifle、MP5A4、Thompson、Custom SMG、Uzi、Semi-Automatic Rifle、Revolver 等 30 种</td><td>10～20%</td></tr><tr><td>M92 Pistol</td><td>20～30%</td></tr><tr><td>LR-300 Assault Rifle</td><td>50～100%</td></tr><tr><td>Python Revolver、Double Barrel Shotgun</td><td>10%</td></tr><tr><td>Bolt Action Rifle、L96 Rifle</td><td>1～5%</td></tr><tr><td>Pump Shotgun、Spas-12 Shotgun、M4 Shotgun</td><td>1～3%</td></tr></tbody></table></div>
+<p>Locked Crate、Supply Drop，以及直升机和 Bradley 的箱子不会重新随机耐久度。</p>
+<h2 class="ra-section">掉落表的变迁</h2>
+<h3>用数字看 2020 年的改动</h3>
+<p>我们比较了 Tech Tree Update（2020-12-03）前后版本的表。Barrel 是每从 Barrel 的表抽取 1 次的概率，直升机是每从直升机的表抽取 1 次的概率。</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table ra-prose-short"><thead><tr><th scope="col"></th><th scope="col">2020-11</th><th scope="col">2021-08</th><th scope="col">现在</th></tr></thead><tbody><tr><td><i class="ra-ico ra-ii-barrel" aria-hidden="true"></i> <strong>Barrel 出蓝图</strong></td><td><strong>10.4%</strong></td><td><strong>0%</strong></td><td>0%</td></tr><tr><td>以蓝图形式出现的物品</td><td>23 种</td><td>7 种</td><td>12 种</td></tr><tr><td><i class="ra-ico ra-ii-helicopter" aria-hidden="true"></i> Targeting Computer</td><td>5.9%</td><td>0.3%</td><td>0%</td></tr><tr><td><i class="ra-ico ra-ii-helicopter" aria-hidden="true"></i> CCTV</td><td>5.9%</td><td>0.3%</td><td>0%</td></tr><tr><td><i class="ra-ico ra-ii-helicopter" aria-hidden="true"></i> C4</td><td>15.2%</td><td>17.3%</td><td>25.7%</td></tr><tr><td><i class="ra-ico ra-ii-helicopter" aria-hidden="true"></i> M249</td><td>5.9%</td><td>6.6%</td><td>10.0%</td></tr><tr><td>Metal Pipe（大）的数量</td><td>3～5</td><td>5</td><td>5</td></tr></tbody></table></div>
+<ul><li>不再以蓝图形式出现的 16 种包括 Sandbag Barricade、Chair、Table、Water Pump、Watch Tower 等。在 2021-08 版本中它们以实物形式出现。</li><li>Workbench Level 1 表中的 17 件物品（Smart Switch、Tesla Coil 等电力物品）移到了 Level 2 的表。</li><li>Barrel 的表本身（Workbench Level 0 物品 35%、零件 65%）在 3 个版本中都相同。</li></ul>
+<h3><i class="ra-ico ra-ii-supply-drop" aria-hidden="true"></i> Supply Drop 的物品（2020-11 → 现在）</h3>
+<p>2020-11 时，它是从 1 个表（<code>LootSpawn.SupplyDrop</code>）抽取 8 次的箱子。现在则按槽位分别抽取枪械、护甲、资源、工具和弹药的表（这种结构在 2021-08 版本中已经存在）。数字是每箱至少有 1 个的概率。</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table ra-prose-short"><thead><tr><th scope="col"></th><th scope="col">2020-11</th><th scope="col">现在</th></tr></thead><tbody><tr><td><strong>消失</strong></td><td></td><td></td></tr><tr><td>Assault Rifle</td><td>2.1%</td><td>不出</td></tr><tr><td>Bolt Action Rifle</td><td>2.0%</td><td>不出</td></tr><tr><td>L96 Rifle</td><td>0.8%</td><td>不出</td></tr><tr><td>Double Barrel Shotgun</td><td>37.6%</td><td>不出</td></tr><tr><td>Auto Turret</td><td>73.1%</td><td>不出</td></tr><tr><td>Shotgun Trap、Homemade Landmine、Snap Trap</td><td>各 64.2%</td><td>不出</td></tr><tr><td>Crossbow、Revolver、Waterpipe Shotgun、近战武器等 13 种</td><td>各 约 10%</td><td>不出</td></tr><tr><td><strong>增加</strong></td><td></td><td></td></tr><tr><td>Thompson、Custom SMG</td><td>各 6.0%</td><td>各 38.8%</td></tr><tr><td>M92、Spas-12、MP5A4</td><td>各 2～4%</td><td>各 18.3%</td></tr><tr><td>M39 Rifle</td><td>1.3%</td><td>18.4%</td></tr><tr><td>LR-300</td><td>1.3%</td><td>3.9%</td></tr><tr><td>F1 Grenade</td><td>17.2%</td><td>48.7%</td></tr><tr><td>5.56 Rifle Ammo</td><td>29.6%</td><td>78.2%</td></tr><tr><td>Timed Explosive Charge（C4）</td><td>21.8%</td><td>26.6%</td></tr><tr><td><strong>新加入</strong></td><td></td><td></td></tr><tr><td>Pump Shotgun、Semi-Automatic Rifle</td><td>不出</td><td>各 38.8%</td></tr><tr><td>Blueprint Page</td><td>不出</td><td>100%</td></tr><tr><td>Satchel Charge</td><td>不出</td><td>49.1%</td></tr><tr><td>Road Sign 护甲 3 件</td><td>不出</td><td>各 37.6%</td></tr><tr><td>Chainsaw、Jackhammer</td><td>不出</td><td>各 约 27%</td></tr><tr><td>Scrap</td><td>不出</td><td>55.6%</td></tr></tbody></table></div>
+<p>强力步枪（Assault Rifle、Bolt Action、L96）以及陷阱和炮塔被移除，它变成了更容易出 SMG 和霰弹枪的箱子。</p>
+<h3>年表</h3>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">日期</th><th scope="col">更新</th><th scope="col">变化</th></tr></thead><tbody><tr><td>2016-08</td><td>Devblog 121、122</td><td>减少城镇和 <i class="ra-ico ra-ii-supply-drop" aria-hidden="true"></i> Supply Drop 表中的杂物</td></tr><tr><td>2017-08-31</td><td>Devblog 175</td><td>大幅减少 <i class="ra-ico ra-ii-tank" aria-hidden="true"></i> Bradley 的爆炸物</td></tr><tr><td>2019-06-06</td><td>Giddy Up!</td><td>削弱 Oil Rig 的物品</td></tr><tr><td>2020-08-06</td><td>Mixing Table Update</td><td><i class="ra-ico ra-ii-car" aria-hidden="true"></i> Vehicle Parts Crate 改为放入 2 个零件</td></tr><tr><td><strong>2020-12-03</strong></td><td><strong>Tech Tree Update</strong></td><td><strong><i class="ra-ico ra-ii-barrel" aria-hidden="true"></i> Barrel 和箱子不再出蓝图</strong>（见上表）</td></tr><tr><td>2022-12-01</td><td>The Big QOL Update</td><td>更新 <i class="ra-ico ra-ii-helicopter" aria-hidden="true"></i> 直升机的表</td></tr><tr><td>2025-10-02</td><td>Meta Shift</td><td>重做 <i class="ra-ico ra-ii-lock" aria-hidden="true"></i> Locked Crate 和 <i class="ra-ico ra-ii-crate-elite" aria-hidden="true"></i> Elite Crate，加入 Blueprint Fragment</td></tr><tr><td>2026-09-03</td><td>Breach and Clear</td><td>SMG Body 更容易出，Rifle Body 更难出</td></tr><tr><td>2026-11-05</td><td>Printed and Polished</td><td>换成 Blueprint Fragment、Page 和 Book</td></tr></tbody></table></div>
+<p>2020 年消失的蓝图，从 2025 年起以碎片的形式回归（现在的 Barrel 中为 16.7%）。</p>
+<h2 class="ra-section">行为相同的程序</h2>
+<p>这是我们从零编写、行为相同的程序（没有复制游戏代码）。示例只包含 Military Crate 的零件表和几个小槽位。</p>
+<pre class="ra-code ra-code-src">def roll_amount(amount, maximum, rng):
+    """在最小值到最大值之间取实数，舍去小数。最大值本身不会出现"""
+    if maximum &gt; 0 and maximum &gt; amount:
+        return max(1, int(rng.uniform(amount, maximum)))
+    return max(1, int(amount))
+
+def spawn(table, rng, box):
+    """从表中抽取 1 次。有下级表就按权重选 1 个，到达叶节点就全部放入"""
+    subs = TABLES.get(table)
+    if subs:
+        left = sum(weight for weight, _ in subs)
+        pick = rng.randrange(left)
+        for weight, name in subs:
+            left -= weight
+            if pick &gt;= left:
+                spawn(name, rng, box)
+                return
+    for item, amount, maximum in ITEMS.get(table, []):
+        box[item] += roll_amount(amount, maximum, rng)
+
+def fill(rng):
+    """1 个箱子。开箱的人、时间、地点都不参与。只有表和随机数"""
+    box = collections.Counter()
+    for table, tries, chance in SLOTS:
+        for _ in range(tries):
+            if rng.random() &lt;= chance:
+                spawn(table, rng, box)
+    box["scrap"] += SCRAP
+    return box</pre>
+<h3>生成 10 万个箱子的结果</h3>
+<p>10 万个箱子（随机数种子 1）。</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table ra-prose-short"><thead><tr><th scope="col">物品</th><th scope="col">至少出 1 个的概率（计算）</th><th scope="col">出现比例（10 万箱）</th><th scope="col">数量</th></tr></thead><tbody><tr><td>Scrap</td><td>100%</td><td>100%</td><td>8</td></tr><tr><td>SMG Body</td><td>20.00%</td><td>19.96%</td><td>1</td></tr><tr><td>Tech Trash</td><td>16.67%</td><td>16.54%</td><td>2～3</td></tr><tr><td>Metal Pipe</td><td>16.67%</td><td>16.67%</td><td>5</td></tr><tr><td>High Quality Metal</td><td>16.67%</td><td>16.79%</td><td>15～24</td></tr><tr><td>Rifle Body</td><td>13.33%</td><td>13.39%</td><td>1</td></tr><tr><td>Blueprint Page</td><td>10.00%</td><td>10.12%</td><td>1</td></tr><tr><td>Targeting Computer</td><td>8.73%</td><td>8.72%</td><td>1</td></tr><tr><td>CCTV Camera</td><td>7.14%</td><td>7.14%</td><td>1</td></tr><tr><td>Heavy Fuse</td><td>6.00%</td><td>6.00%</td><td>1</td></tr><tr><td>Large Backpack</td><td>5.00%</td><td>4.98%</td><td>1</td></tr><tr><td>Metal Armor Insert</td><td>5.00%</td><td>4.98%</td><td>1</td></tr><tr><td>Supply Signal</td><td>1.00%</td><td>1.03%</td><td>1</td></tr><tr><td>Auto Turret</td><td>0.79%</td><td>0.80%</td><td>1</td></tr></tbody></table></div>
+<p>完整程序见 <a class="ra-link" href="loot-containers.py">loot-containers.py</a>。</p>
+<h2 class="ra-section">验证常见说法</h2>
+<div class="ra-myth"><p class="ra-myth-q">“开箱的人不同，物品也不同”</p><p class="ra-myth-a"><span class="ra-verdict">不会变</span>箱子刷出时物品就已经在里面了，打开这一步不进行抽取。不管谁打开，同一个箱子出的都是同样的东西。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">“人少的时段容易出好东西”</p><p class="ra-myth-a"><span class="ra-verdict">不会变</span>抽取既不使用时间，也不使用服务器人数。人数只影响被搜空的箱子重新刷出的速度。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">“Locked Crate 的物品在破解完成时才决定”</p><p class="ra-myth-a"><span class="ra-verdict">放置时就已决定</span>Locked Crate 也是在出现时就完成抽取。那 15 分钟只是能够打开之前的等待时间。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">“Barrel 掉落的东西取决于破坏方式”</p><p class="ra-myth-a"><span class="ra-verdict">不会变</span>Barrel 的物品同样在刷出时就已决定，破坏后会原样掉出里面的东西。只有增加 Scrap 的效果所带来的额外部分，是在破坏时才加上的。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">“只留下一点东西，那个箱子就会一直保持原样”</p><p class="ra-myth-a"><span class="ra-verdict">时间到了就会重置</span>遗迹中的箱子即使留下东西也不会消失，但到了 60～120 分钟的重置时，剩下的东西会被清除，换成新的物品。路边垃圾堆的箱子，只要拿走 1 件，玩家离开 90 秒后整个垃圾堆就会消失。搜空的箱子要几分钟才会重新刷出，我们还没有调查。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">“出过好东西的箱子位置，下次也会出好东西”</p><p class="ra-myth-a"><span class="ra-verdict">没有关系</span>抽取既不使用箱子的位置，也不使用之前出过的物品。每次只是从同样的表重新抽取。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">“一直刷 Military Crate，总有一天会出 Timed Explosive Charge（C4）”</p><p class="ra-myth-a"><span class="ra-verdict">不会出</span>Military Crate 的表里没有 Timed Explosive Charge（C4）。想从箱子里拿，就去找 Bradley Crate（36%）、Supply Drop（27%）、Heli Crate（26%）、Locked Crate（9.6%）或 Elite Crate（1.9%）。</p></div>
+<h2 class="ra-section">尚不清楚的事</h2>
+<ul><li><strong>重置时间为无穷大的箱子。</strong> Elite Crate 和 Locked Crate 的重置时间被设为无穷大。计时器的设计是“到了预定时间才执行”，所以设为无穷大可以理解为永远不执行。不过，Unity 的随机数在收到无穷大时会返回什么，属于 Unity 引擎内部，我们没有确认。</li><li><strong>重新刷出的间隔和位置。</strong> 被搜空的箱子要几分钟才重新刷出、哪个位置刷出哪种箱子，因为没有读遗迹的数据，所以不清楚。</li><li><strong>游戏模式的加成。</strong> 抽取的权重有按游戏模式追加加成的机制。普通模式没有加成，本文的数字都是这种情况下的。服务器的时代设定按默认（无限制）处理。Hardcore、Primitive 等模式下数字会变。</li><li><strong>与箱子外观的对应。</strong> 预制体名与游戏中箱子的外观和名称的对应关系，是根据预制体名推测的。</li><li><strong>本文的对象。</strong> 本文针对 2026-11-07 版本。表的权重经常随更新而变化。</li><li><strong>2020 年 Supply Drop 的抽取次数。</strong> “8 次”是现在 Supply Drop 箱子里残留的旧设置（<code>maxDefinitionsToSpawn</code> 8）。没有槽位的箱子按这个次数抽取表的代码至今仍在，但 2020 年的值是否为 8，我们没有确认。</li><li><strong>2020 年的代码。</strong> 旧版本的服务器无法获取，所以 2020-11 和 2021-08 只读了客户端的表，并假定是否以蓝图形式出现与现在一样由物品的标记（<code>spawnAsBlueprint</code>）决定来计算。与 2021-08 的差异中，也包含 Tech Tree Update 以外的更新带来的变化。</li><li><strong>2020 年以前。</strong> 年表中更早的条目只依据官方更新日志的文字。</li></ul>
+<h2 class="ra-section">调查方法</h2>
+<p>我们阅读了服务器代码、105 个箱子设置和 1,327 个掉落表（没有运行服务器）。概率由表计算得出，并确认与自编程序的 10 万个箱子在 0.5 个百分点以内吻合（“至少 1 把枪”和 Bradley 为试验值）。旧版本的表用 <code>scripts/dump_loot_spawns.py</code> 读取。这些不是在游戏中打开箱子计数得到的结果。</p><h2 class="ra-section">出处</h2><ul><li><a class="ra-link" href="https://rust.facepunch.com/changes" rel="noopener">Official list of changes (how the loot tables changed)</a></li><li><a class="ra-link" href="https://docs.unity3d.com/ScriptReference/Random.Range.html" rel="noopener">Unity documentation, UnityEngine.Random.Range</a></li><li><a class="ra-link" href="https://docs.unity3d.com/ScriptReference/Random.html" rel="noopener">Unity documentation, UnityEngine.Random</a></li><li><a class="ra-link" href="https://docs.unity3d.com/ScriptReference/ScriptableObject.html" rel="noopener">Unity documentation, ScriptableObject</a></li></ul></article></main>
+<footer class="ra-foot"><p>本站为个人分析制作的非官方网站，与 Facepunch Studios 无关。数值读取自游戏服务器的数据与代码，不保证准确。</p>
+<p>部分图标来自 <a class="ra-link" href="https://lucide.dev/" rel="noopener">Lucide</a> (ISC License)。</p></footer>
+<script>document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('[data-lang]');if(a)try{localStorage.setItem('ra-lang',a.dataset.lang)}catch(_){}})</script></body></html>
