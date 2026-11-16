@@ -28,40 +28,11 @@
 
 ## 시스템 구성
 
-페이지는 게임에서 읽어 낸 데이터로 Python 스크립트가 만듭니다. 외부 JS 파일은 없으며, `build_site.py`가 각 페이지의 스크립트를 페이지 안에 직접 씁니다.
-
 <p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme/arch-dark.png"><img src="assets/readme/arch.png" alt="Rust Analysis: sources, Python scripts, data, build_site.py, GitHub Pages" width="100%"></picture></p>
-
-- 모든 페이지에서 상단 메뉴로 주요 페이지 전체에 갈 수 있습니다.
-- `tools/raid.html`은 고른 개수를 URL (`m`, `o`, `c`, `r`)로 `tools/craft.html`에 넘깁니다. 제작 페이지는 `r`로 되돌아가는 링크를 만듭니다.
-- `assets/style.css`는 `design/tokens.json`을 CSS 변수로 바꾼 것에 `components.css`, `site.css`, `item-icons/`의 아이콘 마스크를 더한 것입니다.
-
-## 페이지
-
-| 페이지 | 내용 | 근거 |
-|---|---|---|
-| [index.html](ko/index.html) | 이번 달 업데이트: 요점, 건수, 수치 변화, 전체 변경 | 공식 변경 사항을 일본어로 다시 쓴 것 |
-| [history.html](history.html) (일본어만) · [genres.html](ko/genres.html) · [numbers.html](numbers.html) (일본어만) | 모든 패치 (장르·연도·종류로 필터); 장르별 건수; 수치가 적힌 변경 | 같은 변경 사항; 장르 분류는 이 사이트의 규칙 |
-| [items.html](items.html) (일본어만) · [spec.html](spec.html) (일본어만) | 아이템별 설정, 드롭 위치와 확률; 모든 수치의 표 | 서버 빌드에서 내보낸 수치와, 루팅 표로 계산한 확률 |
-| [diffs.html](diffs.html) (일본어만) | 두 빌드 사이에 바뀐 아이템 설정 | 클라이언트 월별 빌드의 아이템 파일 |
-| [columns.html](ko/columns.html) | 플레이어들의 말을 서버 코드와 데이터로 확인하는 글 | 서버의 코드 (IL)와 데이터; 출처는 각 글의 끝 |
-| [tools/raid.html](ko/tools/raid.html) | Raid Planner: 벽·문·설치물을 함께 부수는 데 필요한 폭발물, 유황, 재료와 화로 시간 | 서버 데이터와, 서버 코드에서 읽은 피해·제련 규칙 |
-| [tools/craft.html](ko/tools/craft.html) | Craft Planner: 만들 것, 가진 자원, 화로로부터 부족한 것과 화로 시간 | Raid Planner와 같은 데이터 |
-| [tools/gene.html](ko/tools/gene.html) | Gene Planner: 가진 모종으로 GGGYYY 같은 목표에 가까운 유전자를 얻는 심는 법과 유전자의 효과 | 서버 데이터와, 서버 코드에서 읽은 교배 규칙 |
-| [tools/buff.html](ko/tools/buff.html) | Buff Planner: 차와 파이의 효과가 얼마나 강하고 언제까지 가는지, 무엇이 교체되는지, 곰고기 파이가 무엇을 짧게 하는지 | 서버 데이터와, 서버 코드에서 읽은 중첩 규칙 |
-| [tools/ttk.html](ko/tools/ttk.html) | TTK Planner: 방어구와 삽입판으로 부위별 방어, 총과 활마다 머리·몸통·다리에 몇 발에 쓰러지는지 10 m마다 | 서버 데이터와, 서버 코드에서 읽은 피해 공식 |
 
 ## 언어
 
 이번 달, 장르, 도구, 글은 일본어, 영어, 중국어(간체), 한국어, 러시아어로 볼 수 있고, 다른 페이지(와 이번 달의 전체 변경 목록)는 일본어뿐입니다. 이 페이지들은 처음 열 때 브라우저 언어의 판으로 이동합니다(언어 링크로 고르면 그 언어를 기억합니다). 아이템 이름은 모든 언어에서 게임의 영어 이름입니다. 변경 사항은 공식 영어 문장을 일본어로 옮긴 것이라 다른 언어로 옮기지 않습니다. https://rust.facepunch.com/changes 를 보세요.
-
-| 언어 | 상태 |
-|---|---|
-| 日本語 | 모든 페이지 |
-| English | 이번 달, 장르, 도구, 글, README |
-| 简体中文 | 이번 달, 장르, 도구, 글, README |
-| 한국어 | 이번 달, 장르, 도구, 글, 이 README |
-| Русский | 이번 달, 장르, 도구, 글, README |
 
 ## 알아 둘 점
 
@@ -73,6 +44,20 @@
 
 ## 게임 Rust 소개
 
-Rust는 Facepunch Studios가 개발한 멀티플레이 생존 게임입니다. 돌 하나만 든 채 해변에서 시작해 자원을 모으고, 도구를 만들고, 기지를 지으며 다른 플레이어와 협력하거나 빼앗습니다. 2013년에 앞서 해보기로 시작해 2018년에 정식 출시되었습니다. 매달 첫째 목요일에 큰 업데이트가 있으며, 이 사이트는 그 변화를 따라갑니다. PC판은 Steam에서, PlayStation과 Xbox용으로는 Rust Console Edition이 있습니다.
+Rust는 Facepunch Studios가 개발한 멀티플레이 생존 게임입니다. 돌 하나만 든 채 해변에서 시작해 자원을 모으고, 도구를 만들고, 기지를 지으며 다른 플레이어와 협력하거나 빼앗습니다. 2013년에 앞서 해보기로 시작해 2018년에 정식 출시되었습니다. 게임과 서버는 Unity 엔진 위에서 C#으로 만들어져 있습니다. 매달 첫째 목요일에 큰 업데이트가 있으며, 이 사이트는 그 변화를 따라갑니다. PC판은 Steam에서, PlayStation과 Xbox용으로는 Rust Console Edition이 있습니다.
 
-<p><a href="https://store.steampowered.com/app/252490/Rust/"><img src="assets/readme/steam-ko.png" alt="Steam" height="46"></a> &nbsp; <a href="https://rust.facepunch.com/">공식 사이트: rust.facepunch.com</a></p>
+<p><a href="https://store.steampowered.com/app/252490/Rust/"><img src="assets/readme/steam-ko.png" alt="Steam" height="46"></a></p>
+
+### 무엇으로 돌아가나
+
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme/engine-dark.png"><img src="assets/readme/engine.png" alt="Rust: C# code (Assembly-CSharp, Rust.*, Facepunch.*) on the Unity 6 engine" width="100%"></picture></p>
+
+게임과 서버는 Unity 6 위에서 돌아가는 C# 프로그램입니다. 전용 서버 (RustDedicated, 2026-10-22 판)의 C# 구성 요소 (DLL)로 확인했으며, Unity 버전은 공식 변경 사항 (2026-11-05: 6000.3.26f1)에 따릅니다.
+
+### 공식 링크
+
+- [공식 사이트: rust.facepunch.com](https://rust.facepunch.com/)
+- [업데이트 정보 (공식 변경 사항)](https://rust.facepunch.com/changes)
+- [뉴스](https://rust.facepunch.com/news)
+- [개발 커밋 로그](https://commits.facepunch.com/r/rust_reboot)
+
