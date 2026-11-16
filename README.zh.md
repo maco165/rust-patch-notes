@@ -1,51 +1,34 @@
-[日本語](README.md) | [English](README.en.md) | **简体中文** | [한국어](README.ko.md) | [Русский](README.ru.md)
+<p align="center"><a href="https://maco165.github.io/rust-patch-notes/zh/index.html"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme/hero-zh-dark.png"><img src="assets/readme/hero-zh.png" alt="Rust Analysis" width="100%"></picture></a></p>
 
-# Rust Analysis
+<p align="center"><a href="README.md">日本語</a> · <a href="README.en.md">English</a> · <b>简体中文</b> · <a href="README.ko.md">한국어</a> · <a href="README.ru.md">Русский</a></p>
 
-关于游戏 Rust (Facepunch Studios) 的非官方个人网站：用日语整理官方更新日志，列出所有物品的数值，并提供突袭与制作的计算器。
+<p align="center"><b><a href="https://maco165.github.io/rust-patch-notes/zh/index.html">https://maco165.github.io/rust-patch-notes/</a></b></p>
 
-**https://maco165.github.io/rust-patch-notes/**
+关于游戏 Rust (Facepunch Studios) 的非官方个人网站：用日语整理官方更新日志，列出所有物品的数值，并提供 5 个计算器（抄家、制作、植物基因、茶与派、几发击倒）。本月、类别、工具和文章支持 5 种语言。
+
+## 关于本站
+
+**是什么** — 阅读官方更新日志以及游戏本体的数据和代码，来确认 Rust 运作方式的非官方分析网站。
+
+**为什么做** — 此前没有一个网站从游戏代码的变化中整理更新内容和内部机制。
+
+**优势**
+
+- 读到代码为止：不只看数值，还读服务器代码 (IL) 来确认计算规则，计算器用例题和穷举来检验
+- 2015 年以来的全部历史并每月更新：2015 年以来的全部变更，以及按月版本比较的物品设置差异
+- 5 种语言、只需浏览器、免费：支持日语、英语、中文、韩语和俄语，无需注册、没有广告，全部在浏览器中运行
+
+**理念** — 只写确认过的内容。未确认的内容会标明“未确认”。
+
+## 页面截图
+
+<table><tr><td colspan="2" valign="top"><a href="https://maco165.github.io/rust-patch-notes/zh/index.html"><img src="assets/readme/shot-zh-month.png" alt="本月"></a><br><sub><b>本月</b></sub></td></tr><tr><td width="50%" valign="top"><a href="https://maco165.github.io/rust-patch-notes/zh/tools/raid.html"><img src="assets/readme/shot-zh-raid.png" alt="Raid Planner"></a><br><sub><b>Raid Planner</b></sub></td><td width="50%" valign="top"><a href="https://maco165.github.io/rust-patch-notes/zh/tools/gene.html"><img src="assets/readme/shot-zh-gene.png" alt="Gene Planner"></a><br><sub><b>Gene Planner</b></sub></td></tr><tr><td width="50%" valign="top"><a href="https://maco165.github.io/rust-patch-notes/zh/tools/buff.html"><img src="assets/readme/shot-zh-buff.png" alt="Buff Planner"></a><br><sub><b>Buff Planner</b></sub></td><td width="50%" valign="top"><a href="https://maco165.github.io/rust-patch-notes/zh/tools/ttk.html"><img src="assets/readme/shot-zh-ttk.png" alt="TTK Planner"></a><br><sub><b>TTK Planner</b></sub></td></tr></table>
 
 ## 系统结构
 
 页面由 Python 脚本根据从游戏中读取的数据生成。没有外部 JS 文件：`build_site.py` 把每个页面的脚本直接写进页面里。
 
-```mermaid
-flowchart LR
-  subgraph S["Sources"]
-    s1["rust.facepunch.com<br/>official change lists"]
-    s2["RustDedicated<br/>server build"]
-    s3["Rust client<br/>monthly builds"]
-  end
-  subgraph E["Extract (Python) → data/"]
-    e1["fetch_changes.py<br/>data/patches/"]
-    e2["extract_items.py · extract_loot.py · extract_raid.py · extract_genetics.py<br/>data/items/ · loot/ · raid/ · genetics/"]
-    e3["build_diffs.py<br/>data/diffs/"]
-  end
-  subgraph B["Build (Python)"]
-    b1["build_site.py<br/>imports raid_calc.py · gene_calc.py · consume_calc.py · ttk_calc.py · loot_odds.py<br/>build_views.py · build_index.py · genres.py · item_icons.py"]
-    b2["content/ · rules/ · design/<br/>digests, columns, *.yml, tokens.json, *.css, item-icons/"]
-  end
-  subgraph W["Site (GitHub Pages)"]
-    w1["index.html · history.html · genres.html · numbers.html"]
-    w2["items.html · spec.html · diffs.html"]
-    w3["columns.html → columns/*.html"]
-    w4["tools.html → tools/raid.html → tools/craft.html<br/>tools.html → tools/gene.html · tools/buff.html · tools/ttk.html"]
-    w5["assets/style.css<br/>used by every page"]
-  end
-  s1 --> e1
-  s2 --> e2
-  s3 --> e3
-  e1 --> b1
-  e2 --> b1
-  e3 --> b1
-  b2 --> b1
-  b1 --> w1
-  b1 --> w2
-  b1 --> w3
-  b1 --> w4
-  b1 --> w5
-```
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme/arch-dark.png"><img src="assets/readme/arch.png" alt="Rust Analysis: sources, Python scripts, data, build_site.py, GitHub Pages" width="100%"></picture></p>
 
 - 每个页面都可以通过顶部导航栏前往所有主要页面。
 - `tools/raid.html` 通过 URL (`m`、`o`、`c`、`r`) 把选好的数量传给 `tools/craft.html`；制作页面用 `r` 链接回去。
@@ -83,3 +66,4 @@ flowchart LR
 - 数值是从游戏的数据和代码中读出的，并非在游戏里实测，不保证正确。
 - 本仓库只存放生成的页面，请不要手动修改。
 - 部分图标来自 [Lucide](https://lucide.dev/)（ISC License，`LICENSE-lucide.txt`）。未使用游戏的图标或图片。
+- 结构图中的标志是各自所有者的商标（图标：svgl、Lucide；用 stack-diagram 绘制）。

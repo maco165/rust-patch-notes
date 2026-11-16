@@ -1,56 +1,39 @@
-**日本語** | [English](README.en.md) | [简体中文](README.zh.md) | [한국어](README.ko.md) | [Русский](README.ru.md)
+<p align="center"><a href="https://maco165.github.io/rust-patch-notes/"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme/hero-ja-dark.png"><img src="assets/readme/hero-ja.png" alt="Rust Analysis" width="100%"></picture></a></p>
 
-# Rust Analysis
+<p align="center"><b>日本語</b> · <a href="README.en.md">English</a> · <a href="README.zh.md">简体中文</a> · <a href="README.ko.md">한국어</a> · <a href="README.ru.md">Русский</a></p>
 
-ゲーム Rust (Facepunch Studios) の公式の変更点を日本語にまとめ、アイテムの値と、レイドやクラフトの計算機を置いた、個人の非公式のサイトです。
+<p align="center"><b><a href="https://maco165.github.io/rust-patch-notes/">https://maco165.github.io/rust-patch-notes/</a></b></p>
 
-**https://maco165.github.io/rust-patch-notes/**
+ゲーム Rust (Facepunch Studios) の公式の変更点を日本語にまとめ、アイテムの値と、レイドやクラフト・遺伝子・お茶とパイ・何発で倒れるかの計算機を置いた、個人の非公式のサイトです。今月・ジャンル・ツール・コラムは 5 言語で読めます。
 
 - Facepunch Studios とは関係がありません。
 - 値はゲームのデータと処理を読んだもので、ゲームの中で測ったものではありません。正しさは保証しません。
 - このリポジトリには、生成したページだけを置いています。ページを作る仕組みとデータは別の非公開のリポジトリにあります。
-- アイコンの一部は [Lucide](https://lucide.dev/) (ISC License。`LICENSE-lucide.txt`) です。ゲームのアイコンや画像は使っていません。
+- アイコンの一部は [Lucide](https://lucide.dev/) (ISC License。`LICENSE-lucide.txt`) です。ゲームのアイコンや画像は使っていません。構成図のロゴは各社の商標です (アイコン: svgl・Lucide。図は stack-diagram で作成)。
+
+## このサイトについて
+
+**何か** — 公式の変更点と、ゲーム本体のデータと処理を読んで、Rust の仕組みを確かめる非公式の解析サイトです。
+
+**なぜ作ったか** — ゲームのコードの変更から、アップデートの中身や内部の仕組みをまとめたサイトが無かったからです。
+
+**強み**
+
+- 処理まで読んで確かめる: 値だけでなくサーバーの処理 (IL) から計算の決まりを確かめ、計算機は例題と総当たりで検査しています
+- 2015 年からの全履歴と毎月の更新: 2015 年からの全部の変更点と、月ごとの版のアイテムの設定の差
+- 5 言語・ブラウザだけ・無料: 日本語・英語・中国語・韓国語・ロシア語で読め、登録も広告も無く、ブラウザの中だけで動きます
+
+**考え方** — 確かめたことだけを書きます。確かめていないことは「未確認」と書きます。
+
+## 画面
+
+<table><tr><td colspan="2" valign="top"><a href="https://maco165.github.io/rust-patch-notes/index.html"><img src="assets/readme/shot-ja-month.png" alt="今月"></a><br><sub><b>今月</b></sub></td></tr><tr><td width="50%" valign="top"><a href="https://maco165.github.io/rust-patch-notes/tools/raid.html"><img src="assets/readme/shot-ja-raid.png" alt="Raid Planner"></a><br><sub><b>Raid Planner</b></sub></td><td width="50%" valign="top"><a href="https://maco165.github.io/rust-patch-notes/tools/gene.html"><img src="assets/readme/shot-ja-gene.png" alt="Gene Planner"></a><br><sub><b>Gene Planner</b></sub></td></tr><tr><td width="50%" valign="top"><a href="https://maco165.github.io/rust-patch-notes/tools/buff.html"><img src="assets/readme/shot-ja-buff.png" alt="Buff Planner"></a><br><sub><b>Buff Planner</b></sub></td><td width="50%" valign="top"><a href="https://maco165.github.io/rust-patch-notes/tools/ttk.html"><img src="assets/readme/shot-ja-ttk.png" alt="TTK Planner"></a><br><sub><b>TTK Planner</b></sub></td></tr></table>
 
 ## システム構成
 
 ページは Python のスクリプトがデータから作ります。外部の JS ファイルは無く、各ページの JS は `build_site.py` がページの中に書き込みます。
 
-```mermaid
-flowchart LR
-  subgraph S["Sources"]
-    s1["rust.facepunch.com<br/>official change lists"]
-    s2["RustDedicated<br/>server build"]
-    s3["Rust client<br/>monthly builds"]
-  end
-  subgraph E["Extract (Python) → data/"]
-    e1["fetch_changes.py<br/>data/patches/"]
-    e2["extract_items.py · extract_loot.py · extract_raid.py · extract_genetics.py<br/>data/items/ · loot/ · raid/ · genetics/"]
-    e3["build_diffs.py<br/>data/diffs/"]
-  end
-  subgraph B["Build (Python)"]
-    b1["build_site.py<br/>imports raid_calc.py · gene_calc.py · consume_calc.py · ttk_calc.py · loot_odds.py<br/>build_views.py · build_index.py · genres.py · item_icons.py"]
-    b2["content/ · rules/ · design/<br/>digests, columns, *.yml, tokens.json, *.css, item-icons/"]
-  end
-  subgraph W["Site (GitHub Pages)"]
-    w1["index.html · history.html · genres.html · numbers.html"]
-    w2["items.html · spec.html · diffs.html"]
-    w3["columns.html → columns/*.html"]
-    w4["tools.html → tools/raid.html → tools/craft.html<br/>tools.html → tools/gene.html · tools/buff.html · tools/ttk.html"]
-    w5["assets/style.css<br/>used by every page"]
-  end
-  s1 --> e1
-  s2 --> e2
-  s3 --> e3
-  e1 --> b1
-  e2 --> b1
-  e3 --> b1
-  b2 --> b1
-  b1 --> w1
-  b1 --> w2
-  b1 --> w3
-  b1 --> w4
-  b1 --> w5
-```
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme/arch-dark.png"><img src="assets/readme/arch.png" alt="Rust Analysis: sources, Python scripts, data, build_site.py, GitHub Pages" width="100%"></picture></p>
 
 - どのページも、上のメニューから全部の主なページへ行けます。
 - `tools/raid.html` は、選んだ数を URL (`m`・`o`・`c`・`r`) で `tools/craft.html` に渡します。戻りのリンクは `r` で作ります。
