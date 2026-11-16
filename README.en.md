@@ -55,9 +55,9 @@ flowchart LR
 
 | Page | What it shows | Drawn from |
 |---|---|---|
-| [index.html](index.html) (Japanese only) | This month's update: key points, counts, changed numbers, every change | The official change lists, rewritten in Japanese |
-| [history.html](history.html) · [genres.html](genres.html) · [numbers.html](numbers.html) (Japanese only) | Every patch, filtered by genre, year and kind; counts per genre; changes that state numbers | The same change lists; the genres are this site's own rules |
-| [items.html](items.html) · [spec.html](spec.html) (Japanese only) | Each item's settings, where it drops and how often; all values as tables | Values exported from the server build, and odds worked out from its loot tables |
+| [index.html](en/index.html) | This month's update: key points, counts, changed numbers, every change | The official change lists, rewritten in Japanese |
+| [history.html](history.html) (Japanese only) · [genres.html](en/genres.html) · [numbers.html](numbers.html) (Japanese only) | Every patch, filtered by genre, year and kind; counts per genre; changes that state numbers | The same change lists; the genres are this site's own rules |
+| [items.html](items.html) (Japanese only) · [spec.html](spec.html) (Japanese only) | Each item's settings, where it drops and how often; all values as tables | Values exported from the server build, and odds worked out from its loot tables |
 | [diffs.html](diffs.html) (Japanese only) | What changed in the item settings between two builds | The item files of the client's monthly builds |
 | [columns.html](en/columns.html) | Articles that check what players say against the server's code and data | The server's code (IL) and data; sources at the end of each article |
 | [tools/raid.html](en/tools/raid.html) | Raid Planner: explosives, sulfur, materials and furnace time to break walls, doors and deployables together | Server data, and the damage and smelting rules read from the server's code |
@@ -67,15 +67,15 @@ flowchart LR
 
 ## Languages
 
-The tools and the articles are in Japanese, English, Chinese (Simplified), Korean and Russian; the other pages are in Japanese only. The tools and the articles open in your browser's language the first time (a language you pick with the language links is kept). Item names are the game's English names in every language. The change lists are the official English text put into Japanese, so they will not be translated back: read https://rust.facepunch.com/changes.
+This month, genres, the tools and the articles are in Japanese, English, Chinese (Simplified), Korean and Russian; the other pages (and this month's list of every change) are in Japanese only. These pages open in your browser's language the first time (a language you pick with the language links is kept). Item names are the game's English names in every language. The change lists are the official English text put into Japanese, so they will not be translated back: read https://rust.facepunch.com/changes.
 
 | Language | Status |
 |---|---|
 | 日本語 | Every page |
-| English | Tools, articles and this README |
-| 简体中文 | Tools, articles and README |
-| 한국어 | Tools, articles and README |
-| Русский | Tools, articles and README |
+| English | This month, genres, tools, articles and this README |
+| 简体中文 | This month, genres, tools, articles and README |
+| 한국어 | This month, genres, tools, articles and README |
+| Русский | This month, genres, tools, articles and README |
 
 ## Good to know
 
