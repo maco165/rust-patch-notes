@@ -12,10 +12,13 @@
 <meta property="og:title" content="Rust のアイテムの設定と変更の履歴 | Rust Analysis">
 <meta property="og:description" content="ゲーム Rust の全アイテムの設定 (スタック数、作成コスト、ダメージ、防御など) と、版の間の差、変更の履歴。">
 <meta property="og:url" content="https://maco165.github.io/rust-patch-notes/items.html">
-<meta property="og:image" content="https://maco165.github.io/rust-patch-notes/assets/og.png">
+<meta property="og:image" content="https://maco165.github.io/rust-patch-notes/assets/og/ja/default.png">
+<meta property="og:image:alt" content="Rust のアイテムの設定と変更の履歴 | Rust Analysis">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@maco165_rust">
+<meta name="twitter:creator" content="@maco165_rust">
 <link rel="canonical" href="https://maco165.github.io/rust-patch-notes/items.html">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -35,7 +38,7 @@
   <p class="ra-lead">サーバー本体から書き出した設定 (2026-11-07 の版 1,318 件、2026-10-22 の版 1,313 件) と、公式の変更点のうちそのアイテムの名前が出てくるものを並べています。版の間で設定が変わったアイテムには、その時点の値と今の値を並べます。</p>
   <form class="ra-filter" role="search" onsubmit="return false">
     <span class="ra-search"><i class="ra-ico ra-ico-search" aria-hidden="true"></i><input class="ra-input" id="q" type="search" role="combobox" aria-autocomplete="list" aria-controls="q-suggest" aria-expanded="false" autocomplete="off" placeholder="名前で探す (アサルトライフル、door など)" aria-label="名前で探す"><span class="ra-suggest" id="q-suggest" role="listbox" aria-label="名前の候補" hidden></span></span>
-    <select class="ra-select" id="cat" aria-label="分類"></select>
+    <select class="ra-select" id="cat" aria-label="分類"><option value="">すべての分類</option><option value="その他">その他</option><option value="医療">医療</option><option value="娯楽・装飾">娯楽・装飾</option><option value="建築">建築</option><option value="弾薬">弾薬</option><option value="服・防具">服・防具</option><option value="武器">武器</option><option value="罠">罠</option><option value="設置物">設置物</option><option value="資源">資源</option><option value="道具">道具</option><option value="部品">部品</option><option value="電気">電気</option><option value="食べ物">食べ物</option></select>
     <label class="ra-toggle"><input id="only" type="checkbox" checked>変更の文章があるものだけ</label>
     <label class="ra-toggle"><input id="diff" type="checkbox">版の間で設定が変わったものだけ</label>
     <output class="ra-result" id="stat" for="q cat only diff"></output>
@@ -52,7 +55,6 @@ const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const ico=n=>`<i class="ra-ico ra-ico-${n}" aria-hidden="true"></i>`;
 const num=n=>Number(n).toLocaleString('en-US');
-$('#cat').add(new Option('すべての分類',''));for(const c of [...new Set(I.map(i=>i.c))].sort())$('#cat').add(new Option(c,c));
 const P=new URLSearchParams(location.search);if(P.get('q')){$('#q').value=P.get('q');$('#only').checked=false}
 const KIND={added:'この版で追加',removed:'この版で削除',changed:'設定が変わった'};const KCAT={added:'added',removed:'removed',changed:'improved'};
 const NAMES=[...new Map(I.filter(i=>!i.e.startsWith('#')).map(i=>[i.n,[i.n,i.e]])).values()];

@@ -12,10 +12,13 @@
 <meta property="og:title" content="Rust のアップデート履歴 (全パッチの変更点) | Rust Analysis">
 <meta property="og:description" content="ゲーム Rust の公式の変更点を、2015 年から今まで日本語で一覧にしたページ。ジャンル・年・分類・語で絞り込めます。">
 <meta property="og:url" content="https://maco165.github.io/rust-patch-notes/history.html">
-<meta property="og:image" content="https://maco165.github.io/rust-patch-notes/assets/og.png">
+<meta property="og:image" content="https://maco165.github.io/rust-patch-notes/assets/og/ja/default.png">
+<meta property="og:image:alt" content="Rust のアップデート履歴 (全パッチの変更点) | Rust Analysis">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@maco165_rust">
+<meta name="twitter:creator" content="@maco165_rust">
 <link rel="canonical" href="https://maco165.github.io/rust-patch-notes/history.html">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -34,12 +37,12 @@
   <h1 class="ra-patch-sub">これまでの変更点</h1>
   <form class="ra-filter" role="search" onsubmit="return false">
     <span class="ra-search"><i class="ra-ico ra-ico-search" aria-hidden="true"></i><input class="ra-input" id="q" type="search" role="combobox" aria-autocomplete="list" aria-controls="q-suggest" aria-expanded="false" autocomplete="off" placeholder="名前で探す" aria-label="名前で探す"><span class="ra-suggest" id="q-suggest" role="listbox" aria-label="名前の候補" hidden></span></span>
-    <span class="ra-range"><select class="ra-select" id="from" aria-label="いつから"></select>〜<select class="ra-select" id="to" aria-label="いつまで"></select></span>
+    <span class="ra-range"><select class="ra-select" id="from" aria-label="いつから"><option value="2015" selected>2015</option><option value="2016">2016</option><option value="2017">2017</option><option value="2018">2018</option><option value="2019">2019</option><option value="2020">2020</option><option value="2021">2021</option><option value="2022">2022</option><option value="2023">2023</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option></select>〜<select class="ra-select" id="to" aria-label="いつまで"><option value="2015">2015</option><option value="2016">2016</option><option value="2017">2017</option><option value="2018">2018</option><option value="2019">2019</option><option value="2020">2020</option><option value="2021">2021</option><option value="2022">2022</option><option value="2023">2023</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026" selected>2026</option></select></span>
     <span class="ra-tabs" role="radiogroup" aria-label="分類"><label class="ra-tab"><input type="radio" name="cat" id="cat-all" value="" checked>すべて</label><label class="ra-tab"><input type="radio" name="cat" id="cat-added" value="added"><i class="ra-ico ra-ico-added" aria-hidden="true"></i>追加</label><label class="ra-tab"><input type="radio" name="cat" id="cat-improved" value="improved"><i class="ra-ico ra-ico-improved" aria-hidden="true"></i>改善</label><label class="ra-tab"><input type="radio" name="cat" id="cat-fixed" value="fixed"><i class="ra-ico ra-ico-fixed" aria-hidden="true"></i>修正</label><label class="ra-tab"><input type="radio" name="cat" id="cat-removed" value="removed"><i class="ra-ico ra-ico-removed" aria-hidden="true"></i>削除</label></span>
     
     <output class="ra-result" id="stat" for="q from to"></output>
   </form>
-  <div class="ra-chips" id="genres" role="group" aria-label="ジャンル"></div>
+  <div class="ra-chips" id="genres" role="group" aria-label="ジャンル"><label class="ra-chip"><input type="checkbox" id="g-weapons" value="weapons"><i class="ra-ico ra-ico-weapons" aria-hidden="true"></i>武器・弾薬<span class="ra-chip-n">1,140</span></label><label class="ra-chip"><input type="checkbox" id="g-raiding" value="raiding"><i class="ra-ico ra-ico-raiding" aria-hidden="true"></i>爆発物・レイド<span class="ra-chip-n">203</span></label><label class="ra-chip"><input type="checkbox" id="g-armor" value="armor"><i class="ra-ico ra-ico-armor" aria-hidden="true"></i>防具・服<span class="ra-chip-n">371</span></label><label class="ra-chip"><input type="checkbox" id="g-building" value="building"><i class="ra-ico ra-ico-building" aria-hidden="true"></i>建築・設置物<span class="ra-chip-n">1,726</span></label><label class="ra-chip"><input type="checkbox" id="g-crafting" value="crafting"><i class="ra-ico ra-ico-crafting" aria-hidden="true"></i>作成・研究<span class="ra-chip-n">590</span></label><label class="ra-chip"><input type="checkbox" id="g-resources" value="resources"><i class="ra-ico ra-ico-resources" aria-hidden="true"></i>採取・資源<span class="ra-chip-n">377</span></label><label class="ra-chip"><input type="checkbox" id="g-farming" value="farming"><i class="ra-ico ra-ico-farming" aria-hidden="true"></i>農業・食料・生存<span class="ra-chip-n">858</span></label><label class="ra-chip"><input type="checkbox" id="g-vehicles" value="vehicles"><i class="ra-ico ra-ico-vehicles" aria-hidden="true"></i>乗り物<span class="ra-chip-n">723</span></label><label class="ra-chip"><input type="checkbox" id="g-monuments" value="monuments"><i class="ra-ico ra-ico-monuments" aria-hidden="true"></i>モニュメント・イベント<span class="ra-chip-n">974</span></label><label class="ra-chip"><input type="checkbox" id="g-npc" value="npc"><i class="ra-ico ra-ico-npc" aria-hidden="true"></i>NPC・動物<span class="ra-chip-n">453</span></label><label class="ra-chip"><input type="checkbox" id="g-electricity" value="electricity"><i class="ra-ico ra-ico-electricity" aria-hidden="true"></i>電気・産業<span class="ra-chip-n">633</span></label><label class="ra-chip"><input type="checkbox" id="g-economy" value="economy"><i class="ra-ico ra-ico-economy" aria-hidden="true"></i>経済・店<span class="ra-chip-n">282</span></label><label class="ra-chip"><input type="checkbox" id="g-map" value="map"><i class="ra-ico ra-ico-map" aria-hidden="true"></i>マップ・地形・環境<span class="ra-chip-n">1,211</span></label><label class="ra-chip"><input type="checkbox" id="g-ui" value="ui"><i class="ra-ico ra-ico-ui" aria-hidden="true"></i>UI・操作<span class="ra-chip-n">1,073</span></label><label class="ra-chip"><input type="checkbox" id="g-visuals" value="visuals"><i class="ra-ico ra-ico-visuals" aria-hidden="true"></i>描画・音・演出<span class="ra-chip-n">2,170</span></label><label class="ra-chip"><input type="checkbox" id="g-performance" value="performance"><i class="ra-ico ra-ico-performance" aria-hidden="true"></i>性能・安定性<span class="ra-chip-n">1,245</span></label><label class="ra-chip"><input type="checkbox" id="g-server" value="server"><i class="ra-ico ra-ico-server" aria-hidden="true"></i>サーバー・管理・不正対策<span class="ra-chip-n">1,527</span></label><label class="ra-chip"><input type="checkbox" id="g-social" value="social"><i class="ra-ico ra-ico-social" aria-hidden="true"></i>チーム・交流<span class="ra-chip-n">372</span></label><label class="ra-chip"><input type="checkbox" id="g-other" value="other"><i class="ra-ico ra-ico-other" aria-hidden="true"></i>その他<span class="ra-chip-n">1,093</span></label></div>
 </div>
 <div class="ra-block" id="list" data-en="off"></div>
 <button class="ra-button" id="more" type="button" hidden></button>
@@ -54,11 +57,11 @@ const folds=new Map();const isOpen=(k,byDefault)=>folds.has(k)?folds.get(k):byDe
 const $=s=>document.querySelector(s);const years=[...new Set(DATA.map(d=>d.date.slice(0,4)))].sort();
 const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const ico=n=>`<i class="ra-ico ra-ico-${n}" aria-hidden="true"></i>`;
-for(const sel of [$('#from'),$('#to')])for(const y of years)sel.add(new Option(y,y));
+// the years and the genre chips are written into the page by build_site.py (so that the page does not move while it
+// loads); here only what the address asks for is set
 const P=new URLSearchParams(location.search);
 $('#from').value=years.includes(P.get('from'))?P.get('from'):years[0];$('#to').value=years.includes(P.get('to'))?P.get('to'):years.at(-1);
-for(const g of G){const l=document.createElement('label');l.className='ra-chip';
-l.innerHTML=`<input type="checkbox" id="g-${g.slug}" value="${g.slug}"${P.getAll('g').includes(g.slug)?' checked':''}>${ico(g.slug)}${esc(g.name)}<span class="ra-chip-n"></span>`;$('#genres').append(l)}
+for(const i of document.querySelectorAll('#genres input'))i.checked=P.getAll('g').includes(i.value);
 function render(){const q=$('#q').value.trim().toLowerCase(),f=$('#from').value,t=$('#to').value,c=document.querySelector('input[name=cat]:checked').value;
 const gs=[...document.querySelectorAll('#genres input:checked')].map(i=>i.value);
 const base=DATA.filter(d=>{const y=d.date.slice(0,4);if(y<f||y>t)return false;if(c&&d.cat!==c)return false;
