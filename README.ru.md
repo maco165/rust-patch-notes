@@ -1,51 +1,34 @@
-[日本語](README.md) | [English](README.en.md) | [简体中文](README.zh.md) | [한국어](README.ko.md) | **Русский**
+<p align="center"><a href="https://maco165.github.io/rust-patch-notes/ru/index.html"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme/hero-ru-dark.png"><img src="assets/readme/hero-ru.png" alt="Rust Analysis" width="100%"></picture></a></p>
 
-# Rust Analysis
+<p align="center"><a href="README.md">日本語</a> · <a href="README.en.md">English</a> · <a href="README.zh.md">简体中文</a> · <a href="README.ko.md">한국어</a> · <b>Русский</b></p>
 
-Неофициальный сайт одного автора об игре Rust (Facepunch Studios): официальные списки изменений, пересказанные на японском, значения всех предметов и калькуляторы для рейдов и крафта.
+<p align="center"><b><a href="https://maco165.github.io/rust-patch-notes/ru/index.html">https://maco165.github.io/rust-patch-notes/</a></b></p>
 
-**https://maco165.github.io/rust-patch-notes/**
+Неофициальный сайт одного автора об игре Rust (Facepunch Studios): официальные списки изменений, пересказанные на японском, значения всех предметов и пять калькуляторов (рейд, крафт, гены растений, чаи и пироги, число попаданий до смерти). Этот месяц, категории, инструменты и статьи доступны на пяти языках.
+
+## О сайте
+
+**Что это** — Неофициальный аналитический сайт: он читает официальные списки изменений, данные и код самой игры, чтобы проверить, как устроен Rust.
+
+**Зачем** — Не было сайта, который по изменениям в коде игры собирал бы содержание обновлений и внутреннее устройство.
+
+**Сильные стороны**
+
+- Читаем до кода: не только значения, но и код сервера (IL), чтобы проверить правила расчёта; калькуляторы проверены на примерах и полным перебором
+- Вся история с 2015 года и ежемесячные обновления: все патчи с 2015 года и различия настроек предметов по месячным сборкам
+- Пять языков, только браузер, бесплатно: японский, английский, китайский, корейский и русский, без регистрации и рекламы, всё работает в браузере
+
+**Принцип** — Пишем только то, что проверено. Непроверенное помечаем как неподтверждённое.
+
+## Экраны
+
+<table><tr><td colspan="2" valign="top"><a href="https://maco165.github.io/rust-patch-notes/ru/index.html"><img src="assets/readme/shot-ru-month.png" alt="Этот месяц"></a><br><sub><b>Этот месяц</b></sub></td></tr><tr><td width="50%" valign="top"><a href="https://maco165.github.io/rust-patch-notes/ru/tools/raid.html"><img src="assets/readme/shot-ru-raid.png" alt="Raid Planner"></a><br><sub><b>Raid Planner</b></sub></td><td width="50%" valign="top"><a href="https://maco165.github.io/rust-patch-notes/ru/tools/gene.html"><img src="assets/readme/shot-ru-gene.png" alt="Gene Planner"></a><br><sub><b>Gene Planner</b></sub></td></tr><tr><td width="50%" valign="top"><a href="https://maco165.github.io/rust-patch-notes/ru/tools/buff.html"><img src="assets/readme/shot-ru-buff.png" alt="Buff Planner"></a><br><sub><b>Buff Planner</b></sub></td><td width="50%" valign="top"><a href="https://maco165.github.io/rust-patch-notes/ru/tools/ttk.html"><img src="assets/readme/shot-ru-ttk.png" alt="TTK Planner"></a><br><sub><b>TTK Planner</b></sub></td></tr></table>
 
 ## Устройство системы
 
 Страницы собирают скрипты на Python из данных, прочитанных из игры. Внешних JS-файлов нет: `build_site.py` записывает скрипт каждой страницы прямо в неё.
 
-```mermaid
-flowchart LR
-  subgraph S["Sources"]
-    s1["rust.facepunch.com<br/>official change lists"]
-    s2["RustDedicated<br/>server build"]
-    s3["Rust client<br/>monthly builds"]
-  end
-  subgraph E["Extract (Python) → data/"]
-    e1["fetch_changes.py<br/>data/patches/"]
-    e2["extract_items.py · extract_loot.py · extract_raid.py · extract_genetics.py<br/>data/items/ · loot/ · raid/ · genetics/"]
-    e3["build_diffs.py<br/>data/diffs/"]
-  end
-  subgraph B["Build (Python)"]
-    b1["build_site.py<br/>imports raid_calc.py · gene_calc.py · consume_calc.py · ttk_calc.py · loot_odds.py<br/>build_views.py · build_index.py · genres.py · item_icons.py"]
-    b2["content/ · rules/ · design/<br/>digests, columns, *.yml, tokens.json, *.css, item-icons/"]
-  end
-  subgraph W["Site (GitHub Pages)"]
-    w1["index.html · history.html · genres.html · numbers.html"]
-    w2["items.html · spec.html · diffs.html"]
-    w3["columns.html → columns/*.html"]
-    w4["tools.html → tools/raid.html → tools/craft.html<br/>tools.html → tools/gene.html · tools/buff.html · tools/ttk.html"]
-    w5["assets/style.css<br/>used by every page"]
-  end
-  s1 --> e1
-  s2 --> e2
-  s3 --> e3
-  e1 --> b1
-  e2 --> b1
-  e3 --> b1
-  b2 --> b1
-  b1 --> w1
-  b1 --> w2
-  b1 --> w3
-  b1 --> w4
-  b1 --> w5
-```
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme/arch-dark.png"><img src="assets/readme/arch.png" alt="Rust Analysis: sources, Python scripts, data, build_site.py, GitHub Pages" width="100%"></picture></p>
 
 - С любой страницы через верхнее меню можно попасть на все основные страницы.
 - `tools/raid.html` передаёт выбранные количества в `tools/craft.html` через URL (`m`, `o`, `c`, `r`); страница крафта ссылается обратно через `r`.
@@ -83,3 +66,4 @@ flowchart LR
 - Значения прочитаны из данных и кода игры, а не измерены в игре. Их правильность не гарантируется.
 - В этом репозитории только сгенерированные страницы. Не правьте их вручную.
 - Часть иконок — из [Lucide](https://lucide.dev/) (ISC License, `LICENSE-lucide.txt`). Иконки и изображения игры не используются.
+- Логотипы на схеме — товарные знаки их владельцев (иконки: svgl, Lucide; схема сделана stack-diagram).

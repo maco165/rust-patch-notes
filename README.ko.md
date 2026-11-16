@@ -1,51 +1,34 @@
-[日本語](README.md) | [English](README.en.md) | [简体中文](README.zh.md) | **한국어** | [Русский](README.ru.md)
+<p align="center"><a href="https://maco165.github.io/rust-patch-notes/ko/index.html"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme/hero-ko-dark.png"><img src="assets/readme/hero-ko.png" alt="Rust Analysis" width="100%"></picture></a></p>
 
-# Rust Analysis
+<p align="center"><a href="README.md">日本語</a> · <a href="README.en.md">English</a> · <a href="README.zh.md">简体中文</a> · <b>한국어</b> · <a href="README.ru.md">Русский</a></p>
 
-게임 Rust (Facepunch Studios)에 관한 비공식 개인 사이트입니다. 공식 변경 사항을 일본어로 정리하고, 모든 아이템의 수치와 레이드·제작 계산기를 제공합니다.
+<p align="center"><b><a href="https://maco165.github.io/rust-patch-notes/ko/index.html">https://maco165.github.io/rust-patch-notes/</a></b></p>
 
-**https://maco165.github.io/rust-patch-notes/**
+게임 Rust (Facepunch Studios)에 관한 비공식 개인 사이트입니다. 공식 변경 사항을 일본어로 정리하고, 모든 아이템의 수치와 계산기 5개 (레이드, 제작, 식물 유전자, 차와 파이, 몇 발에 쓰러지는지)를 제공합니다. 이번 달, 장르, 도구, 글은 5개 언어로 볼 수 있습니다.
+
+## 이 사이트에 대해
+
+**무엇인가** — 공식 변경 사항과 게임 본체의 데이터와 코드를 읽어 Rust의 작동 방식을 확인하는 비공식 분석 사이트입니다.
+
+**왜 만들었나** — 게임 코드의 변경에서 업데이트 내용과 내부 구조를 정리한 사이트가 없었기 때문입니다.
+
+**강점**
+
+- 코드까지 읽고 확인: 수치만이 아니라 서버 코드 (IL)를 읽어 계산 규칙을 확인하고, 계산기는 예제와 전수 검사로 검증합니다
+- 2015년부터의 전체 기록과 매달 업데이트: 2015년부터의 모든 변경 사항과 월별 판의 아이템 설정 차이
+- 5개 언어, 브라우저만, 무료: 일본어, 영어, 중국어, 한국어, 러시아어로 볼 수 있고, 가입도 광고도 없이 브라우저 안에서만 작동합니다
+
+**원칙** — 확인한 것만 씁니다. 확인하지 않은 것은 '미확인'이라고 씁니다.
+
+## 화면
+
+<table><tr><td colspan="2" valign="top"><a href="https://maco165.github.io/rust-patch-notes/ko/index.html"><img src="assets/readme/shot-ko-month.png" alt="이번 달"></a><br><sub><b>이번 달</b></sub></td></tr><tr><td width="50%" valign="top"><a href="https://maco165.github.io/rust-patch-notes/ko/tools/raid.html"><img src="assets/readme/shot-ko-raid.png" alt="Raid Planner"></a><br><sub><b>Raid Planner</b></sub></td><td width="50%" valign="top"><a href="https://maco165.github.io/rust-patch-notes/ko/tools/gene.html"><img src="assets/readme/shot-ko-gene.png" alt="Gene Planner"></a><br><sub><b>Gene Planner</b></sub></td></tr><tr><td width="50%" valign="top"><a href="https://maco165.github.io/rust-patch-notes/ko/tools/buff.html"><img src="assets/readme/shot-ko-buff.png" alt="Buff Planner"></a><br><sub><b>Buff Planner</b></sub></td><td width="50%" valign="top"><a href="https://maco165.github.io/rust-patch-notes/ko/tools/ttk.html"><img src="assets/readme/shot-ko-ttk.png" alt="TTK Planner"></a><br><sub><b>TTK Planner</b></sub></td></tr></table>
 
 ## 시스템 구성
 
 페이지는 게임에서 읽어 낸 데이터로 Python 스크립트가 만듭니다. 외부 JS 파일은 없으며, `build_site.py`가 각 페이지의 스크립트를 페이지 안에 직접 씁니다.
 
-```mermaid
-flowchart LR
-  subgraph S["Sources"]
-    s1["rust.facepunch.com<br/>official change lists"]
-    s2["RustDedicated<br/>server build"]
-    s3["Rust client<br/>monthly builds"]
-  end
-  subgraph E["Extract (Python) → data/"]
-    e1["fetch_changes.py<br/>data/patches/"]
-    e2["extract_items.py · extract_loot.py · extract_raid.py · extract_genetics.py<br/>data/items/ · loot/ · raid/ · genetics/"]
-    e3["build_diffs.py<br/>data/diffs/"]
-  end
-  subgraph B["Build (Python)"]
-    b1["build_site.py<br/>imports raid_calc.py · gene_calc.py · consume_calc.py · ttk_calc.py · loot_odds.py<br/>build_views.py · build_index.py · genres.py · item_icons.py"]
-    b2["content/ · rules/ · design/<br/>digests, columns, *.yml, tokens.json, *.css, item-icons/"]
-  end
-  subgraph W["Site (GitHub Pages)"]
-    w1["index.html · history.html · genres.html · numbers.html"]
-    w2["items.html · spec.html · diffs.html"]
-    w3["columns.html → columns/*.html"]
-    w4["tools.html → tools/raid.html → tools/craft.html<br/>tools.html → tools/gene.html · tools/buff.html · tools/ttk.html"]
-    w5["assets/style.css<br/>used by every page"]
-  end
-  s1 --> e1
-  s2 --> e2
-  s3 --> e3
-  e1 --> b1
-  e2 --> b1
-  e3 --> b1
-  b2 --> b1
-  b1 --> w1
-  b1 --> w2
-  b1 --> w3
-  b1 --> w4
-  b1 --> w5
-```
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme/arch-dark.png"><img src="assets/readme/arch.png" alt="Rust Analysis: sources, Python scripts, data, build_site.py, GitHub Pages" width="100%"></picture></p>
 
 - 모든 페이지에서 상단 메뉴로 주요 페이지 전체에 갈 수 있습니다.
 - `tools/raid.html`은 고른 개수를 URL (`m`, `o`, `c`, `r`)로 `tools/craft.html`에 넘깁니다. 제작 페이지는 `r`로 되돌아가는 링크를 만듭니다.
@@ -83,3 +66,4 @@ flowchart LR
 - 수치는 게임의 데이터와 코드에서 읽은 것이며, 게임 안에서 측정한 것이 아닙니다. 정확함을 보장하지 않습니다.
 - 이 저장소에는 생성된 페이지만 있습니다. 직접 고치지 마세요.
 - 일부 아이콘은 [Lucide](https://lucide.dev/) (ISC License, `LICENSE-lucide.txt`)입니다. 게임의 아이콘이나 이미지는 쓰지 않았습니다.
+- 구성도의 로고는 각 소유자의 상표입니다 (아이콘: svgl, Lucide. stack-diagram으로 작성).

@@ -1,51 +1,34 @@
-[日本語](README.md) | **English** | [简体中文](README.zh.md) | [한국어](README.ko.md) | [Русский](README.ru.md)
+<p align="center"><a href="https://maco165.github.io/rust-patch-notes/en/index.html"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme/hero-en-dark.png"><img src="assets/readme/hero-en.png" alt="Rust Analysis" width="100%"></picture></a></p>
 
-# Rust Analysis
+<p align="center"><a href="README.md">日本語</a> · <b>English</b> · <a href="README.zh.md">简体中文</a> · <a href="README.ko.md">한국어</a> · <a href="README.ru.md">Русский</a></p>
 
-An unofficial, one-person site about the game Rust (Facepunch Studios): the official change lists summarised in Japanese, the values of every item, and calculators for raiding and crafting.
+<p align="center"><b><a href="https://maco165.github.io/rust-patch-notes/en/index.html">https://maco165.github.io/rust-patch-notes/</a></b></p>
 
-**https://maco165.github.io/rust-patch-notes/**
+An unofficial, one-person site about the game Rust (Facepunch Studios): the official change lists summarised in Japanese, the values of every item, and five calculators (raiding, crafting, plant genes, teas and pies, hits to kill). This month, genres, the tools and the articles are in five languages.
+
+## About this site
+
+**What** — An unofficial analysis site that reads the official change lists and the game's own data and code to check how Rust works.
+
+**Why** — No site summed up the updates and the inner workings of the game from the changes in its code.
+
+**Strengths**
+
+- Read down to the code: not only the values but the server's code (IL) is read to confirm the rules, and the calculators are tested against worked examples and exhaustive checks
+- Every update since 2015, refreshed monthly: every patch since 2015, and the item settings compared build by build
+- Five languages, just a browser, free: Japanese, English, Chinese, Korean and Russian, no sign-up and no ads, everything runs in your browser
+
+**Principle** — Only what has been checked is written. Anything not checked is marked as not confirmed.
+
+## Screens
+
+<table><tr><td colspan="2" valign="top"><a href="https://maco165.github.io/rust-patch-notes/en/index.html"><img src="assets/readme/shot-en-month.png" alt="This month"></a><br><sub><b>This month</b></sub></td></tr><tr><td width="50%" valign="top"><a href="https://maco165.github.io/rust-patch-notes/en/tools/raid.html"><img src="assets/readme/shot-en-raid.png" alt="Raid Planner"></a><br><sub><b>Raid Planner</b></sub></td><td width="50%" valign="top"><a href="https://maco165.github.io/rust-patch-notes/en/tools/gene.html"><img src="assets/readme/shot-en-gene.png" alt="Gene Planner"></a><br><sub><b>Gene Planner</b></sub></td></tr><tr><td width="50%" valign="top"><a href="https://maco165.github.io/rust-patch-notes/en/tools/buff.html"><img src="assets/readme/shot-en-buff.png" alt="Buff Planner"></a><br><sub><b>Buff Planner</b></sub></td><td width="50%" valign="top"><a href="https://maco165.github.io/rust-patch-notes/en/tools/ttk.html"><img src="assets/readme/shot-en-ttk.png" alt="TTK Planner"></a><br><sub><b>TTK Planner</b></sub></td></tr></table>
 
 ## System structure
 
 The pages are built by Python scripts from data read out of the game. There are no external JS files: `build_site.py` writes each page's script into the page.
 
-```mermaid
-flowchart LR
-  subgraph S["Sources"]
-    s1["rust.facepunch.com<br/>official change lists"]
-    s2["RustDedicated<br/>server build"]
-    s3["Rust client<br/>monthly builds"]
-  end
-  subgraph E["Extract (Python) → data/"]
-    e1["fetch_changes.py<br/>data/patches/"]
-    e2["extract_items.py · extract_loot.py · extract_raid.py · extract_genetics.py<br/>data/items/ · loot/ · raid/ · genetics/"]
-    e3["build_diffs.py<br/>data/diffs/"]
-  end
-  subgraph B["Build (Python)"]
-    b1["build_site.py<br/>imports raid_calc.py · gene_calc.py · consume_calc.py · ttk_calc.py · loot_odds.py<br/>build_views.py · build_index.py · genres.py · item_icons.py"]
-    b2["content/ · rules/ · design/<br/>digests, columns, *.yml, tokens.json, *.css, item-icons/"]
-  end
-  subgraph W["Site (GitHub Pages)"]
-    w1["index.html · history.html · genres.html · numbers.html"]
-    w2["items.html · spec.html · diffs.html"]
-    w3["columns.html → columns/*.html"]
-    w4["tools.html → tools/raid.html → tools/craft.html<br/>tools.html → tools/gene.html · tools/buff.html · tools/ttk.html"]
-    w5["assets/style.css<br/>used by every page"]
-  end
-  s1 --> e1
-  s2 --> e2
-  s3 --> e3
-  e1 --> b1
-  e2 --> b1
-  e3 --> b1
-  b2 --> b1
-  b1 --> w1
-  b1 --> w2
-  b1 --> w3
-  b1 --> w4
-  b1 --> w5
-```
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme/arch-dark.png"><img src="assets/readme/arch.png" alt="Rust Analysis: sources, Python scripts, data, build_site.py, GitHub Pages" width="100%"></picture></p>
 
 - Every page links to every top-level page through the header nav.
 - `tools/raid.html` passes the picked counts to `tools/craft.html` in the URL (`m`, `o`, `c`, `r`); the craft page links back with `r`.
@@ -83,3 +66,4 @@ This month, genres, the tools and the articles are in Japanese, English, Chinese
 - The values are read from the game's data and code, not measured in the game. No guarantee that they are right.
 - This repository holds only the generated pages. Do not edit them by hand.
 - Some icons are from [Lucide](https://lucide.dev/) (ISC License, `LICENSE-lucide.txt`). No icons or images of the game are used.
+- The logos in the diagram are trademarks of their owners (icons: svgl, Lucide; drawn with stack-diagram).
