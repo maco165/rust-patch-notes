@@ -22,6 +22,29 @@ An unofficial, one-person site about the game Rust (Facepunch Studios): the offi
 
 **Review** — Every change is checked as a diff by Claude, Anthropic's AI, and approved by a person before it goes public.
 
+## Pages
+
+| Page | What it shows | Languages |
+|---|---|---|
+| [This month](https://maco165.github.io/rust-patch-notes/en/index.html) | key points, counts, genres and item setting changes of this month's update | JP EN CN KR RU |
+| [History](https://maco165.github.io/rust-patch-notes/history.html) | every change since 2015, filtered by genre, year, kind and words | JP only |
+| [Genres](https://maco165.github.io/rust-patch-notes/en/genres.html) | changes per genre and how they moved year by year | JP EN CN KR RU |
+| [Numbers](https://maco165.github.io/rust-patch-notes/numbers.html) | changes whose official text states values before and after, or rates | JP only |
+| [Build diffs](https://maco165.github.io/rust-patch-notes/diffs.html) | pick two builds to see how many item settings changed | JP only |
+| [Items](https://maco165.github.io/rust-patch-notes/items.html) | each item's settings, where it drops and how often, and its change history | JP only |
+| [Spec sheet](https://maco165.github.io/rust-patch-notes/spec.html) | every item's values in tables by type | JP only |
+| [Articles](https://maco165.github.io/rust-patch-notes/en/columns.html) | what players say, checked against the server's code and data | JP EN CN KR RU |
+
+### Tools
+
+| Tool | What it does | Languages |
+|---|---|---|
+| [Raid Planner](https://maco165.github.io/rust-patch-notes/en/tools/raid.html) | explosives, sulfur and materials to break walls, doors and deployables together | JP EN CN KR RU |
+| [Craft Planner](https://maco165.github.io/rust-patch-notes/en/tools/craft.html) | what you still need and the furnace time, from what you make and what you hold | JP EN CN KR RU |
+| [Gene Planner](https://maco165.github.io/rust-patch-notes/en/tools/gene.html) | how to plant your saplings to get close to the genes you want | JP EN CN KR RU |
+| [Buff Planner](https://maco165.github.io/rust-patch-notes/en/tools/buff.html) | how teas and pies stack and when they run out | JP EN CN KR RU |
+| [TTK Planner](https://maco165.github.io/rust-patch-notes/en/tools/ttk.html) | hits to kill for each armour and weapon | JP EN CN KR RU |
+
 ## Screens
 
 <table><tr><td colspan="2" valign="top"><a href="https://maco165.github.io/rust-patch-notes/en/index.html"><img src="assets/readme/shot-en-month.png" alt="This month"></a><br><sub><b>This month</b></sub></td></tr><tr><td width="50%" valign="top"><a href="https://maco165.github.io/rust-patch-notes/en/tools/raid.html"><img src="assets/readme/shot-en-raid.png" alt="Raid Planner"></a><br><sub><b>Raid Planner</b></sub></td><td width="50%" valign="top"><a href="https://maco165.github.io/rust-patch-notes/en/tools/gene.html"><img src="assets/readme/shot-en-gene.png" alt="Gene Planner"></a><br><sub><b>Gene Planner</b></sub></td></tr><tr><td width="50%" valign="top"><a href="https://maco165.github.io/rust-patch-notes/en/tools/buff.html"><img src="assets/readme/shot-en-buff.png" alt="Buff Planner"></a><br><sub><b>Buff Planner</b></sub></td><td width="50%" valign="top"><a href="https://maco165.github.io/rust-patch-notes/en/tools/ttk.html"><img src="assets/readme/shot-en-ttk.png" alt="TTK Planner"></a><br><sub><b>TTK Planner</b></sub></td></tr></table>

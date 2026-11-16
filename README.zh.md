@@ -22,6 +22,29 @@
 
 **审核** — 每项变更在公开前都由 Anthropic 的 AI“Claude”检查差异，并经人工批准。
 
+## 页面
+
+| 页面 | 内容 | 语言 |
+|---|---|---|
+| [本月](https://maco165.github.io/rust-patch-notes/zh/index.html) | 本月更新的要点、数量、类别和物品设置的差异 | JP EN CN KR RU |
+| [历史](https://maco165.github.io/rust-patch-notes/history.html) | 2015 年以来的全部变更，可按类别、年份、分类和关键词筛选 | JP only |
+| [类别](https://maco165.github.io/rust-patch-notes/zh/genres.html) | 各类别的变更数量及逐年变化 | JP EN CN KR RU |
+| [数值](https://maco165.github.io/rust-patch-notes/numbers.html) | 官方文字中写有前后数值或比例的变更 | JP only |
+| [版本差异](https://maco165.github.io/rust-patch-notes/diffs.html) | 选择两个版本，查看物品设置变了多少 | JP only |
+| [物品](https://maco165.github.io/rust-patch-notes/items.html) | 每个物品的设置、掉落来源与概率、变更历史 | JP only |
+| [规格表](https://maco165.github.io/rust-patch-notes/spec.html) | 按种类整理的全部物品数值 | JP only |
+| [文章](https://maco165.github.io/rust-patch-notes/zh/columns.html) | 用服务器代码和数据验证玩家说法的文章 | JP EN CN KR RU |
+
+### 工具
+
+| 工具 | 用途 | 语言 |
+|---|---|---|
+| [Raid Planner](https://maco165.github.io/rust-patch-notes/zh/tools/raid.html) | 一起破坏墙、门和放置物所需的爆炸物数量、硫磺和材料 | JP EN CN KR RU |
+| [Craft Planner](https://maco165.github.io/rust-patch-notes/zh/tools/craft.html) | 根据要做的爆炸物和手头物资，算出缺少的材料和熔炉时间 | JP EN CN KR RU |
+| [Gene Planner](https://maco165.github.io/rust-patch-notes/zh/tools/gene.html) | 用手头的幼苗接近目标基因的种法 | JP EN CN KR RU |
+| [Buff Planner](https://maco165.github.io/rust-patch-notes/zh/tools/buff.html) | 茶和派的效果如何叠加、何时结束 | JP EN CN KR RU |
+| [TTK Planner](https://maco165.github.io/rust-patch-notes/zh/tools/ttk.html) | 按护甲和武器算出几发击倒 | JP EN CN KR RU |
+
 ## 页面截图
 
 <table><tr><td colspan="2" valign="top"><a href="https://maco165.github.io/rust-patch-notes/zh/index.html"><img src="assets/readme/shot-zh-month.png" alt="本月"></a><br><sub><b>本月</b></sub></td></tr><tr><td width="50%" valign="top"><a href="https://maco165.github.io/rust-patch-notes/zh/tools/raid.html"><img src="assets/readme/shot-zh-raid.png" alt="Raid Planner"></a><br><sub><b>Raid Planner</b></sub></td><td width="50%" valign="top"><a href="https://maco165.github.io/rust-patch-notes/zh/tools/gene.html"><img src="assets/readme/shot-zh-gene.png" alt="Gene Planner"></a><br><sub><b>Gene Planner</b></sub></td></tr><tr><td width="50%" valign="top"><a href="https://maco165.github.io/rust-patch-notes/zh/tools/buff.html"><img src="assets/readme/shot-zh-buff.png" alt="Buff Planner"></a><br><sub><b>Buff Planner</b></sub></td><td width="50%" valign="top"><a href="https://maco165.github.io/rust-patch-notes/zh/tools/ttk.html"><img src="assets/readme/shot-zh-ttk.png" alt="TTK Planner"></a><br><sub><b>TTK Planner</b></sub></td></tr></table>

@@ -22,6 +22,29 @@
 
 **Проверка** — Каждое изменение перед публикацией проверяет по диффу Claude — ИИ от Anthropic, — и одобряет человек.
 
+## Страницы
+
+| Страница | Что показывает | Языки |
+|---|---|---|
+| [Этот месяц](https://maco165.github.io/rust-patch-notes/ru/index.html) | главное, число изменений, категории и различия настроек предметов в обновлении месяца | JP EN CN KR RU |
+| [История](https://maco165.github.io/rust-patch-notes/history.html) | все изменения с 2015 года с фильтрами по категории, году, типу и словам | JP only |
+| [Категории](https://maco165.github.io/rust-patch-notes/ru/genres.html) | число изменений по категориям и их динамика по годам | JP EN CN KR RU |
+| [Числа](https://maco165.github.io/rust-patch-notes/numbers.html) | изменения, где в официальном тексте указаны значения «до» и «после» или проценты | JP only |
+| [Различия сборок](https://maco165.github.io/rust-patch-notes/diffs.html) | выберите две сборки и посмотрите, сколько настроек предметов изменилось | JP only |
+| [Предметы](https://maco165.github.io/rust-patch-notes/items.html) | настройки каждого предмета, откуда выпадает и с каким шансом, история изменений | JP only |
+| [Справочник](https://maco165.github.io/rust-patch-notes/spec.html) | значения всех предметов в таблицах по типам | JP only |
+| [Статьи](https://maco165.github.io/rust-patch-notes/ru/columns.html) | то, что говорят игроки, проверенное по коду и данным сервера | JP EN CN KR RU |
+
+### Инструменты
+
+| Инструмент | Что делает | Языки |
+|---|---|---|
+| [Raid Planner](https://maco165.github.io/rust-patch-notes/ru/tools/raid.html) | взрывчатка, сера и материалы, чтобы сломать стены, двери и размещаемое | JP EN CN KR RU |
+| [Craft Planner](https://maco165.github.io/rust-patch-notes/ru/tools/craft.html) | чего не хватает и сколько времени в печах — по тому, что делаете и что есть | JP EN CN KR RU |
+| [Gene Planner](https://maco165.github.io/rust-patch-notes/ru/tools/gene.html) | как посадить саженцы, чтобы приблизиться к нужным генам | JP EN CN KR RU |
+| [Buff Planner](https://maco165.github.io/rust-patch-notes/ru/tools/buff.html) | как сочетаются чаи и пироги и когда их действие заканчивается | JP EN CN KR RU |
+| [TTK Planner](https://maco165.github.io/rust-patch-notes/ru/tools/ttk.html) | сколько попаданий до смерти для каждой брони и оружия | JP EN CN KR RU |
+
 ## Экраны
 
 <table><tr><td colspan="2" valign="top"><a href="https://maco165.github.io/rust-patch-notes/ru/index.html"><img src="assets/readme/shot-ru-month.png" alt="Этот месяц"></a><br><sub><b>Этот месяц</b></sub></td></tr><tr><td width="50%" valign="top"><a href="https://maco165.github.io/rust-patch-notes/ru/tools/raid.html"><img src="assets/readme/shot-ru-raid.png" alt="Raid Planner"></a><br><sub><b>Raid Planner</b></sub></td><td width="50%" valign="top"><a href="https://maco165.github.io/rust-patch-notes/ru/tools/gene.html"><img src="assets/readme/shot-ru-gene.png" alt="Gene Planner"></a><br><sub><b>Gene Planner</b></sub></td></tr><tr><td width="50%" valign="top"><a href="https://maco165.github.io/rust-patch-notes/ru/tools/buff.html"><img src="assets/readme/shot-ru-buff.png" alt="Buff Planner"></a><br><sub><b>Buff Planner</b></sub></td><td width="50%" valign="top"><a href="https://maco165.github.io/rust-patch-notes/ru/tools/ttk.html"><img src="assets/readme/shot-ru-ttk.png" alt="TTK Planner"></a><br><sub><b>TTK Planner</b></sub></td></tr></table>
