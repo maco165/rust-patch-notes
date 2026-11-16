@@ -1,6 +1,6 @@
 <p align="center"><a href="https://maco165.github.io/rust-patch-notes/ru/index.html"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme/hero-ru-dark.png"><img src="assets/readme/hero-ru.png" alt="Rust Analysis" width="100%"></picture></a></p>
 
-<p align="center"><a href="README.md">日本語</a> · <a href="README.en.md">English</a> · <a href="README.zh.md">简体中文</a> · <a href="README.ko.md">한국어</a> · <b>Русский</b></p>
+<p align="center"><a href="README.md"><img src="assets/readme/lang-ja.png" alt="日本語" height="40"></a> <a href="README.en.md"><img src="assets/readme/lang-en.png" alt="English" height="40"></a> <a href="README.zh.md"><img src="assets/readme/lang-zh.png" alt="简体中文" height="40"></a> <a href="README.ko.md"><img src="assets/readme/lang-ko.png" alt="한국어" height="40"></a> <a href="README.ru.md"><img src="assets/readme/lang-ru-on.png" alt="Русский" height="40"></a></p>
 
 <p align="center"><b><a href="https://maco165.github.io/rust-patch-notes/ru/index.html">https://maco165.github.io/rust-patch-notes/</a></b></p>
 
@@ -20,45 +20,19 @@
 
 **Принцип** — Пишем только то, что проверено. Непроверенное помечаем как неподтверждённое.
 
+**Проверка** — Каждое изменение перед публикацией проверяет по диффу Claude — ИИ от Anthropic, — и одобряет человек.
+
 ## Экраны
 
 <table><tr><td colspan="2" valign="top"><a href="https://maco165.github.io/rust-patch-notes/ru/index.html"><img src="assets/readme/shot-ru-month.png" alt="Этот месяц"></a><br><sub><b>Этот месяц</b></sub></td></tr><tr><td width="50%" valign="top"><a href="https://maco165.github.io/rust-patch-notes/ru/tools/raid.html"><img src="assets/readme/shot-ru-raid.png" alt="Raid Planner"></a><br><sub><b>Raid Planner</b></sub></td><td width="50%" valign="top"><a href="https://maco165.github.io/rust-patch-notes/ru/tools/gene.html"><img src="assets/readme/shot-ru-gene.png" alt="Gene Planner"></a><br><sub><b>Gene Planner</b></sub></td></tr><tr><td width="50%" valign="top"><a href="https://maco165.github.io/rust-patch-notes/ru/tools/buff.html"><img src="assets/readme/shot-ru-buff.png" alt="Buff Planner"></a><br><sub><b>Buff Planner</b></sub></td><td width="50%" valign="top"><a href="https://maco165.github.io/rust-patch-notes/ru/tools/ttk.html"><img src="assets/readme/shot-ru-ttk.png" alt="TTK Planner"></a><br><sub><b>TTK Planner</b></sub></td></tr></table>
 
 ## Устройство системы
 
-Страницы собирают скрипты на Python из данных, прочитанных из игры. Внешних JS-файлов нет: `build_site.py` записывает скрипт каждой страницы прямо в неё.
-
 <p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme/arch-dark.png"><img src="assets/readme/arch.png" alt="Rust Analysis: sources, Python scripts, data, build_site.py, GitHub Pages" width="100%"></picture></p>
-
-- С любой страницы через верхнее меню можно попасть на все основные страницы.
-- `tools/raid.html` передаёт выбранные количества в `tools/craft.html` через URL (`m`, `o`, `c`, `r`); страница крафта ссылается обратно через `r`.
-- `assets/style.css` — это `design/tokens.json` в виде CSS-переменных, затем `components.css`, `site.css` и по одной маске на каждую иконку из `item-icons/`.
-
-## Страницы
-
-| Страница | Что показывает | Источник |
-|---|---|---|
-| [index.html](ru/index.html) | Обновление этого месяца: главное, количество, изменённые значения, все изменения | Официальные списки изменений, пересказанные на японском |
-| [history.html](history.html) (Только японский) · [genres.html](ru/genres.html) · [numbers.html](numbers.html) (Только японский) | Все патчи с фильтром по жанру, году и типу; количество по жанрам; изменения с числами | Те же списки изменений; жанры — правила этого сайта |
-| [items.html](items.html) (Только японский) · [spec.html](spec.html) (Только японский) | Настройки каждого предмета, где он выпадает и как часто; все значения в таблицах | Значения, выгруженные из серверной сборки, и шансы, посчитанные по таблицам лута |
-| [diffs.html](diffs.html) (Только японский) | Что изменилось в настройках предметов между двумя сборками | Файлы предметов ежемесячных сборок клиента |
-| [columns.html](ru/columns.html) | Статьи, проверяющие слова игроков по коду и данным сервера | Код сервера (IL) и данные; источники в конце каждой статьи |
-| [tools/raid.html](ru/tools/raid.html) | Raid Planner: взрывчатка, сера, материалы и время печей, чтобы разрушить стены, двери и постройки вместе | Данные сервера и правила урона и переплавки из кода сервера |
-| [tools/craft.html](ru/tools/craft.html) | Craft Planner: чего не хватает и сколько работают печи — по тому, что вы делаете, что у вас есть и какие печи | Те же данные, что и у Raid Planner |
-| [tools/gene.html](ru/tools/gene.html) | Gene Planner: как посадить ваши саженцы, чтобы получить гены близко к цели вроде GGGYYY, и что дают гены | Данные сервера и правила скрещивания из кода сервера |
-| [tools/buff.html](ru/tools/buff.html) | Buff Planner: насколько сильны эффекты чаёв и пирогов и до какого времени, что что заменяет и что укорачивает медвежий пирог | Данные сервера и правила наложения из кода сервера |
 
 ## Языки
 
 Этот месяц, категории, инструменты и статьи есть на японском, английском, китайском (упрощённом), корейском и русском, остальные страницы (и список всех изменений месяца) — только на японском. При первом открытии эти страницы переходят на язык браузера (язык, выбранный ссылкой, запоминается). Названия предметов на всех языках — английские названия из игры. Списки изменений — это официальный английский текст, пересказанный на японском, поэтому на другие языки их не переводим: читайте https://rust.facepunch.com/changes.
-
-| Язык | Статус |
-|---|---|
-| 日本語 | Все страницы |
-| English | Месяц, категории, инструменты, статьи и README |
-| 简体中文 | Месяц, категории, инструменты, статьи и README |
-| 한국어 | Месяц, категории, инструменты, статьи и README |
-| Русский | Месяц, категории, инструменты, статьи и этот README |
 
 ## Важно знать
 
@@ -67,3 +41,23 @@
 - В этом репозитории только сгенерированные страницы. Не правьте их вручную.
 - Часть иконок — из [Lucide](https://lucide.dev/) (ISC License, `LICENSE-lucide.txt`). Иконки и изображения игры не используются.
 - Логотипы на схеме — товарные знаки их владельцев (иконки: svgl, Lucide; схема сделана stack-diagram).
+
+## Об игре Rust
+
+Rust — многопользовательская игра на выживание от Facepunch Studios. Вы начинаете на берегу с одним камнем в руках, добываете ресурсы, создаёте инструменты, строите базу и объединяетесь с другими игроками или сражаетесь с ними. Игра вышла в раннем доступе в 2013 году и полностью — в 2018-м. Игра и сервер написаны на C# на движке Unity. В первый четверг каждого месяца выходит крупное обновление, и этот сайт следит за этими изменениями. Версия для ПК — в Steam, для PlayStation и Xbox есть Rust Console Edition.
+
+<p><a href="https://store.steampowered.com/app/252490/Rust/"><img src="assets/readme/steam-ru.png" alt="Steam" height="46"></a></p>
+
+### На чём работает
+
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme/engine-dark.png"><img src="assets/readme/engine.png" alt="Rust: C# code (Assembly-CSharp, Rust.*, Facepunch.*) on the Unity 6 engine" width="100%"></picture></p>
+
+Игра и сервер — программы на C# поверх Unity 6. Проверено по сборкам C# (DLL) выделенного сервера (RustDedicated, сборка 2026-10-22); версия Unity — из официального списка изменений (2026-11-05: 6000.3.26f1).
+
+### Официальные ссылки
+
+- [Официальный сайт: rust.facepunch.com](https://rust.facepunch.com/)
+- [Обновления (официальные изменения)](https://rust.facepunch.com/changes)
+- [Новости](https://rust.facepunch.com/news)
+- [Журнал коммитов разработки](https://commits.facepunch.com/r/rust_reboot)
+
