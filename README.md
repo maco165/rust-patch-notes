@@ -58,15 +58,15 @@ flowchart LR
 
 ## 言語 / Languages
 
-ツールとコラムは日本語・英語・中国語 (簡体字)・韓国語・ロシア語、ほかのページは日本語だけです。ツールとコラムのページは、初めて開いたときにブラウザの言語の版へ移ります (言語のリンクで選ぶと、その言語を覚えます)。アイテム名はどの言語でもゲームの英語名です。README は 5 言語あります。変更点の一覧は公式の英語の文章を日本語にしたものなので、ほかの言語にはしません。
+今月・ジャンル・ツール・コラムは日本語・英語・中国語 (簡体字)・韓国語・ロシア語、ほかのページは日本語だけです (今月の全変更点の一覧も日本語だけで、ほかの言語は件数と公式の一覧へのリンク)。これらのページは、初めて開いたときにブラウザの言語の版へ移ります (言語のリンクで選ぶと、その言語を覚えます)。アイテム名はどの言語でもゲームの英語名です。README は 5 言語あります。変更点の一覧は公式の英語の文章を日本語にしたものなので、ほかの言語にはしません。
 
 | 言語 | 状態 |
 |---|---|
 | 日本語 | 対応済み |
-| English | ツールとコラム。README は [English](README.en.md) — The tools and the articles are in English. For the change lists, read the official page: https://rust.facepunch.com/changes |
-| 简体中文 | ツールとコラム。README は [简体中文](README.zh.md) |
-| 한국어 | ツールとコラム。README は [한국어](README.ko.md) |
-| Русский | ツールとコラム。README は [Русский](README.ru.md) |
+| English | 今月・ジャンル・ツール・コラム。README は [English](README.en.md) — The tools and the articles are in English. For the change lists, read the official page: https://rust.facepunch.com/changes |
+| 简体中文 | 今月・ジャンル・ツール・コラム。README は [简体中文](README.zh.md) |
+| 한국어 | 今月・ジャンル・ツール・コラム。README は [한국어](README.ko.md) |
+| Русский | 今月・ジャンル・ツール・コラム。README は [Русский](README.ru.md) |
 
 ## 各ページが何を元に描かれているか
 
@@ -87,24 +87,32 @@ flowchart LR
 | [tools/ttk.html](tools/ttk.html) | 装備と差し込み板から部位ごとの守りと、銃と弓ごとに頭・胴・脚に何発で倒れるか、10 m ごとの発数 | サーバー本体のデータ (弾・武器・防具・部位の倍率、版 2026-11-07) と、ダメージの式をサーバーの処理 (IL) から確かめた結果 |
 | [tools/raid.html](tools/raid.html) | 壁・扉・外壁・設置物をまとめて壊すのに要る爆発物の数・硫黄・材料と、硫黄鉱石・木の数と炉の時間 | サーバー本体のデータ (建材・爆発物・炉、版 2026-11-07) と、ダメージと製錬の計算の仕方をサーバーの処理 (IL) から確かめた結果 |
 | [404.html](404.html) | 見つからないアドレスで出るページ (検索には載せない) | このサイトの文言 |
+| [en/index.html](en/index.html) | English の index.html | index.html と同じ件数 (全件の一覧の代わりに分類ごとの件数と公式の一覧へのリンク)。要点は content/digests/en/、文言は content/i18n/en.yml から |
+| [en/genres.html](en/genres.html) | English の genres.html | genres.html と同じ件数。文言は content/i18n/en.yml から |
 | [en/tools.html](en/tools.html) | English の tools.html | tools.html と同じ計算。文言は content/i18n/en.yml から |
 | [en/tools/raid.html](en/tools/raid.html) | English の tools/raid.html | tools/raid.html と同じ計算。文言は content/i18n/en.yml から |
 | [en/tools/craft.html](en/tools/craft.html) | English の tools/craft.html | tools/craft.html と同じ計算。文言は content/i18n/en.yml から |
 | [en/tools/gene.html](en/tools/gene.html) | English の tools/gene.html | tools/gene.html と同じ計算。文言は content/i18n/en.yml から |
 | [en/tools/buff.html](en/tools/buff.html) | English の tools/buff.html | tools/buff.html と同じ計算。文言は content/i18n/en.yml から |
 | [en/tools/ttk.html](en/tools/ttk.html) | English の tools/ttk.html | tools/ttk.html と同じ計算。文言は content/i18n/en.yml から |
+| [zh/index.html](zh/index.html) | 简体中文 の index.html | index.html と同じ件数 (全件の一覧の代わりに分類ごとの件数と公式の一覧へのリンク)。要点は content/digests/zh/、文言は content/i18n/zh.yml から |
+| [zh/genres.html](zh/genres.html) | 简体中文 の genres.html | genres.html と同じ件数。文言は content/i18n/zh.yml から |
 | [zh/tools.html](zh/tools.html) | 简体中文 の tools.html | tools.html と同じ計算。文言は content/i18n/zh.yml から |
 | [zh/tools/raid.html](zh/tools/raid.html) | 简体中文 の tools/raid.html | tools/raid.html と同じ計算。文言は content/i18n/zh.yml から |
 | [zh/tools/craft.html](zh/tools/craft.html) | 简体中文 の tools/craft.html | tools/craft.html と同じ計算。文言は content/i18n/zh.yml から |
 | [zh/tools/gene.html](zh/tools/gene.html) | 简体中文 の tools/gene.html | tools/gene.html と同じ計算。文言は content/i18n/zh.yml から |
 | [zh/tools/buff.html](zh/tools/buff.html) | 简体中文 の tools/buff.html | tools/buff.html と同じ計算。文言は content/i18n/zh.yml から |
 | [zh/tools/ttk.html](zh/tools/ttk.html) | 简体中文 の tools/ttk.html | tools/ttk.html と同じ計算。文言は content/i18n/zh.yml から |
+| [ko/index.html](ko/index.html) | 한국어 の index.html | index.html と同じ件数 (全件の一覧の代わりに分類ごとの件数と公式の一覧へのリンク)。要点は content/digests/ko/、文言は content/i18n/ko.yml から |
+| [ko/genres.html](ko/genres.html) | 한국어 の genres.html | genres.html と同じ件数。文言は content/i18n/ko.yml から |
 | [ko/tools.html](ko/tools.html) | 한국어 の tools.html | tools.html と同じ計算。文言は content/i18n/ko.yml から |
 | [ko/tools/raid.html](ko/tools/raid.html) | 한국어 の tools/raid.html | tools/raid.html と同じ計算。文言は content/i18n/ko.yml から |
 | [ko/tools/craft.html](ko/tools/craft.html) | 한국어 の tools/craft.html | tools/craft.html と同じ計算。文言は content/i18n/ko.yml から |
 | [ko/tools/gene.html](ko/tools/gene.html) | 한국어 の tools/gene.html | tools/gene.html と同じ計算。文言は content/i18n/ko.yml から |
 | [ko/tools/buff.html](ko/tools/buff.html) | 한국어 の tools/buff.html | tools/buff.html と同じ計算。文言は content/i18n/ko.yml から |
 | [ko/tools/ttk.html](ko/tools/ttk.html) | 한국어 の tools/ttk.html | tools/ttk.html と同じ計算。文言は content/i18n/ko.yml から |
+| [ru/index.html](ru/index.html) | Русский の index.html | index.html と同じ件数 (全件の一覧の代わりに分類ごとの件数と公式の一覧へのリンク)。要点は content/digests/ru/、文言は content/i18n/ru.yml から |
+| [ru/genres.html](ru/genres.html) | Русский の genres.html | genres.html と同じ件数。文言は content/i18n/ru.yml から |
 | [ru/tools.html](ru/tools.html) | Русский の tools.html | tools.html と同じ計算。文言は content/i18n/ru.yml から |
 | [ru/tools/raid.html](ru/tools/raid.html) | Русский の tools/raid.html | tools/raid.html と同じ計算。文言は content/i18n/ru.yml から |
 | [ru/tools/craft.html](ru/tools/craft.html) | Русский の tools/craft.html | tools/craft.html と同じ計算。文言は content/i18n/ru.yml から |
