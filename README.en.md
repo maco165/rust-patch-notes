@@ -8,13 +8,13 @@ An unofficial, one-person site about the game Rust (Facepunch Studios): the offi
 
 ## About this site
 
-**What** — An unofficial analysis site that reads the official change lists and the game's own data and code to check how Rust works.
+**What** — An unofficial analysis site that sums up what changed in each Rust update and how the game works, with the numbers.
 
 **Why** — No site summed up the updates and the inner workings of the game from the changes in its code.
 
 **Strengths**
 
-- Read down to the code: not only the values but the server's code (IL) is read to confirm the rules, and the calculators are tested against worked examples and exhaustive checks
+- Tested calculators: the raid, crossbreeding, tea and food, and shots-to-kill calculators are tested against worked examples and exhaustive checks
 - Every update since 2015, refreshed monthly: every patch since 2015, and the item settings compared build by build
 - Five languages, just a browser, free: Japanese, English, Chinese, Korean and Russian, no sign-up and no ads, everything runs in your browser
 
