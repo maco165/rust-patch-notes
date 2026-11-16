@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ja">
+  <id>https://maco165.github.io/rust-patch-notes/feed.xml</id><title>Rust Analysis</title>
+  <link href="https://maco165.github.io/rust-patch-notes/"/><link rel="self" href="https://maco165.github.io/rust-patch-notes/feed.xml"/>
+  <updated>2026-11-15T00:00:00Z</updated><author><name>Rust Analysis</name></author>
+  <entry>
+    <id>https://maco165.github.io/rust-patch-notes/columns/buff-ranking.html</id><title>お茶とパイの最強の組み合わせ。1 杯ならミルキー、飲み直すなら熊肉パイと</title><link href="https://maco165.github.io/rust-patch-notes/columns/buff-ranking.html"/>
+    <published>2026-11-15T00:00:00Z</published><updated>2026-11-15T00:00:00Z</updated>
+    <summary>お茶とパイを、Buff Planner と同じ計算で全部の組み合わせを試して比べました。採集の量、短い時間の強さ、戦うとき、材料あたりの 4 つのランキングです。</summary>
+  </entry>
+  <entry>
+    <id>https://maco165.github.io/rust-patch-notes/columns/wheel-myths.html</id><title>ルーレットに必勝パターンはあるのか</title><link href="https://maco165.github.io/rust-patch-notes/columns/wheel-myths.html"/>
+    <published>2026-11-12T00:00:00Z</published><updated>2026-11-12T00:00:00Z</updated>
+    <summary>Bandit Camp のルーレットにまつわる 7 つの話を、サーバーの処理を読んだ結果から 1 つずつ確かめます。今はパターンはありません。2024 年 5 月より前は、前の当たりを見れば次に出やすいマスが分かり、平均で増える賭け方もありました。</summary>
+  </entry>
+  <entry>
+    <id>https://maco165.github.io/rust-patch-notes/columns/slot-machine.html</id><title>スロットマシンは回すほど減る。戻りは平均 91.8%</title><link href="https://maco165.github.io/rust-patch-notes/columns/slot-machine.html"/>
+    <published>2026-11-12T00:00:00Z</published><updated>2026-11-12T00:00:00Z</updated>
+    <summary>スロットマシンの絵柄の決まり方と配当を、サーバーの処理とデータから読みました。賭け 2 スクラップに戻るのは平均 1.84。出る台も、出る時間もありません。</summary>
+  </entry>
+  <entry>
+    <id>https://maco165.github.io/rust-patch-notes/columns/loot-containers.html</id><title>箱の中身はいつ決まるのか</title><link href="https://maco165.github.io/rust-patch-notes/columns/loot-containers.html"/>
+    <published>2026-11-12T00:00:00Z</published><updated>2026-11-12T00:00:00Z</updated>
+    <summary>樽や軍用箱、ロックされた箱の中身が、いつ、どう決まるかをサーバーの処理から確かめました。中身は箱が湧いた時に決まり、開ける人や時刻では変わりません。</summary>
+  </entry>
+  <entry>
+    <id>https://maco165.github.io/rust-patch-notes/columns/card-games.html</id><title>ブラックジャックとポーカーは、数えれば勝てるのか</title><link href="https://maco165.github.io/rust-patch-notes/columns/card-games.html"/>
+    <published>2026-11-12T00:00:00Z</published><updated>2026-11-12T00:00:00Z</updated>
+    <summary>ブラックジャックの台とカードテーブルを、サーバーの処理を読んだ結果から確かめます。山札は毎回作り直され、カードを数えても有利になりません。店の取り分は約 0.8% です。</summary>
+  </entry>
+  <entry>
+    <id>https://maco165.github.io/rust-patch-notes/</id><title>Rust 2026 年 11 月のアップデート「Printed and Polished」のまとめ</title><link href="https://maco165.github.io/rust-patch-notes/"/>
+    <published>2026-11-05T00:00:00Z</published><updated>2026-11-05T00:00:00Z</updated>
+    <summary>ゲーム Rust の 2026 年 11 月のアップデート「Printed and Polished」の変更点 215 件を日本語でまとめたページ。要点、ジャンル別の件数、全件の一覧。</summary>
+  </entry>
+</feed>

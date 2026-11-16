@@ -1,33 +1,41 @@
 <!doctype html>
 <html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<script>(()=>{try{if(/bot|crawl|spider|slurp|lighthouse|inspection/i.test(navigator.userAgent))return;const A={"ja":"index.html","en":"en/index.html","zh":"zh/index.html","ko":"ko/index.html","ru":"ru/index.html"},S=["ja","en","zh","ko","ru"];let w=localStorage.getItem('ra-lang');if(!w){for(const l of navigator.languages||[navigator.language||'']){const c=String(l).toLowerCase().split('-')[0];if(S.includes(c)){w=c;break}}w=w||'en'}if(!A[w])w=A.en?'en':null;if(w&&w!=='ja')location.replace(A[w]+location.search+location.hash)}catch(_){}})()</script><title>Printed and Polished (2026-11) | Rust Analysis</title>
+<script>(()=>{try{if(/bot|crawl|spider|slurp|lighthouse|inspection/i.test(navigator.userAgent))return;const A={"ja":"index.html","en":"en/index.html","zh":"zh/index.html","ko":"ko/index.html","ru":"ru/index.html"},S=["ja","en","zh","ko","ru"];let w=localStorage.getItem('ra-lang');if(!w){for(const l of navigator.languages||[navigator.language||'']){const c=String(l).toLowerCase().split('-')[0];if(S.includes(c)){w=c;break}}w=w||'en'}if(!A[w])w=A.en?'en':null;if(w&&w!=='ja')location.replace(A[w]+location.search+location.hash)}catch(_){}})()</script><title>Rust 2026 年 11 月のアップデート「Printed and Polished」のまとめ | Rust Analysis</title>
 <meta name="description" content="ゲーム Rust の 2026 年 11 月のアップデート「Printed and Polished」の変更点 215 件を日本語でまとめたページ。要点、ジャンル別の件数、全件の一覧。">
 <meta name="theme-color" content="#f2f4f5" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15181a" media="(prefers-color-scheme: dark)">
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<meta property="og:type" content="website">
+<meta property="og:type" content="article">
 <meta property="og:site_name" content="Rust Analysis">
 <meta property="og:locale" content="ja_JP">
-<meta property="og:title" content="Printed and Polished (2026-11) | Rust Analysis">
+<meta property="og:title" content="Rust 2026 年 11 月のアップデート「Printed and Polished」のまとめ | Rust Analysis">
 <meta property="og:description" content="ゲーム Rust の 2026 年 11 月のアップデート「Printed and Polished」の変更点 215 件を日本語でまとめたページ。要点、ジャンル別の件数、全件の一覧。">
 <meta property="og:url" content="https://maco165.github.io/rust-patch-notes/">
 <meta property="og:image" content="https://maco165.github.io/rust-patch-notes/assets/og/ja/default.png">
-<meta property="og:image:alt" content="Printed and Polished (2026-11) | Rust Analysis">
+<meta property="og:image:alt" content="Rust 2026 年 11 月のアップデート「Printed and Polished」のまとめ | Rust Analysis">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@maco165_rust">
 <meta name="twitter:creator" content="@maco165_rust">
 <link rel="canonical" href="https://maco165.github.io/rust-patch-notes/">
+<link rel="alternate" type="application/atom+xml" title="Rust Analysis" href="https://maco165.github.io/rust-patch-notes/feed.xml">
+<meta property="article:published_time" content="2026-11-05">
+<meta property="article:modified_time" content="2026-11-05">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:locale:alternate" content="zh_CN">
+<meta property="og:locale:alternate" content="ko_KR">
+<meta property="og:locale:alternate" content="ru_RU">
 <link rel="alternate" hreflang="ja" href="https://maco165.github.io/rust-patch-notes/">
 <link rel="alternate" hreflang="en" href="https://maco165.github.io/rust-patch-notes/en/index.html">
-<link rel="alternate" hreflang="zh" href="https://maco165.github.io/rust-patch-notes/zh/index.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://maco165.github.io/rust-patch-notes/zh/index.html">
 <link rel="alternate" hreflang="ko" href="https://maco165.github.io/rust-patch-notes/ko/index.html">
 <link rel="alternate" hreflang="ru" href="https://maco165.github.io/rust-patch-notes/ru/index.html">
 <link rel="alternate" hreflang="x-default" href="https://maco165.github.io/rust-patch-notes/">
 <meta name="google-site-verification" content="0XhustYHA4NBSTWOtIsbCei_aVm7hPXepDuAlXU3eK0">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebSite", "name": "Rust Analysis", "url": "https://maco165.github.io/rust-patch-notes/", "inLanguage": "ja", "description": "ゲーム Rust の今月のアップデートを日本語でまとめたページ。変更の件数、要点、ジャンル別の件数、全件の一覧。"}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Rust 2026 年 11 月のアップデート「Printed and Polished」のまとめ", "inLanguage": "ja", "datePublished": "2026-11-05", "dateModified": "2026-11-05", "url": "https://maco165.github.io/rust-patch-notes/", "image": "https://maco165.github.io/rust-patch-notes/assets/og/ja/default.png", "author": {"@type": "Organization", "name": "Rust Analysis", "url": "https://maco165.github.io/rust-patch-notes/"}, "publisher": {"@type": "Organization", "name": "Rust Analysis", "url": "https://maco165.github.io/rust-patch-notes/"}}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+JP:wght@400;600&display=swap">
@@ -37,7 +45,7 @@
   <a class="ra-site-name" href="index.html"><b>Rust</b> Analysis</a>
   <nav class="ra-nav" aria-label="ページ"><a href="index.html" aria-current="page"><i class="ra-ico ra-ico-month" aria-hidden="true"></i>今月</a><a href="history.html"><i class="ra-ico ra-ico-history" aria-hidden="true"></i>これまで</a><a href="genres.html"><i class="ra-ico ra-ico-genres" aria-hidden="true"></i>ジャンル</a><a href="numbers.html"><i class="ra-ico ra-ico-numbers" aria-hidden="true"></i>数値</a><a href="diffs.html"><i class="ra-ico ra-ico-diffs" aria-hidden="true"></i>版の差分</a><a href="items.html"><i class="ra-ico ra-ico-items" aria-hidden="true"></i>アイテム</a><a href="spec.html"><i class="ra-ico ra-ico-spec" aria-hidden="true"></i>仕様書</a><a href="columns.html"><i class="ra-ico ra-ico-columns" aria-hidden="true"></i>コラム</a><a href="tools.html"><i class="ra-ico ra-ico-tools" aria-hidden="true"></i>ツール</a></nav>
   <span class="ra-site-meta"><span class="ra-site-meta-w">データ </span>2026-11-05<span class="ra-site-meta-w"> まで</span></span>
-  <details class="ra-site-lang"><summary title="言語"><i class="ra-ico ra-ico-globe" aria-hidden="true"></i><span class="ra-lang-now">日本語</span><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i></summary><div class="ra-lang-menu"><span class="ra-lang-here" aria-current="true">日本語<i class="ra-ico ra-ico-check" aria-hidden="true"></i></span><a href="en/index.html" lang="en" hreflang="en" data-lang="en">English</a><a href="zh/index.html" lang="zh" hreflang="zh" data-lang="zh">简体中文</a><a href="ko/index.html" lang="ko" hreflang="ko" data-lang="ko">한국어</a><a href="ru/index.html" lang="ru" hreflang="ru" data-lang="ru">Русский</a></div></details><a class="ra-site-link" href="https://github.com/maco165/rust-patch-notes" rel="noopener"><i class="ra-ico ra-ico-github" aria-hidden="true"></i>GitHub</a>
+  <details class="ra-site-lang"><summary title="言語"><i class="ra-ico ra-ico-globe" aria-hidden="true"></i><span class="ra-lang-now">日本語</span><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i></summary><div class="ra-lang-menu"><span class="ra-lang-here" aria-current="true">日本語<i class="ra-ico ra-ico-check" aria-hidden="true"></i></span><a href="en/index.html" lang="en" hreflang="en" data-lang="en">English</a><a href="zh/index.html" lang="zh" hreflang="zh-Hans" data-lang="zh">简体中文</a><a href="ko/index.html" lang="ko" hreflang="ko" data-lang="ko">한국어</a><a href="ru/index.html" lang="ru" hreflang="ru" data-lang="ru">Русский</a></div></details><a class="ra-site-link" href="https://github.com/maco165/rust-patch-notes" rel="noopener"><i class="ra-ico ra-ico-github" aria-hidden="true"></i>GitHub</a>
 </header>
 <script>(()=>{const n=document.querySelector('.ra-nav'),a=n&&n.querySelector('[aria-current]');if(a&&n.scrollWidth>n.clientWidth)n.scrollLeft=a.offsetLeft-(n.clientWidth-a.offsetWidth)/2})()</script>
 <main class="ra-page"><div class="ra-hero">

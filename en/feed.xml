@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+  <id>https://maco165.github.io/rust-patch-notes/en/feed.xml</id><title>Rust Analysis</title>
+  <link href="https://maco165.github.io/rust-patch-notes/en/"/><link rel="self" href="https://maco165.github.io/rust-patch-notes/en/feed.xml"/>
+  <updated>2026-11-15T00:00:00Z</updated><author><name>Rust Analysis</name></author>
+  <entry>
+    <id>https://maco165.github.io/rust-patch-notes/en/columns/buff-ranking.html</id><title>Best teas and pies: Milky for one cup</title><link href="https://maco165.github.io/rust-patch-notes/en/columns/buff-ranking.html"/>
+    <published>2026-11-15T00:00:00Z</published><updated>2026-11-15T00:00:00Z</updated>
+    <summary>Teas and pies tried in every combination with the Buff Planner&#x27;s calculation. Four rankings, for the amount gathered, short runs, fights, and per ingredient.</summary>
+  </entry>
+  <entry>
+    <id>https://maco165.github.io/rust-patch-notes/en/columns/wheel-myths.html</id><title>Is there a winning pattern on the Wheel?</title><link href="https://maco165.github.io/rust-patch-notes/en/columns/wheel-myths.html"/>
+    <published>2026-11-12T00:00:00Z</published><updated>2026-11-12T00:00:00Z</updated>
+    <summary>Seven Wheel claims, checked against the server code. No pattern today; before May 2024 the last result hinted at the next one, and some bets paid on average.</summary>
+  </entry>
+  <entry>
+    <id>https://maco165.github.io/rust-patch-notes/en/columns/slot-machine.html</id><title>Slot machines return 91.8%: spin more, lose more</title><link href="https://maco165.github.io/rust-patch-notes/en/columns/slot-machine.html"/>
+    <published>2026-11-12T00:00:00Z</published><updated>2026-11-12T00:00:00Z</updated>
+    <summary>How the slot machine picks symbols and pays out, read from the server code and data. A 2 Scrap bet returns 1.84 on average. No machine or time pays better.</summary>
+  </entry>
+  <entry>
+    <id>https://maco165.github.io/rust-patch-notes/en/columns/loot-containers.html</id><title>When is a crate&#x27;s loot decided?</title><link href="https://maco165.github.io/rust-patch-notes/en/columns/loot-containers.html"/>
+    <published>2026-11-12T00:00:00Z</published><updated>2026-11-12T00:00:00Z</updated>
+    <summary>When are the contents of Barrels, Military Crates and Locked Crates decided? The server code says at spawn. The opener and the time change nothing.</summary>
+  </entry>
+  <entry>
+    <id>https://maco165.github.io/rust-patch-notes/en/columns/card-games.html</id><title>Can you beat blackjack and poker by counting cards?</title><link href="https://maco165.github.io/rust-patch-notes/en/columns/card-games.html"/>
+    <published>2026-11-12T00:00:00Z</published><updated>2026-11-12T00:00:00Z</updated>
+    <summary>From the server code, the blackjack deck is rebuilt and reshuffled every round, so counting cards gives no edge. The house edge is about 0.8%.</summary>
+  </entry>
+  <entry>
+    <id>https://maco165.github.io/rust-patch-notes/en/index.html</id><title>Rust 2026-11 update: Printed and Polished</title><link href="https://maco165.github.io/rust-patch-notes/en/index.html"/>
+    <published>2026-11-05T00:00:00Z</published><updated>2026-11-05T00:00:00Z</updated>
+    <summary>The Printed and Polished update of the game Rust (2026-11): its 215 changes in numbers, key points and genres, and the item setting differences.</summary>
+  </entry>
+</feed>

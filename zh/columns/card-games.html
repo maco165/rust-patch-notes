@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#15181a" media="(prefers-color-scheme: dark)">
 <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
 <link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png">
-<meta property="og:type" content="website">
+<meta property="og:type" content="article">
 <meta property="og:site_name" content="Rust Analysis">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:title" content="21 点和扑克，靠算牌能赢吗？ | Rust Analysis">
@@ -20,9 +20,16 @@
 <meta name="twitter:site" content="@maco165_rust">
 <meta name="twitter:creator" content="@maco165_rust">
 <link rel="canonical" href="https://maco165.github.io/rust-patch-notes/zh/columns/card-games.html">
+<link rel="alternate" type="application/atom+xml" title="Rust Analysis" href="https://maco165.github.io/rust-patch-notes/zh/feed.xml">
+<meta property="article:published_time" content="2026-11-12">
+<meta property="article:modified_time" content="2026-11-12">
+<meta property="og:locale:alternate" content="ja_JP">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:locale:alternate" content="ko_KR">
+<meta property="og:locale:alternate" content="ru_RU">
 <link rel="alternate" hreflang="ja" href="https://maco165.github.io/rust-patch-notes/columns/card-games.html">
 <link rel="alternate" hreflang="en" href="https://maco165.github.io/rust-patch-notes/en/columns/card-games.html">
-<link rel="alternate" hreflang="zh" href="https://maco165.github.io/rust-patch-notes/zh/columns/card-games.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://maco165.github.io/rust-patch-notes/zh/columns/card-games.html">
 <link rel="alternate" hreflang="ko" href="https://maco165.github.io/rust-patch-notes/ko/columns/card-games.html">
 <link rel="alternate" hreflang="ru" href="https://maco165.github.io/rust-patch-notes/ru/columns/card-games.html">
 <link rel="alternate" hreflang="x-default" href="https://maco165.github.io/rust-patch-notes/columns/card-games.html">
@@ -198,7 +205,7 @@ def settle(cards, bet, dealer):
 <h2 class="ra-section">调查方法</h2>
 <p>我们阅读了服务器本体的代码（21 点和扑克相关类的中间代码），并从数据文件中读取了机台和牌桌的设置值。没有启动服务器。牌堆张数、庄家的要牌方式、赔付倍率、下注范围、盲注和时间，全都是读到的值。</p>
 <p>庄家优势、基本策略表和各座位的比例，是用我们把读到的规则重新写成的程序计算和模拟得出的。到拿到梅花 A 的比例为止，都可以由 <a class="ra-link" href="card-games.py">card-games.py</a> 得出。扑克的底池分配和 21 点 3 人时各座位的差异，是用另一个一次性程序得出的。</p>
-<p>这些并不是在游戏里实际玩并统计的结果，而是对“代码就是这样写的”的确认。</p><h2 class="ra-section">出处</h2><ul><li><a class="ra-link" href="https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.randomnumbergenerator.getint32" rel="noopener">.NET documentation, RandomNumberGenerator.GetInt32</a></li><li><a class="ra-link" href="https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle" rel="noopener">Wikipedia, Fisher–Yates shuffle (section on Sattolo&#x27;s algorithm)</a></li></ul></article></main>
+<p>这些并不是在游戏里实际玩并统计的结果，而是对“代码就是这样写的”的确认。</p><h2 class="ra-section">出处</h2><ul><li><a class="ra-link" href="https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.randomnumbergenerator.getint32" rel="noopener">.NET documentation, RandomNumberGenerator.GetInt32</a></li><li><a class="ra-link" href="https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle" rel="noopener">Wikipedia, Fisher–Yates shuffle (section on Sattolo&#x27;s algorithm)</a></li></ul><div class="ra-col-share"><span class="ra-col-share-h">分享这篇文章</span><a class="ra-button" href="https://twitter.com/intent/tweet?text=21%20%E7%82%B9%E5%92%8C%E6%89%91%E5%85%8B%EF%BC%8C%E9%9D%A0%E7%AE%97%E7%89%8C%E8%83%BD%E8%B5%A2%E5%90%97%EF%BC%9F&amp;url=https%3A//maco165.github.io/rust-patch-notes/zh/columns/card-games.html&amp;via=maco165_rust" rel="noopener" target="_blank">X</a><a class="ra-button" href="https://www.reddit.com/submit?url=https%3A//maco165.github.io/rust-patch-notes/zh/columns/card-games.html&amp;title=21%20%E7%82%B9%E5%92%8C%E6%89%91%E5%85%8B%EF%BC%8C%E9%9D%A0%E7%AE%97%E7%89%8C%E8%83%BD%E8%B5%A2%E5%90%97%EF%BC%9F" rel="noopener" target="_blank">Reddit</a><button type="button" class="ra-button" data-copy="https://maco165.github.io/rust-patch-notes/zh/columns/card-games.html">复制链接</button><span class="ra-col-share-msg" role="status"></span></div></article></main>
 <footer class="ra-foot"><p>本站为个人分析制作的非官方网站，与 Facepunch Studios 无关。数值读取自游戏服务器的数据与代码，不保证准确。</p>
 <p>部分图标来自 <a class="ra-link" href="https://lucide.dev/" rel="noopener">Lucide</a> (ISC License)。</p></footer>
-<script>(()=>{const m=document.querySelector('details.ra-site-lang');document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('[data-lang]');if(a)try{localStorage.setItem('ra-lang',a.dataset.lang)}catch(_){}if(m&&m.open&&!m.contains(e.target))m.open=false});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&m&&m.open){m.open=false;m.querySelector('summary').focus()}})})()</script></body></html>
+<script>(()=>{const m=document.querySelector('details.ra-site-lang');document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('[data-lang]');if(a)try{localStorage.setItem('ra-lang',a.dataset.lang)}catch(_){}if(m&&m.open&&!m.contains(e.target))m.open=false});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&m&&m.open){m.open=false;m.querySelector('summary').focus()}})})()</script><script>document.addEventListener('click',async e=>{const b=e.target.closest&&e.target.closest('[data-copy]');if(!b)return;const m=b.parentElement.querySelector('.ra-col-share-msg');try{await navigator.clipboard.writeText(b.dataset.copy);m.textContent='已复制链接。'}catch(_){m.textContent='无法复制。可以直接使用地址栏中的 URL。'}})</script></body></html>

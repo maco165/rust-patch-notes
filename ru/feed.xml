@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ru">
+  <id>https://maco165.github.io/rust-patch-notes/ru/feed.xml</id><title>Rust Analysis</title>
+  <link href="https://maco165.github.io/rust-patch-notes/ru/"/><link rel="self" href="https://maco165.github.io/rust-patch-notes/ru/feed.xml"/>
+  <updated>2026-11-15T00:00:00Z</updated><author><name>Rust Analysis</name></author>
+  <entry>
+    <id>https://maco165.github.io/rust-patch-notes/ru/columns/buff-ranking.html</id><title>Чай и пироги: 1 чашка — Milky, повторы — с Bear Pie</title><link href="https://maco165.github.io/rust-patch-notes/ru/columns/buff-ranking.html"/>
+    <published>2026-11-15T00:00:00Z</published><updated>2026-11-15T00:00:00Z</updated>
+    <summary>Мы перебрали все сочетания чаёв и пирогов по той же формуле, что и Buff Planner. Четыре рейтинга — объём добычи, короткие отрезки, бой и выгода на ингредиент.</summary>
+  </entry>
+  <entry>
+    <id>https://maco165.github.io/rust-patch-notes/ru/columns/wheel-myths.html</id><title>Есть ли выигрышная схема на Big Wheel?</title><link href="https://maco165.github.io/rust-patch-notes/ru/columns/wheel-myths.html"/>
+    <published>2026-11-12T00:00:00Z</published><updated>2026-11-12T00:00:00Z</updated>
+    <summary>Проверяем по коду сервера 7 мифов о рулетке Bandit Camp. Сейчас схемы нет; до мая 2024 года прошлый результат подсказывал следующий, и были ставки в плюс.</summary>
+  </entry>
+  <entry>
+    <id>https://maco165.github.io/rust-patch-notes/ru/columns/slot-machine.html</id><title>Слоты отдают 91.8%: больше крутите — больше теряете</title><link href="https://maco165.github.io/rust-patch-notes/ru/columns/slot-machine.html"/>
+    <published>2026-11-12T00:00:00Z</published><updated>2026-11-12T00:00:00Z</updated>
+    <summary>Как слот-машина выбирает символы и платит, мы прочитали из кода и данных сервера. Со ставки 2 Scrap в среднем возвращается 1.84. «Щедрых» автоматов и часов нет.</summary>
+  </entry>
+  <entry>
+    <id>https://maco165.github.io/rust-patch-notes/ru/columns/loot-containers.html</id><title>Когда определяется лут в ящике?</title><link href="https://maco165.github.io/rust-patch-notes/ru/columns/loot-containers.html"/>
+    <published>2026-11-12T00:00:00Z</published><updated>2026-11-12T00:00:00Z</updated>
+    <summary>По коду сервера проверили, когда и как определяется содержимое Barrel, Military Crate и Locked Crate. Лут задаётся при спавне; кто и когда открывает, не важно.</summary>
+  </entry>
+  <entry>
+    <id>https://maco165.github.io/rust-patch-notes/ru/columns/card-games.html</id><title>Можно ли обыграть блэкджек и покер подсчётом карт?</title><link href="https://maco165.github.io/rust-patch-notes/ru/columns/card-games.html"/>
+    <published>2026-11-12T00:00:00Z</published><updated>2026-11-12T00:00:00Z</updated>
+    <summary>Проверили по коду сервера автомат для блэкджека и карточный стол. Колода собирается заново каждый раунд, подсчёт карт не помогает. Доля казино — около 0.8%.</summary>
+  </entry>
+  <entry>
+    <id>https://maco165.github.io/rust-patch-notes/ru/index.html</id><title>Обновление Rust 11.2026: Printed and Polished</title><link href="https://maco165.github.io/rust-patch-notes/ru/index.html"/>
+    <published>2026-11-05T00:00:00Z</published><updated>2026-11-05T00:00:00Z</updated>
+    <summary>Обновление Rust «Printed and Polished» (11.2026): 215 изменений — их число, главное, категории и различия настроек предметов.</summary>
+  </entry>
+</feed>
