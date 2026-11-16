@@ -49,6 +49,7 @@ The pages are built by Python scripts from data read out of the game. There are 
 | [tools/craft.html](en/tools/craft.html) | Craft Planner: what is still missing and how long the furnaces take, from what you make, what you hold and your furnaces | The same data as the Raid Planner |
 | [tools/gene.html](en/tools/gene.html) | Gene Planner: how to plant your saplings to get genes close to a target such as GGGYYY, and what the genes do | Server data, and the crossbreeding rules read from the server's code |
 | [tools/buff.html](en/tools/buff.html) | Buff Planner: how strong the effects of teas and pies are and until when, what replaces what, and what the Bear Pie makes shorter | Server data, and the stacking rules read from the server's code |
+| [tools/ttk.html](en/tools/ttk.html) | TTK Planner: protection per body part from armour and inserts, and how many hits each gun and bow needs to the head, torso and legs, every 10 m | Server data, and the damage formula read from the server's code |
 
 ## Languages
 

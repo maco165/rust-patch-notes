@@ -49,6 +49,7 @@
 | [tools/craft.html](ko/tools/craft.html) | Craft Planner: 만들 것, 가진 자원, 화로로부터 부족한 것과 화로 시간 | Raid Planner와 같은 데이터 |
 | [tools/gene.html](ko/tools/gene.html) | Gene Planner: 가진 모종으로 GGGYYY 같은 목표에 가까운 유전자를 얻는 심는 법과 유전자의 효과 | 서버 데이터와, 서버 코드에서 읽은 교배 규칙 |
 | [tools/buff.html](ko/tools/buff.html) | Buff Planner: 차와 파이의 효과가 얼마나 강하고 언제까지 가는지, 무엇이 교체되는지, 곰고기 파이가 무엇을 짧게 하는지 | 서버 데이터와, 서버 코드에서 읽은 중첩 규칙 |
+| [tools/ttk.html](ko/tools/ttk.html) | TTK Planner: 방어구와 삽입판으로 부위별 방어, 총과 활마다 머리·몸통·다리에 몇 발에 쓰러지는지 10 m마다 | 서버 데이터와, 서버 코드에서 읽은 피해 공식 |
 
 ## 언어
 

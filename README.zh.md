@@ -49,6 +49,7 @@
 | [tools/craft.html](zh/tools/craft.html) | Craft Planner：根据要制作的东西、持有的物资和熔炉，算出还缺什么、熔炉要多久 | 与 Raid Planner 相同的数据 |
 | [tools/gene.html](zh/tools/gene.html) | Gene Planner：用手上的幼苗种出接近 GGGYYY 等目标基因的种法，以及基因的效果 | 服务器数据，以及从服务器代码读出的杂交规则 |
 | [tools/buff.html](zh/tools/buff.html) | Buff Planner：茶和派的效果有多强、持续到何时，哪个会被替换，熊肉派会让哪些变短 | 服务器数据，以及从服务器代码读出的叠加规则 |
+| [tools/ttk.html](zh/tools/ttk.html) | TTK Planner：根据护甲和插板算出各部位的防护，以及每把枪和弓打头、躯干、腿需要几发，每 10 m 一档 | 服务器数据，以及从服务器代码读出的伤害公式 |
 
 ## 语言
 
