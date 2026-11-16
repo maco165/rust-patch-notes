@@ -12,10 +12,13 @@
 <meta property="og:title" content="Big Wheel에 필승 패턴이 있을까? | Rust Analysis">
 <meta property="og:description" content="Bandit Camp의 Big Wheel에 얽힌 7가지 이야기를 서버 코드를 읽은 결과로 하나씩 확인합니다. 지금은 패턴이 없습니다. 2024년 5월 이전에는 이전 당첨을 보면 다음에 잘 나올 칸을 알 수 있었고, 평균적으로 늘어나는 베팅법도 있었습니다.">
 <meta property="og:url" content="https://maco165.github.io/rust-patch-notes/ko/columns/wheel-myths.html">
-<meta property="og:image" content="https://maco165.github.io/rust-patch-notes/assets/og.png">
+<meta property="og:image" content="https://maco165.github.io/rust-patch-notes/assets/og/ko/column-wheel-myths.png">
+<meta property="og:image:alt" content="Big Wheel에 필승 패턴이 있을까? | Rust Analysis">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@maco165_rust">
+<meta name="twitter:creator" content="@maco165_rust">
 <link rel="canonical" href="https://maco165.github.io/rust-patch-notes/ko/columns/wheel-myths.html">
 <link rel="alternate" hreflang="ja" href="https://maco165.github.io/rust-patch-notes/columns/wheel-myths.html">
 <link rel="alternate" hreflang="en" href="https://maco165.github.io/rust-patch-notes/en/columns/wheel-myths.html">
@@ -23,7 +26,7 @@
 <link rel="alternate" hreflang="ko" href="https://maco165.github.io/rust-patch-notes/ko/columns/wheel-myths.html">
 <link rel="alternate" hreflang="ru" href="https://maco165.github.io/rust-patch-notes/ru/columns/wheel-myths.html">
 <link rel="alternate" hreflang="x-default" href="https://maco165.github.io/rust-patch-notes/columns/wheel-myths.html">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Big Wheel에 필승 패턴이 있을까?", "description": "Bandit Camp의 Big Wheel에 얽힌 7가지 이야기를 서버 코드를 읽은 결과로 하나씩 확인합니다. 지금은 패턴이 없습니다. 2024년 5월 이전에는 이전 당첨을 보면 다음에 잘 나올 칸을 알 수 있었고, 평균적으로 늘어나는 베팅법도 있었습니다.", "inLanguage": "ko", "datePublished": "2026-11-12", "dateModified": "2026-11-12", "url": "https://maco165.github.io/rust-patch-notes/ko/columns/wheel-myths.html", "mainEntityOfPage": "https://maco165.github.io/rust-patch-notes/ko/columns/wheel-myths.html", "image": "https://maco165.github.io/rust-patch-notes/assets/og.png", "author": {"@type": "Organization", "name": "Rust Analysis", "url": "https://maco165.github.io/rust-patch-notes/"}, "publisher": {"@type": "Organization", "name": "Rust Analysis", "url": "https://maco165.github.io/rust-patch-notes/"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Big Wheel에 필승 패턴이 있을까?", "description": "Bandit Camp의 Big Wheel에 얽힌 7가지 이야기를 서버 코드를 읽은 결과로 하나씩 확인합니다. 지금은 패턴이 없습니다. 2024년 5월 이전에는 이전 당첨을 보면 다음에 잘 나올 칸을 알 수 있었고, 평균적으로 늘어나는 베팅법도 있었습니다.", "inLanguage": "ko", "datePublished": "2026-11-12", "dateModified": "2026-11-12", "url": "https://maco165.github.io/rust-patch-notes/ko/columns/wheel-myths.html", "mainEntityOfPage": "https://maco165.github.io/rust-patch-notes/ko/columns/wheel-myths.html", "image": "https://maco165.github.io/rust-patch-notes/assets/og/ko/column-wheel-myths.png", "author": {"@type": "Organization", "name": "Rust Analysis", "url": "https://maco165.github.io/rust-patch-notes/"}, "publisher": {"@type": "Organization", "name": "Rust Analysis", "url": "https://maco165.github.io/rust-patch-notes/"}}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Rust Analysis", "item": "https://maco165.github.io/rust-patch-notes/ko/index.html"}, {"@type": "ListItem", "position": 2, "name": "칼럼", "item": "https://maco165.github.io/rust-patch-notes/ko/columns.html"}, {"@type": "ListItem", "position": 3, "name": "Big Wheel에 필승 패턴이 있을까?", "item": "https://maco165.github.io/rust-patch-notes/ko/columns/wheel-myths.html"}]}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
