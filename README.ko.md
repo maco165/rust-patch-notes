@@ -22,6 +22,29 @@
 
 **검토** — 모든 변경은 공개 전에 Anthropic의 AI 'Claude'가 차이를 확인하고 사람이 승인합니다.
 
+## 페이지
+
+| 페이지 | 내용 | 언어 |
+|---|---|---|
+| [이번 달](https://maco165.github.io/rust-patch-notes/ko/index.html) | 이번 달 업데이트의 요점, 건수, 장르, 아이템 설정의 차이 | JP EN CN KR RU |
+| [이전 기록](https://maco165.github.io/rust-patch-notes/history.html) | 2015년부터의 모든 변경 사항을 장르, 연도, 분류, 단어로 필터 | JP only |
+| [장르](https://maco165.github.io/rust-patch-notes/ko/genres.html) | 장르별 변경 건수와 연도별 추이 | JP EN CN KR RU |
+| [수치](https://maco165.github.io/rust-patch-notes/numbers.html) | 공식 문장에 전후 값이나 비율이 적힌 변경 | JP only |
+| [판 차이](https://maco165.github.io/rust-patch-notes/diffs.html) | 두 판을 고르면 아이템 설정이 얼마나 바뀌었는지 | JP only |
+| [아이템](https://maco165.github.io/rust-patch-notes/items.html) | 아이템별 설정, 나오는 상자와 확률, 변경 기록 | JP only |
+| [사양서](https://maco165.github.io/rust-patch-notes/spec.html) | 모든 아이템의 수치를 종류별 표로 | JP only |
+| [칼럼](https://maco165.github.io/rust-patch-notes/ko/columns.html) | 플레이어들의 말을 서버 코드와 데이터로 확인한 글 | JP EN CN KR RU |
+
+### 도구
+
+| 도구 | 용도 | 언어 |
+|---|---|---|
+| [Raid Planner](https://maco165.github.io/rust-patch-notes/ko/tools/raid.html) | 벽, 문, 설치물을 함께 부수는 데 필요한 폭발물 수와 유황, 재료 | JP EN CN KR RU |
+| [Craft Planner](https://maco165.github.io/rust-patch-notes/ko/tools/craft.html) | 만들 폭발물과 보유 자원으로 부족한 재료와 화로 시간 | JP EN CN KR RU |
+| [Gene Planner](https://maco165.github.io/rust-patch-notes/ko/tools/gene.html) | 가진 묘목으로 목표 유전자에 가깝게 심는 법 | JP EN CN KR RU |
+| [Buff Planner](https://maco165.github.io/rust-patch-notes/ko/tools/buff.html) | 차와 파이 효과가 겹치는 방식과 끝나는 시각 | JP EN CN KR RU |
+| [TTK Planner](https://maco165.github.io/rust-patch-notes/ko/tools/ttk.html) | 방어구와 무기별로 몇 발에 쓰러지는지 | JP EN CN KR RU |
+
 ## 화면
 
 <table><tr><td colspan="2" valign="top"><a href="https://maco165.github.io/rust-patch-notes/ko/index.html"><img src="assets/readme/shot-ko-month.png" alt="이번 달"></a><br><sub><b>이번 달</b></sub></td></tr><tr><td width="50%" valign="top"><a href="https://maco165.github.io/rust-patch-notes/ko/tools/raid.html"><img src="assets/readme/shot-ko-raid.png" alt="Raid Planner"></a><br><sub><b>Raid Planner</b></sub></td><td width="50%" valign="top"><a href="https://maco165.github.io/rust-patch-notes/ko/tools/gene.html"><img src="assets/readme/shot-ko-gene.png" alt="Gene Planner"></a><br><sub><b>Gene Planner</b></sub></td></tr><tr><td width="50%" valign="top"><a href="https://maco165.github.io/rust-patch-notes/ko/tools/buff.html"><img src="assets/readme/shot-ko-buff.png" alt="Buff Planner"></a><br><sub><b>Buff Planner</b></sub></td><td width="50%" valign="top"><a href="https://maco165.github.io/rust-patch-notes/ko/tools/ttk.html"><img src="assets/readme/shot-ko-ttk.png" alt="TTK Planner"></a><br><sub><b>TTK Planner</b></sub></td></tr></table>
