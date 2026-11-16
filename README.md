@@ -90,6 +90,7 @@ flowchart LR
 | [en/tools.html](en/tools.html) | English の tools.html | tools.html と同じ計算。文言は content/i18n/en.yml から |
 | [en/tools/craft.html](en/tools/craft.html) | English の tools/craft.html | tools/craft.html と同じ計算。文言は content/i18n/en.yml から |
 | [en/tools/raid.html](en/tools/raid.html) | English の tools/raid.html | tools/raid.html と同じ計算。文言は content/i18n/en.yml から |
+| [en/tools/gene.html](en/tools/gene.html) | English の tools/gene.html | tools/gene.html と同じ計算。文言は content/i18n/en.yml から |
 | [en/tools/buff.html](en/tools/buff.html) | English の tools/buff.html | tools/buff.html と同じ計算。文言は content/i18n/en.yml から |
 | [en/tools/ttk.html](en/tools/ttk.html) | English の tools/ttk.html | tools/ttk.html と同じ計算。文言は content/i18n/en.yml から |
 | [en/columns.html](en/columns.html) | English の columns.html | content/columns/en/ の記事 (日本語の記事と同じ内容) |

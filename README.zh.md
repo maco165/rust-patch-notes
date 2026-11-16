@@ -62,7 +62,7 @@ flowchart LR
 | [columns.html](en/columns.html) (English) | 根据服务器代码和数据验证玩家说法的文章 | 服务器的代码 (IL) 与数据；出处在每篇文章末尾 |
 | [tools/raid.html](en/tools/raid.html) (English) | Raid Planner：同时摧毁墙、门和设施所需的炸药、硫磺、材料和熔炉时间 | 服务器数据，以及从服务器代码读出的伤害与冶炼规则 |
 | [tools/craft.html](en/tools/craft.html) (English) | Craft Planner：根据要制作的东西、持有的物资和熔炉，算出还缺什么、熔炉要多久 | 与 Raid Planner 相同的数据 |
-| [tools/gene.html](tools/gene.html) (仅日语) | Gene Planner：用手上的幼苗种出接近 GGGYYY 等目标基因的种法，以及基因的效果 | 服务器数据，以及从服务器代码读出的杂交规则 |
+| [tools/gene.html](en/tools/gene.html) (English) | Gene Planner：用手上的幼苗种出接近 GGGYYY 等目标基因的种法，以及基因的效果 | 服务器数据，以及从服务器代码读出的杂交规则 |
 | [tools/buff.html](en/tools/buff.html) (English) | Buff Planner：茶和派的效果有多强、持续到何时，哪个会被替换，熊肉派会让哪些变短 | 服务器数据，以及从服务器代码读出的叠加规则 |
 
 ## 语言

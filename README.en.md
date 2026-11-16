@@ -62,7 +62,7 @@ flowchart LR
 | [columns.html](en/columns.html) | Articles that check what players say against the server's code and data | The server's code (IL) and data; sources at the end of each article |
 | [tools/raid.html](en/tools/raid.html) | Raid Planner: explosives, sulfur, materials and furnace time to break walls, doors and deployables together | Server data, and the damage and smelting rules read from the server's code |
 | [tools/craft.html](en/tools/craft.html) | Craft Planner: what is still missing and how long the furnaces take, from what you make, what you hold and your furnaces | The same data as the Raid Planner |
-| [tools/gene.html](tools/gene.html) (Japanese only) | Gene Planner: how to plant your saplings to get genes close to a target such as GGGYYY, and what the genes do | Server data, and the crossbreeding rules read from the server's code |
+| [tools/gene.html](en/tools/gene.html) | Gene Planner: how to plant your saplings to get genes close to a target such as GGGYYY, and what the genes do | Server data, and the crossbreeding rules read from the server's code |
 | [tools/buff.html](en/tools/buff.html) | Buff Planner: how strong the effects of teas and pies are and until when, what replaces what, and what the Bear Pie makes shorter | Server data, and the stacking rules read from the server's code |
 
 ## Languages
