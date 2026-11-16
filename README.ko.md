@@ -59,23 +59,23 @@ flowchart LR
 | [history.html](history.html) · [genres.html](genres.html) · [numbers.html](numbers.html) (일본어만) | 모든 패치 (장르·연도·종류로 필터); 장르별 건수; 수치가 적힌 변경 | 같은 변경 사항; 장르 분류는 이 사이트의 규칙 |
 | [items.html](items.html) · [spec.html](spec.html) (일본어만) | 아이템별 설정, 드롭 위치와 확률; 모든 수치의 표 | 서버 빌드에서 내보낸 수치와, 루팅 표로 계산한 확률 |
 | [diffs.html](diffs.html) (일본어만) | 두 빌드 사이에 바뀐 아이템 설정 | 클라이언트 월별 빌드의 아이템 파일 |
-| [columns.html](en/columns.html) (English) | 플레이어들의 말을 서버 코드와 데이터로 확인하는 글 | 서버의 코드 (IL)와 데이터; 출처는 각 글의 끝 |
-| [tools/raid.html](en/tools/raid.html) (English) | Raid Planner: 벽·문·설치물을 함께 부수는 데 필요한 폭발물, 유황, 재료와 화로 시간 | 서버 데이터와, 서버 코드에서 읽은 피해·제련 규칙 |
-| [tools/craft.html](en/tools/craft.html) (English) | Craft Planner: 만들 것, 가진 자원, 화로로부터 부족한 것과 화로 시간 | Raid Planner와 같은 데이터 |
-| [tools/gene.html](tools/gene.html) (일본어만) | Gene Planner: 가진 모종으로 GGGYYY 같은 목표에 가까운 유전자를 얻는 심는 법과 유전자의 효과 | 서버 데이터와, 서버 코드에서 읽은 교배 규칙 |
-| [tools/buff.html](en/tools/buff.html) (English) | Buff Planner: 차와 파이의 효과가 얼마나 강하고 언제까지 가는지, 무엇이 교체되는지, 곰고기 파이가 무엇을 짧게 하는지 | 서버 데이터와, 서버 코드에서 읽은 중첩 규칙 |
+| [columns.html](ko/columns.html) | 플레이어들의 말을 서버 코드와 데이터로 확인하는 글 | 서버의 코드 (IL)와 데이터; 출처는 각 글의 끝 |
+| [tools/raid.html](ko/tools/raid.html) | Raid Planner: 벽·문·설치물을 함께 부수는 데 필요한 폭발물, 유황, 재료와 화로 시간 | 서버 데이터와, 서버 코드에서 읽은 피해·제련 규칙 |
+| [tools/craft.html](ko/tools/craft.html) | Craft Planner: 만들 것, 가진 자원, 화로로부터 부족한 것과 화로 시간 | Raid Planner와 같은 데이터 |
+| [tools/gene.html](ko/tools/gene.html) | Gene Planner: 가진 모종으로 GGGYYY 같은 목표에 가까운 유전자를 얻는 심는 법과 유전자의 효과 | 서버 데이터와, 서버 코드에서 읽은 교배 규칙 |
+| [tools/buff.html](ko/tools/buff.html) | Buff Planner: 차와 파이의 효과가 얼마나 강하고 언제까지 가는지, 무엇이 교체되는지, 곰고기 파이가 무엇을 짧게 하는지 | 서버 데이터와, 서버 코드에서 읽은 중첩 규칙 |
 
 ## 언어
 
-도구와 글은 일본어와 영어로 볼 수 있고, 다른 페이지는 일본어뿐입니다. 변경 사항은 공식 영어 문장을 일본어로 옮긴 것이라 다시 영어로 옮기지 않습니다. https://rust.facepunch.com/changes 를 보세요.
+도구와 글은 일본어, 영어, 중국어(간체), 한국어, 러시아어로 볼 수 있고, 다른 페이지는 일본어뿐입니다. 도구와 글은 처음 열 때 브라우저 언어의 판으로 이동합니다(언어 링크로 고르면 그 언어를 기억합니다). 아이템 이름은 모든 언어에서 게임의 영어 이름입니다. 변경 사항은 공식 영어 문장을 일본어로 옮긴 것이라 다른 언어로 옮기지 않습니다. https://rust.facepunch.com/changes 를 보세요.
 
 | 언어 | 상태 |
 |---|---|
 | 日本語 | 모든 페이지 |
-| English | 도구, 글, 이 README |
-| 简体中文 | 이 README; 페이지는 지원 예정 |
-| 한국어 | 이 README; 페이지는 지원 예정 |
-| Русский | 이 README; 페이지는 지원 예정 |
+| English | 도구, 글, README |
+| 简体中文 | 도구, 글, README |
+| 한국어 | 도구, 글, 이 README |
+| Русский | 도구, 글, README |
 
 ## 알아 둘 점
 

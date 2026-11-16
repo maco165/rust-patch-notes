@@ -1,0 +1,559 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<script>(()=>{try{if(/bot|crawl|spider|slurp|lighthouse|inspection/i.test(navigator.userAgent))return;const A={"ja":"../../tools/gene.html","en":"../../en/tools/gene.html","zh":"../../zh/tools/gene.html","ko":"../../ko/tools/gene.html","ru":"../../ru/tools/gene.html"},S=["ja","en","zh","ko","ru"];let w=localStorage.getItem('ra-lang');if(!w){for(const l of navigator.languages||[navigator.language||'']){const c=String(l).toLowerCase().split('-')[0];if(S.includes(c)){w=c;break}}w=w||'en'}if(!A[w])w=A.en?'en':null;if(w&&w!=='zh')location.replace(A[w]+location.search+location.hash)}catch(_){}})()</script><title>Gene Planner：Rust 种子杂交（基因组合）| Rust Analysis</title>
+<meta name="description" content="游戏 Rust 植物基因（G、Y、H、W、X）杂交计算工具。根据手头的幼苗，算出培育 GGGYYY 等接近目标的幼苗的种植方法（中间与周围种哪些幼苗以及顺序），以及长成后的效果。">
+<meta name="theme-color" content="#f2f4f5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15181a" media="(prefers-color-scheme: dark)">
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+<link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rust Analysis">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:title" content="Gene Planner：Rust 种子杂交（基因组合）| Rust Analysis">
+<meta property="og:description" content="游戏 Rust 植物基因（G、Y、H、W、X）杂交计算工具。根据手头的幼苗，算出培育 GGGYYY 等接近目标的幼苗的种植方法（中间与周围种哪些幼苗以及顺序），以及长成后的效果。">
+<meta property="og:url" content="https://maco165.github.io/rust-patch-notes/zh/tools/gene.html">
+<meta property="og:image" content="https://maco165.github.io/rust-patch-notes/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://maco165.github.io/rust-patch-notes/zh/tools/gene.html">
+<link rel="alternate" hreflang="ja" href="https://maco165.github.io/rust-patch-notes/tools/gene.html">
+<link rel="alternate" hreflang="en" href="https://maco165.github.io/rust-patch-notes/en/tools/gene.html">
+<link rel="alternate" hreflang="zh" href="https://maco165.github.io/rust-patch-notes/zh/tools/gene.html">
+<link rel="alternate" hreflang="ko" href="https://maco165.github.io/rust-patch-notes/ko/tools/gene.html">
+<link rel="alternate" hreflang="ru" href="https://maco165.github.io/rust-patch-notes/ru/tools/gene.html">
+<link rel="alternate" hreflang="x-default" href="https://maco165.github.io/rust-patch-notes/tools/gene.html">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Gene Planner", "url": "https://maco165.github.io/rust-patch-notes/zh/tools/gene.html", "description": "游戏 Rust 植物基因（G、Y、H、W、X）杂交计算工具。根据手头的幼苗，算出培育 GGGYYY 等接近目标的幼苗的种植方法（中间与周围种哪些幼苗以及顺序），以及长成后的效果。", "applicationCategory": "GameApplication", "operatingSystem": "Any", "inLanguage": "zh", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "isPartOf": {"@type": "WebSite", "name": "Rust Analysis", "url": "https://maco165.github.io/rust-patch-notes/"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Rust Analysis", "item": "https://maco165.github.io/rust-patch-notes/zh/tools.html"}, {"@type": "ListItem", "position": 2, "name": "工具", "item": "https://maco165.github.io/rust-patch-notes/zh/tools.html"}, {"@type": "ListItem", "position": 3, "name": "Gene Planner", "item": "https://maco165.github.io/rust-patch-notes/zh/tools/gene.html"}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+JP:wght@400;600&display=swap&family=Noto+Sans+SC:wght@400;600">
+<style>html:lang(zh){--font-sans:"Noto Sans SC","IBM Plex Sans JP",system-ui,sans-serif;--font-display:"Big Shoulders Display","Noto Sans SC",sans-serif}</style>
+<link rel="stylesheet" href="../../assets/style.css">
+</head><body>
+<header class="ra-site">
+  <a class="ra-site-name" href="../tools.html"><b>Rust</b> Analysis</a>
+  <nav class="ra-nav" aria-label="页面"><a href="../columns.html"><i class="ra-ico ra-ico-columns" aria-hidden="true"></i>文章</a><a href="../tools.html" aria-current="page"><i class="ra-ico ra-ico-tools" aria-hidden="true"></i>工具</a></nav>
+  <span class="ra-site-meta">2026-11-05</span>
+  <span class="ra-site-lang"><a href="../../tools/gene.html" lang="ja" hreflang="ja" data-lang="ja">日本語</a><a href="../../en/tools/gene.html" lang="en" hreflang="en" data-lang="en">English</a><a href="../../ko/tools/gene.html" lang="ko" hreflang="ko" data-lang="ko">한국어</a><a href="../../ru/tools/gene.html" lang="ru" hreflang="ru" data-lang="ru">Русский</a></span><a class="ra-site-link" href="https://github.com/maco165/rust-patch-notes" rel="noopener"><i class="ra-ico ra-ico-github" aria-hidden="true"></i>GitHub</a>
+</header>
+<script>(()=>{const n=document.querySelector('.ra-nav'),a=n&&n.querySelector('[aria-current]');if(a&&n.scrollWidth>n.clientWidth)n.scrollLeft=a.offsetLeft-(n.clientWidth-a.offsetWidth)/2})()</script>
+<main class="ra-page">
+<div class="ra-block">
+  <p class="ra-patch-meta"><a class="ra-link" href="../tools.html">工具</a><span class="ra-src ra-src-export"><i class="ra-ico ra-ico-export" aria-hidden="true"></i>游戏版本 2026-11-07</span></p>
+  <div class="ra-tp-head"><span class="ra-ti ra-ti-page" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke-linecap="round" stroke-linejoin="round">
+<path d="M33.5 29Q22 30 15.5 17Q28 13.5 33.5 27ZM34 26Q38.5 10.5 53.5 9.5Q53.5 23.5 34.5 27.5Z" fill="#d6eee3"/>
+<path d="M32 43.5Q30.8 34 32.4 24.5" stroke="#0b6649" stroke-width="3.4"/>
+<path d="M32 28Q20.4 28.4 14 15.4Q26.6 12 32.2 26.4M21 20Q26 22.4 30.4 26.6" stroke="#0b6649" stroke-width="3"/>
+<path d="M32.4 24.6Q37 9.2 52 8Q52.4 22 33 26.2M45 14Q39.6 18 34.6 24.4" stroke="#0b6649" stroke-width="3"/>
+<path d="M5.6 53.2Q5.4 49.2 9.4 49Q13.4 49.2 13.2 53.2Q13 57 9.2 57Q5.6 56.8 5.6 53.2Z" fill="#0b6649" stroke="#0b6649" stroke-width="2"/>
+<path d="M15 52.8Q15 48.8 18.8 48.8Q22.8 49 22.6 53Q22.4 56.8 18.6 56.8Q15 56.6 15 52.8Z" fill="#ffd77a" stroke="#0b6649" stroke-width="2.4"/>
+<path d="M24.4 53.2Q24.2 49.2 28.2 49Q32.2 49.2 32 53.2Q31.8 57 28 57Q24.4 56.8 24.4 53.2Z" fill="#0b6649" stroke="#0b6649" stroke-width="2"/>
+<path d="M33.8 52.8Q33.8 48.8 37.6 48.8Q41.6 49 41.4 53Q41.2 56.8 37.4 56.8Q33.8 56.6 33.8 52.8Z" fill="#9c1b3d" stroke="#9c1b3d" stroke-width="2"/>
+<path d="M43.2 53.2Q43 49.2 47 49Q51 49.2 50.8 53.2Q50.6 57 46.8 57Q43.2 56.8 43.2 53.2Z" fill="#0b6649" stroke="#0b6649" stroke-width="2"/>
+<path d="M52.6 52.8Q52.6 48.8 56.4 48.8Q60.4 49 60.2 53Q60 56.8 56.2 56.8Q52.6 56.6 52.6 52.8Z" fill="#ffd77a" stroke="#0b6649" stroke-width="2.4"/>
+</svg></span><h1 class="ra-patch-sub" lang="en">Gene Planner</h1></div>
+  <p class="ra-lead">输入手头幼苗的基因，即可按接近程度列出培育接近目标的幼苗的种植方法（放在中间的幼苗、种在周围的幼苗及顺序）。</p>
+</div>
+<section class="ra-block" aria-labelledby="h-stock-g"><details class="ra-sec" open data-fold="h-stock-g"><summary><h2 class="ra-section" id="h-stock-g">手头的幼苗 <small id="stock-sub"></small></h2><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i></summary><div class="ra-block">
+  <div class="ra-rd-controls">
+    <div class="ra-rd-field"><label for="plant">植物</label><select id="plant" class="ra-select gp-plant"></select></div>
+    <div class="ra-rd-field"><label for="g-in">基因</label><input id="g-in" class="gp-in" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="GGYYXW"></div>
+    <button type="button" class="ra-button" id="g-add">+ 添加</button>
+  </div>
+  <p class="ra-rd-hint" id="g-msg" role="status">用 G、Y、H、W、X 中的 6 个字母输入。每次添加 1 株，基因相同的幼苗有 2 株就添加 2 次。</p>
+  <div class="gp-read">
+    <button type="button" class="ra-button" id="read-img">从图片读取<small>选择、粘贴 (Ctrl+V)、拖放</small></button>
+    <input type="file" id="read-file" accept="image/*" hidden>
+    <button type="button" class="ra-button" id="read-screen" hidden>从屏幕读取<small>电脑屏幕共享</small></button>
+  </div>
+  <div class="gp-found" id="live" aria-live="polite" hidden></div>
+  <div class="gp-found" id="found" aria-live="polite" hidden></div>
+  <div class="gp-stock" id="stock"></div>
+  <div class="ra-rd-controls"><span class="ra-rd-sum" id="stock-sum"></span><button type="button" class="ra-button" id="g-clear">全部移除</button></div>
+</div></details></section>
+<section class="ra-block" aria-labelledby="h-goal"><details class="ra-sec" open data-fold="h-goal"><summary><h2 class="ra-section" id="h-goal">目标 <small id="goal-sub"></small></h2><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i></summary><div class="ra-block">
+  <div class="ra-rd-controls">
+    <div class="ra-rd-field"><span id="l-goal">基因</span><div class="ra-tabs" role="radiogroup" aria-labelledby="l-goal" id="goals"></div></div>
+    <div class="ra-rd-field" id="own-wrap"><label for="own">自定义</label><input id="own" class="gp-in" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="GGGYYY"></div>
+    <div class="ra-rd-field"><span id="l-box">种植箱</span><div class="ra-tabs" role="radiogroup" aria-labelledby="l-box" id="boxes"></div></div>
+  </div>
+  <p class="ra-rd-hint">基因的效果取决于数量而非排列，所以按各字母的数量与目标比较（GGGYYY 和 YYYGGG 相同）。</p>
+</div></details></section>
+<section class="ra-block" id="none">
+  <h2 class="ra-section">结果</h2>
+  <p class="ra-lead" id="none-msg"></p>
+</section>
+<div id="result" class="ra-rd-result">
+<section class="ra-block" aria-live="polite" aria-labelledby="gene-h"><details class="ra-sec" open data-fold="gene-h"><summary><h2 class="ra-section" id="gene-h"></h2><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i></summary><div class="ra-block">
+  <div class="ra-rd-best">
+    <div class="ra-rd-stat"><span class="ra-rd-label">所选种植方法</span><span class="ra-rd-best-name" id="pick-name"></span>
+      <span class="ra-rd-note" id="pick-note"></span></div>
+    <div class="ra-rd-stat"><span class="ra-rd-label">得到的幼苗</span><span id="pick-genes"></span></div>
+    <div class="ra-rd-share"><span class="ra-rd-label">分享当前结果</span>
+      <div class="ra-rd-share-row"><button type="button" class="ra-rd-share-go" id="sh-link"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>复制链接</button>
+        <div class="ra-rd-img" role="group" aria-label="结果图片"><span><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>图片</span><button type="button" id="sh-send" aria-label="分享图片" hidden><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><path d="m8.59 13.51 6.83 3.98"></path><path d="m15.41 6.51-6.82 3.98"></path></svg>分享</button><button type="button" id="sh-copy" aria-label="复制图片" hidden><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>复制</button><button type="button" id="sh-save" aria-label="保存图片"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="m7 10 5 5 5-5"></path><path d="M12 15V3"></path></svg>保存</button></div></div>
+      <span class="ra-rd-share-msg" id="sh-msg" role="status"></span></div>
+  </div>
+  <div class="ra-rd-row ra-rd-head gp-head" aria-hidden="true"><span>得到的幼苗</span><span class="ra-rd-n">所需株数</span><span>接近程度</span><span class="ra-rd-s">与目标的差距</span></div>
+  <div role="radiogroup" aria-label="显示种植方法的幼苗" id="gene-rows"></div>
+  <p class="ra-more" id="rows-note"></p>
+</div></details></section>
+<section class="ra-block" aria-live="polite" aria-labelledby="h-plan"><details class="ra-sec" open data-fold="h-plan"><summary><h2 class="ra-section" id="h-plan">种植方法 <small id="plan-sub"></small></h2><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i></summary><div class="ra-block">
+  <div class="gp-plan">
+    <div>
+      <ol class="gp-steps" id="steps"></ol>
+      <div class="ra-rd-smelt gp-why" id="why"></div>
+      <p class="ra-more" id="why-note"></p>
+    </div>
+    <div><div class="gp-box" id="box"></div><p class="gp-cap" id="box-cap"></p></div>
+  </div>
+</div></details></section>
+<section class="ra-block" aria-live="polite" aria-labelledby="h-eff"><details class="ra-sec" open data-fold="h-eff"><summary><h2 class="ra-section" id="h-eff">长成后的效果 <small id="eff-sub"></small></h2><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i></summary><div class="ra-block">
+  <div class="ra-rd-cost">
+    <div><div class="ra-rd-list-h">生长</div><div id="eff-grow"></div></div>
+    <div><div class="ra-rd-list-h">水分与寒冷</div><div id="eff-env"></div></div>
+  </div>
+</div></details></section>
+</div>
+<section class="ra-block" aria-labelledby="h-notes"><details class="ra-sec" open data-fold="h-notes"><summary><h2 class="ra-section" id="h-notes">计算前提</h2><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i></summary><div class="ra-block">
+  <p class="ra-rd-hint">结果根据游戏服务器的代码和数据计算得出，并非在游戏中实际种植验证。规则依据见调查记录《种子杂交与基因效果》（日语）。</p>
+  <details class="ra-rd-notes"><summary><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i>杂交规则 <span class="ra-num">6 条</span></summary><ul>
+    <li>杂交只在中间的幼苗进入“杂交”阶段的那一刻发生 1 次。没有随机因素。</li>
+    <li>对每一位，将周围幼苗的基因权重（X、W 为 1.0，G、Y、H 为 0.6）按种类相加，合计超过中间幼苗该位权重的种类会替换该位。相等时不变。</li>
+    <li>合计相同时，按种植顺序先达到该合计的种类获胜。按所写顺序种植，必定得到这个结果。</li>
+    <li>只有同一种植箱内、同一种类、存活且在 1.5 m 以内的植物才算周围。Large Planter Box 的中间有 8 个相邻格，Small Planter Box 的中间有 2 个，Triangle Planter 的每一格都有 3 个相邻格。</li>
+    <li>如果周围的幼苗在中间幼苗进入“杂交”之前先发生杂交，周围幼苗自己的基因会被改变。请先种下中间的幼苗，让它先长。</li>
+    <li>服务器重启后，计数顺序可能与种植顺序不同（未验证）。</li>
+  </ul></details>
+  <details class="ra-rd-notes"><summary><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i>从图片和屏幕读取 <span class="ra-num">5 条</span></summary><ul>
+    <li>图片只在本浏览器中读取，不会发送到任何地方。</li>
+    <li>读取绿色和红色圆圈中排列着 6 个白色字母的显示（幼苗说明和已种植作物的显示）。根据圆圈颜色区分优良基因（G、Y、H）和不良基因（W、X），再根据字母形状确定。无法读取没有圆圈、字母带颜色的旧版显示。</li>
+    <li>字母形状的样本取自公开的游戏截图。圆圈在图片边缘被截断或形状难以分辨时会显示为“?”，请修正后再添加。</li>
+    <li>从屏幕读取时，每 0.5 秒读取一次共享的屏幕，6 个字母齐全且连续 2 次读取结果相同时添加该幼苗。显示保持打开期间，不会重复添加同一株幼苗。关闭显示 1 秒以上后再次显示同一株幼苗，会作为另一株添加，不需要的话请移除。</li>
+    <li>屏幕共享可在电脑浏览器（Chrome、Edge 等）中使用。共享的屏幕不会被录制或发送。浏览器切到后台也会继续读取，若停止，请把浏览器放到另一块屏幕上。</li>
+  </ul></details>
+  <details class="ra-rd-notes"><summary><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i>搜索方式与效果 <span class="ra-num">4 条</span></summary><ul>
+    <li>尝试所有组合：手头幼苗中任选 1 株放在中间，再从其余幼苗中选出不超过种植箱相邻格数的幼苗放在周围。只考虑 1 次杂交，不显示再次使用杂交所得幼苗的步骤。</li>
+    <li>合计相同的位，种植顺序决定哪个基因获胜。对这些位检查所有获胜基因的组合，显示存在对应种植顺序的组合。</li>
+    <li>与目标的差距是需要改变的字母数。差距相同时，按不良基因（W、X）少的优先，再按株数少的优先排列。</li>
+    <li>生长速度、产量分别按每个 G、Y 增加 25%。每 2 个 Y 多 1 个克隆。每个 H 让温度条件提高 0.05，每个 W 让吸水量增加 10%。</li>
+  </ul></details>
+</div></details></section>
+</main>
+<footer class="ra-foot"><p>本站为个人分析制作的非官方网站，与 Facepunch Studios 无关。数值读取自游戏服务器的数据与代码，不保证准确。</p>
+<p>部分图标来自 <a class="ra-link" href="https://lucide.dev/" rel="noopener">Lucide</a> (ISC License)。</p></footer>
+<script>document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('[data-lang]');if(a)try{localStorage.setItem('ra-lang',a.dataset.lang)}catch(_){}})</script><script>
+const R={"version":"2026-11-07","w":{"X":1.0,"W":1.0,"G":0.6000000238418579,"Y":0.6000000238418579,"H":0.6000000238418579},"eff":{"ground":{"gene":"H","factor":0.2},"growth":{"gene":"G","factor":0.25},"temperature":{"gene":"H","factor":0.05},"water":{"gene":"W","factor":0.1},"yield":{"gene":"Y","factor":0.25}},"clones":{"gene":"Y","divisor":2},"plants":[{"id":"corn","name":"Corn","base":2},{"id":"hemp","name":"Hemp","base":2},{"id":"potato","name":"Potato","base":2},{"id":"pumpkin","name":"Pumpkin","base":2},{"id":"wheat","name":"Wheat","base":2},{"id":"red.berry","name":"Red Berry","base":2},{"id":"blue.berry","name":"Blue Berry","base":2},{"id":"green.berry","name":"Green Berry","base":2},{"id":"yellow.berry","name":"Yellow Berry","base":2},{"id":"white.berry","name":"White Berry","base":2},{"id":"black.berry","name":"Black Berry","base":2},{"id":"rose","name":"Rose","base":2},{"id":"orchid","name":"Orchid","base":1},{"id":"sunflower","name":"Sunflower","base":2}],"planters":[{"id":"planter.large","name":"大型","full":"Large Planter Box","center":0,"order":[5,1,2,6,3,4,8,7],"slots":[[0.0,0.0],[0.92,0.0],[-0.92,0.0],[-0.92,0.896],[0.936,0.896],[0.0,0.896],[0.0,-0.954],[0.936,-0.954],[-0.92,-0.954]]},{"id":"planter.small","name":"小型","full":"Small Planter Box","center":0,"order":[1,2],"slots":[[0.0,0.0],[0.92,0.0],[-0.92,0.0]]},{"id":"planter.triangle","name":"三角","full":"Triangle Planter","center":0,"order":[3,1,2],"slots":[[0.126,0.492],[0.123,-0.493],[-0.738,0.0],[-0.172,0.0]]}],"presets":["GGGYYY","GGYYYY","GGGGYY"],"icons":{},"msg":{"cut_link":"幼苗最多 {max} 株。链接中的 {held} 株里，从第 {from} 株起的 {n} 株已移除。","cut_dev":"幼苗最多 {max} 株。本设备保存的 {held} 株幼苗里，从第 {from} 株起的 {n} 株已移除（移除幼苗后，移除的部分也会从保存中删除）。","dropped":"保存中从第 {from} 株起的 {n} 株也已从保存中删除。","plan":"中间 {c}，周围 {o}","plan_row":"{plan}，按此顺序","del":"移除 {s}","stock_sub":"{plant} {n} 株","stock_sum":"{n} 株（最多 {max}）","full":"幼苗最多 {max} 株。请移除不用的幼苗。","added":"已将 {g} 添加为 {s}。","off":"与目标差 {d} 个字母","card_off":"与目标 {t} 差 {d} 个字母","pick_note":"幼苗 {n} 株。按所写顺序种植，必定得到这株幼苗。","best_is":"最接近的是 {res}。","n_sap":"{n}<small>株<\/small>","n_off":"{d}<small>个字母<\/small>","rows_note":"列出 1 次杂交可得到的幼苗，最多 {n} 条：按与目标的差距从小到大排列，差距相同时按不良基因（W、X）少的优先，再按株数少的优先。选择某一行后，上方的“所选种植方法”以及下方的种植方法、效果和分享图片都会切换为该幼苗。","step1":"在中间种下 <b>{c}<\/b>，让它先长（G 越多长得越快）","step2":"趁 {c} 还是幼苗时，按 {o} 的顺序种在周围","step3":"{c} 进入“杂交”阶段时，基因变为 {g}","step4":"长成后从 {c} 获取克隆","col":"第 {i} 位","beats":"{a} {t} 超过 {b} 的 {w}","why_note":"只显示会改变的位，其余各位保持 {c} 的原样。","box_cap":"{box} 俯视图。数字为种植顺序，空着的格什么都不种，或种其他种类的植物。","grow":"生长速度（G {n}）","yield":"产量（Y {n}）","clone":"克隆（基础 {base} + Y ÷ 2）","n_clone":"{n}<small>个<\/small>","water":"吸水量（W {n}）","temp":"温度条件（H {n}）","found":"找到 {n} 行基因。请检查（“?”为无法读取的字母）后再添加。","found_i":"读取的基因 {i}","live_n":"读取中：已添加 {n} 株。","live_wait":"正在读取屏幕（已添加 {n} 株）。请在游戏中打开幼苗说明或已种植作物的显示。","card_n":"幼苗 {n} 株。按所写顺序种植必定得到这株幼苗","card_eff":"生长速度 {g} / 产量 {y} / 克隆 {c} 个","summary":"{plant}：培育 {res} 的种植方法 {plan}"}};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const num=n=>Number(n).toLocaleString('en-US',{maximumFractionDigits:1});
+const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,parseInt(v,10)||lo));
+// The sections fold at their headings; which ones are folded is remembered on this device, per page.
+const FOLD='ra-fold-'+location.pathname.split('/').pop(),folds=()=>[...document.querySelectorAll('details[data-fold]')];
+try{const st=JSON.parse(localStorage.getItem(FOLD)||'{}');for(const d of folds())if(d.dataset.fold in st)d.open=!!st[d.dataset.fold]}catch(_){}
+document.addEventListener('toggle',ev=>{if(ev.target.dataset&&ev.target.dataset.fold)try{localStorage.setItem(FOLD,JSON.stringify(Object.fromEntries(folds().map(d=>[d.dataset.fold,d.open]))))}catch(_){}},true);
+// The share image: a 1200x675 card (drawn at 2x) in the page's own colours and fonts, with the site's name and `title` on
+// top and the page's address below. paint(h) draws the rest with the helpers h; icons are the names it draws with h.pic.
+const css=k=>getComputedStyle(document.documentElement).getPropertyValue(k).trim();
+async function drawCard(title,icons,paint){
+  const W=1200,H=675,K=2,L=48,HALF=(W-L*2-24)/2,cv=document.createElement('canvas');cv.width=W*K;cv.height=H*K;
+  const x=cv.getContext('2d');x.scale(K,K);
+  const C={bg:css('--plate'),up:css('--plate-raised'),sunk:css('--plate-sunken'),line:css('--line'),strong:css('--line-strong'),ink:css('--ink'),mute:css('--ink-muted'),rust:css('--rust')};
+  const F={sans:css('--font-sans'),mono:css('--font-mono'),disp:css('--font-display')},f=(w,px,fam)=>`${w} ${px}px ${F[fam]}`;
+  const used=[],pics={};
+  const pic=(k,px,py,sz)=>{if(pics[k])x.drawImage(pics[k],px,py,sz,sz)};
+  const M=(s,font)=>{x.font=font;return x.measureText(s).width};
+  // T draws text and returns the x where it ended (where it began, when right-aligned)
+  const T=(s,px,py,font,col,right)=>{used.push([font,s]);x.font=font;x.fillStyle=col;x.textAlign=right?'right':'left';x.fillText(s,px,py);
+    const w=x.measureText(s).width;return right?px-w:px+w};
+  const fit=(s,font,max)=>{if(M(s,font)<=max)return s;while(s.length>1&&M(s+'…',font)>max)s=s.slice(0,-1);return s+'…'};
+  const box=(col,a,b,w,h)=>{x.fillStyle=col;x.fillRect(a,b,w,h)};
+  const rule=(col,a,b,w,h,lw)=>{x.strokeStyle=col;x.lineWidth=lw;x.strokeRect(a+lw/2,b+lw/2,w-lw,h-lw)};
+  const h={x,W,H,L,HALF,C,f,T,M,fit,box,rule,pic};
+  const all=()=>{box(C.bg,0,0,W,H);const e=T('Rust Analysis',L,60,f(700,26,'disp'),C.ink);T(title,e+16,60,f(600,17,'sans'),C.mute);
+    T(`游戏版本 ${R.version}`,W-L,60,f(400,14,'mono'),C.mute,1);box(C.ink,L,78,W-L*2,2);paint(h);
+    box(C.line,L,642,W-L*2,1);T('maco165.github.io/rust-patch-notes/zh/tools/gene.html',L,662,f(400,13,'mono'),C.mute);T('根据游戏数据计算 / 非官方',W-L,662,f(400,13,'sans'),C.mute,1)};
+  // the first pass lists the text of each font, so the web fonts (split by unicode range) load before the pass that counts
+  all();try{await Promise.all(used.map(([font,s])=>document.fonts.load(font,s)))}catch(_){}
+  // the icons, as SVG images stroked in the ink colour; one that fails to load is left out
+  await Promise.all([...new Set(icons.filter(Boolean))].map(async k=>{try{const im=new Image();
+    im.src='data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 24 24" fill="none" stroke="${C.ink}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${R.icons[k]}</svg>`);
+    await im.decode();pics[k]=im}catch(_){}}));
+  used.length=0;all();return cv}
+// The buttons under "分享当前结果": the link, and the image made by card() shared, copied or saved as name().
+let say=()=>{};
+function shareUI(card,name,summary,hint){
+  const png=async()=>{const cv=await card();return new Promise((ok,ng)=>cv.toBlob(b=>b?ok(b):ng(new Error('toBlob')),'image/png'))};
+  say=m=>{$('#sh-msg').textContent=m||hint};say();document.addEventListener('change',()=>say());
+  const clip=navigator.clipboard;
+  $('#sh-link').addEventListener('click',async()=>{try{await clip.writeText(location.href);say('已复制链接。')}
+    catch(_){say('无法复制。可以直接使用地址栏中的 URL。')}});
+  $('#sh-save').addEventListener('click',async()=>{try{const a=document.createElement('a');a.href=URL.createObjectURL(await png());a.download=name();
+    document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),10000);say(`已保存图片 (${name()})。`)}
+    catch(_){say('无法生成图片。')}});
+  if(clip&&clip.write&&window.ClipboardItem){$('#sh-copy').hidden=false;
+    $('#sh-copy').addEventListener('click',async()=>{try{await clip.write([new ClipboardItem({'image/png':png()})]);say('已复制图片，可以粘贴发送。')}
+      catch(_){say('无法复制图片，请使用“保存”。')}})}
+  const probe=()=>{try{return navigator.canShare&&navigator.canShare({files:[new File([''],'a.png',{type:'image/png'})]})}catch(_){return false}};
+  if(probe()){$('#sh-send').hidden=false;
+    $('#sh-send').addEventListener('click',async()=>{try{const file=new File([await png()],name(),{type:'image/png'});
+        await navigator.share({files:[file],text:`${summary()}\n${location.href}`});say('')}
+      catch(e){if(e.name!=='AbortError')say('无法分享，请使用“保存”。')}})}}
+
+// Crossbreeding as the server does it (content/research/farming/crossbreeding.md): per slot add the weights in
+// planting order in 32-bit floats; the first gene to go above the running highest is dominant; it replaces the
+// slot's gene only when above that gene's weight.
+const W=Object.fromEntries(Object.entries(R.w).map(([g,v])=>[g,Math.fround(v)]));
+const cross=(c,ns)=>{let out='';for(let i=0;i<6;i++){const tot={};let best=null,bw=0;
+  for(const n of ns){const g=n[i];tot[g]=Math.fround((tot[g]||0)+W[g]);if(tot[g]>bw){bw=tot[g];best=g}}
+  out+=best&&bw>W[c[i]]?best:c[i]}return out};
+const GOOD=new Set(['G','Y','H']);
+const count=g=>{const n={X:0,W:0,G:0,Y:0,H:0};for(const c of g)n[c]++;return n};
+// the letters to change to reach the target: the genes count, not where they sit
+const diff=(g,t)=>{const a=count(g),b=count(t);return 6-Object.keys(a).reduce((s,k)=>s+Math.min(a[k],b[k]),0)};
+const bad=g=>[...g].filter(c=>!GOOD.has(c)).length;
+const GI={X:0,W:1,G:2,Y:3,H:4},GL='XWGYH',WI=[...GL].map(g=>W[g]);
+// SUM[n][g]: n genes g added one by one in 32-bit floats, as the server adds them
+const SUM=Array.from({length:9},(_,n)=>WI.map(w=>{let t=0;for(let i=0;i<n;i++)t=Math.fround(t+w);return t}));
+// The ways to plant the saplings `stock` (6-letter genes) towards the target t on a planter whose middle has k
+// neighbours: each sapling as the middle, and every choice of up to k others around it. A slot whose highest total is
+// held by one gene does not depend on the planting order, so the counts of the choice settle it. When the highest is
+// shared (and above the middle's gene), the gene whose carriers are all planted first wins it. Every choice of winners
+// of the shared slots is tried, and an order that gives it is built from the end: a sapling may go last while it does
+// not carry a winner still waiting for a rival to come after it. When no sapling may go, no order gives that choice.
+// The best 8 by the letters to change, then the fewer bad genes, then the fewer saplings; ci and oi are the indices
+// in `stock` of the middle and of those around, in planting order.
+function searchPlans(stock,t,k){
+  const types=[],idx={};stock.forEach((g,i)=>{if(!Object.hasOwn(idx,g)){idx[g]=types.length;types.push({g,ids:[],v:[...g].map(c=>GI[c])})}types[idx[g]].ids.push(i)});
+  const best=new Map(),cnt=new Int8Array(30);
+  // keep the plan for the middle ct and the types around in `order`, unless the same sapling is kept with fewer
+  const keep=(ct,res,order)=>{if(res===ct.g)return;const q=best.get(res);
+    if(!q||1+order.length<q.n)best.set(res,{res,d:diff(res,t),bad:bad(res),n:1+order.length,c:ct.g,order:order.map(i=>types[i].g)})};
+  const out=new Array(6),ties=[];
+  for(const ct of types){
+    const left=types.map(x=>x.ids.length-(x===ct?1:0)),pick=[];
+    // the slots settled by the counts; a slot whose highest is shared is won by the gene that reaches it first
+    const settle=()=>{if(!pick.length)return;ties.length=0;
+      for(let s=0;s<6;s++){let top=0,who=-1,shared=false;
+        for(let g=0;g<5;g++){const v=SUM[cnt[s*5+g]][g];if(v>top){top=v;who=g;shared=false}else if(v===top&&v>0)shared=true}
+        if(who<0||!(top>WI[ct.v[s]]))out[s]=ct.v[s];
+        else if(shared){const gs=[];for(let g=0;g<5;g++)if(cnt[s*5+g]&&SUM[cnt[s*5+g]][g]===top)gs.push(g);ties.push([s,gs])}
+        else out[s]=who}
+      const res=()=>out.map(g=>GL[g]).join('');
+      if(!ties.length){keep(ct,res(),pick);return}
+      // the winners tried: every tied gene of every shared slot (the other slots keep `out` from above)
+      let picks=[[]];for(const[,gs]of ties)picks=picks.flatMap(w=>gs.map(g=>[...w,g]));
+      for(const win of picks){
+        // each rule: one of `after` (the rival's carriers) must come after every one of `first` (the winner's carriers),
+        // so the winner's last carrier comes before the rival's last; positions are in pick
+        const rules=[];ties.forEach(([s,gs],j)=>{const at=g=>pick.map((ti,p)=>types[ti].v[s]===g?p:-1).filter(p=>p>=0);
+          for(const g of gs)if(g!==win[j])rules.push({first:new Set(at(win[j])),after:new Set(at(g)),ok:false})});
+        const rem=new Set(pick.keys()),back=[];
+        while(rem.size){let p=-1;for(const q of rem)if(!rules.some(r=>!r.ok&&r.first.has(q))){p=q;break}
+          if(p<0)break;rem.delete(p);back.push(p);for(const r of rules)if(!r.ok&&r.after.has(p))r.ok=true}
+        if(rem.size)continue;
+        ties.forEach(([s],j)=>{out[s]=win[j]});keep(ct,res(),back.reverse().map(p=>pick[p]))}};
+    const dfs=i=>{if(i===types.length){settle();return}
+      const v=types[i].v;let m=0;
+      for(;;){dfs(i+1);if(m>=left[i]||pick.length>=k)break;pick.push(i);for(let s=0;s<6;s++)cnt[s*5+v[s]]++;m++}
+      for(;m>0;m--){pick.pop();for(let s=0;s<6;s++)cnt[s*5+v[s]]--}};
+    dfs(0)}
+  // which sapling each genotype stands for: the middle first, then the ones around in order
+  const label=p=>{const used=new Set(),take=g=>{const i=types[idx[g]].ids.find(x=>!used.has(x));used.add(i);return i};
+    p.ci=take(p.c);p.oi=p.order.map(take);return p};
+  return[...best.values()].sort((a,b)=>a.d-b.d||a.bad-b.bad||a.n-b.n||(a.res<b.res?-1:1)).slice(0,8).map(label)}
+
+// A gene is a white letter on a green (G, Y, H) or red (W, X) circle; six of them make a row, evenly spaced, in the
+// item tooltip and on the plant's panel. The colour splits good from bad, the letter's shape on a 5x6 grid picks one
+// of 2 or 3 letters. The shapes (TEMPLATES) are averaged from public screenshots (RustBreeder's scanner frames,
+// Facepunch's farming update of 2020, Corrosion Hour 2023, gameplay.tips 2021); each was read right when left out of
+// the average. Older tooltips with coloured letters and no circles are not read.
+const MAX_CIRCLES=400,UNSURE=0.4,TEMPLATES={"G":[0.35,0.92,0.97,0.85,0.33,0.91,0.7,0.13,0.88,0.75,1,0.45,0.18,0.4,0.28,1,0.43,0.62,1,1,0.78,0.88,0.46,0.95,1,0.2,0.93,1,0.97,0.35],"Y":[0.8,0.6,0.19,0.93,0.77,0.63,0.95,0.76,0.95,0.27,0.23,1,1,0.65,0.05,0.03,0.8,0.97,0.23,0,0,0.7,0.85,0.1,0,0,0.5,0.8,0,0],"X":[0.86,0.79,0.44,0.94,0.78,0.62,1,0.95,1,0.2,0.17,1,1,0.64,0.03,0.27,1,1,0.81,0.02,0.69,0.98,0.87,1,0.44,0.78,0.72,0.19,0.97,0.61],"W":[0.81,0.42,0.91,0.32,0.9,0.89,0.76,1,0.81,0.83,0.67,0.97,1,0.97,0.72,0.64,1,0.94,1,0.57,0.43,0.96,0.62,1,0.31,0.22,0.83,0.31,0.97,0.18],"H":[0.89,0.38,0.06,0.71,0.88,1,0.5,0.13,0.81,1,0.92,0.88,0.69,0.94,1,0.92,0.9,0.79,0.96,0.88,0.92,0.63,0.13,0.88,0.88,0.79,0.44,0,0.81,0.81]},GW=5,GH=6;
+const hsvOf=(r,g,b)=>{const mx=Math.max(r,g,b),mn=Math.min(r,g,b),d=mx-mn;let h=0;
+  if(d){h=mx===r?((g-b)/d)%6:mx===g?(b-r)/d+2:(r-g)/d+4;h*=60;if(h<0)h+=360}return[h,mx?d/mx:0,mx/255]};
+// each pixel: 1 green, 2 red, 0 other
+function geneColours(img){const{width:W,height:H,data:D}=img,c=new Uint8Array(W*H);
+  for(let i=0;i<W*H;i++){const[h,s,v]=hsvOf(D[i*4],D[i*4+1],D[i*4+2]);
+    if(s>0.32&&v>0.25&&h>=60&&h<=150)c[i]=1;else if(s>0.38&&v>0.3&&(h<=22||h>=335))c[i]=2}
+  return c}
+// the masks with thin lines erased (the dashes that join the circles): a pixel stays if a 3x3 square of its colour covers it
+function thinOut(W,H,c){const keep=new Uint8Array(W*H);
+  for(let y=1;y<H-1;y++)for(let x=1;x<W-1;x++){const k=c[y*W+x];if(!k)continue;let all=true;
+    for(let dy=-1;dy<=1&&all;dy++)for(let dx=-1;dx<=1;dx++)if(c[(y+dy)*W+x+dx]!==k){all=false;break}
+    if(all)for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++)keep[(y+dy)*W+x+dx]=1}
+  const o=new Uint8Array(c);for(let i=0;i<W*H;i++)if(c[i]&&!keep[i])o[i]=0;return o}
+function blobsOf(W,H,c){const seen=new Uint8Array(W*H),out=[],st=[];
+  for(let i=0;i<W*H;i++){const k=c[i];if(!k||seen[i])continue;let x0=W,y0=H,x1=-1,y1=-1,n=0;st.push(i);seen[i]=1;
+    while(st.length){const j=st.pop(),x=j%W,y=(j-x)/W;n++;if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y;
+      for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const xx=x+dx,yy=y+dy;if(xx<0||yy<0||xx>=W||yy>=H)continue;
+        const q=yy*W+xx;if(!seen[q]&&c[q]===k){seen[q]=1;st.push(q)}}}
+    out.push({k,x0,y0,x1,y1,w:x1-x0+1,h:y1-y0+1,n})}
+  return out}
+// circles: blobs of about a letter's size with bright pixels of another colour inside (the letter), from the plain masks
+// and, where those found none, from the masks with the dashes erased
+function circlesOf(img){const{width:W,height:H,data:D}=img,c=geneColours(img);
+  const ok=b=>b.n>=12&&b.w>=4&&b.h>=5&&b.h<=240&&b.w/b.h>0.45&&b.w/b.h<1.8;
+  const over=(a,b)=>a.x0<=b.x1&&b.x0<=a.x1&&a.y0<=b.y1&&b.y0<=a.y1;
+  // a circle: its colour and a bright letter fill 75% of its ellipse
+  const circle=b=>{const cx=(b.x0+b.x1)/2,cy=(b.y0+b.y1)/2,rx=b.w*0.4,ry=b.h*0.4,letter=[];
+    for(let y=b.y0;y<=b.y1;y++)for(let x=b.x0;x<=b.x1;x++){const dx=(x-cx)/rx,dy=(y-cy)/ry;if(dx*dx+dy*dy>1)continue;
+      const i=y*W+x;if(c[i]===b.k)continue;if(Math.max(D[i*4],D[i*4+1],D[i*4+2])>127.5)letter.push([x,y])}
+    const fill=(b.n+letter.length)/(Math.PI/4*b.w*b.h);
+    if(!(letter.length>0.05*b.w*b.h&&letter.length<0.6*b.w*b.h&&fill>0.75))return null;
+    // a circle cut at the left edge (the first of a row): its centre from its height (a circle is as wide as it is high)
+    const mid=b.x0===0&&b.w<b.h?b.x1-b.h/2:cx;
+    return{...b,cx:mid,cy,letter}};
+  const plain=blobsOf(W,H,c).filter(ok).map(circle).filter(Boolean);
+  if(plain.length>MAX_CIRCLES)return null;
+  // the dashes that join circles make one long blob: the masks with thin lines erased split it
+  const thin=blobsOf(W,H,thinOut(W,H,c)).filter(b=>ok(b)&&!plain.some(p=>over(p,b))).map(circle).filter(Boolean);
+  const all=[...plain,...thin];return all.length>MAX_CIRCLES?null:all}
+// the letter's shape: how much of each cell of a 5x6 grid over the letter's box is filled
+function shapeOf(px){if(px.length<4)return null;let x0=1e9,y0=1e9,x1=-1,y1=-1;
+  for(const[x,y]of px){if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}
+  const w=x1-x0+1,h=y1-y0+1,cell=(x,y)=>Math.min(GH-1,Math.floor((y-y0)/h*GH))*GW+Math.min(GW-1,Math.floor((x-x0)/w*GW));
+  const fill=new Array(GW*GH).fill(0),all=new Array(GW*GH).fill(0);
+  for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++)all[cell(x,y)]++;for(const[x,y]of px)fill[cell(x,y)]++;
+  return fill.map((v,i)=>all[i]?v/all[i]:0)}
+// rows: six circles of about the same height (within 45%: JPEG can wear a ring down), evenly spaced (gaps within 30% of the first), 1.05 to 3.6
+// heights apart, within 1.7 heights up or down (the new gene of a crossbred column sits lower)
+function rowsOf(cs){const out=[],used=new Set(),sorted=[...cs].sort((a,b)=>a.cx-b.cx);
+  for(const a of sorted){if(used.has(a))continue;
+    const pool=sorted.filter(b=>!used.has(b)&&b.cx>=a.cx&&Math.abs(b.h-a.h)<=0.45*Math.max(a.h,b.h)&&Math.abs(b.cy-a.cy)<=1.7*a.h);
+    for(let j=1;j<pool.length;j++){const gap=pool[j].cx-a.cx;if(gap<1.05*a.h||gap>3.6*a.h)continue;
+      const row=[a,pool[j]];let last=pool[j];
+      while(row.length<6){const nx=pool.find(b=>b.cx>last.cx&&Math.abs(b.cx-last.cx-gap)<=0.3*gap);if(!nx)break;row.push(nx);last=nx}
+      if(row.length===6){out.push(row);row.forEach(m=>used.add(m));break}}}
+  return out}
+// The rows of genes in the picture, top to bottom: {rows: [{genes (6 letters, '?' where unsure), y}], dim: the rows
+// found but left out because only 1 or 2 letters were sure (too small or blurred to read; rows of '?' only are left
+// out silently, as noise gives them)}, or null when the picture
+// holds more than MAX_CIRCLES circle-like marks (a fine pattern: reading it would take long and find rows that are not
+// there). A letter is unsure when its circle is narrower than three quarters of the row's middle width (cut at the
+// picture's edge, or worn down: a squashed H read as Y) or when the next letter's shape is nearly as close (the ratio of
+// the distances above UNSURE: scaled and JPEG'd screenshots read wrong letters at 0.5).
+function readGenes(img){const cs=circlesOf(img);if(!cs)return null;
+  const all=rowsOf(cs).map(row=>{const mw=row.map(m=>m.w).sort((a,b)=>a-b)[3];
+    const genes=row.map(m=>{const sh=shapeOf(m.letter);if(!sh||m.w<0.75*mw)return'?';
+      const d=(m.k===1?'GYH':'WX').split('').map(L=>[L,sh.reduce((s,v,i)=>s+(v-TEMPLATES[L][i])**2,0)]).sort((a,b)=>a[1]-b[1]);
+      return d[0][1]<=UNSURE*d[1][1]?d[0][0]:'?'}).join('');
+    return{genes,y:Math.min(...row.map(m=>m.y0))}}).sort((a,b)=>a.y-b.y);
+  const sure=r=>r.genes.replace(/\?/g,'').length;return{rows:all.filter(r=>sure(r)>=3),dim:all.filter(r=>sure(r)>=1&&sure(r)<3).length}}
+// Reading a shared screen: one step per frame. `rows` are readGenes' rows of the frame: [] when none, null when the
+// reader gave up on the frame (a fine pattern), which changes nothing. A row read whole (6 sure letters; the top one
+// not added yet) is added once it reads the same in 2 frames running. The rows added are remembered until 2 frames
+// running show no row (the tooltip closed for 1 s), so a tooltip that stays open, flickers or shows two rows is not
+// added twice. state: {cand, n, added, empty}.
+function liveStep(state,rows){const st=state||{cand:null,n:0,added:[],empty:2};
+  if(rows===null)return{state:st,add:null};
+  if(!rows.length){const empty=st.empty+1;return{state:{cand:null,n:0,added:empty>=2?[]:st.added,empty},add:null}}
+  const whole=rows.find(r=>!r.genes.includes('?')&&!st.added.includes(r.genes));
+  if(!whole)return{state:{...st,cand:null,n:0,empty:0},add:null};
+  const n=st.cand===whole.genes?st.n+1:1,add=n===2?whole.genes:null;
+  return{state:{cand:whole.genes,n,added:add?[...st.added,add]:st.added,empty:0},add}}
+
+// sapling names leave out the gene letters. 10 saplings keep the search within 0.6 s at most (node on NucBox5, Celeron
+// N5105, random saplings, the large planter, target GGGYYY, 20 tries); 12 took up to 2.1 s
+const LET='ABCDEFJKLM',MAX=10;
+const M=(k,o={})=>R.msg[k].replace(/\{(\w+)\}/g,(_,n)=>o[n]);
+const ok6=s=>/^[GYHWX]{6}$/.test(s);
+const HINT=document.querySelector('#g-msg').textContent;
+const chips=(g,cls='')=>`<span class="gp-genes ${cls}">${[...g].map(c=>`<i class="gp-g ${GOOD.has(c)?'gp-good':'gp-bad'}">${c}</i>`).join('')}</span>`;
+const P=new URLSearchParams(location.search),KEY='ra-gene-stock';
+let store={};try{const v=JSON.parse(localStorage.getItem(KEY)||'{}');if(v&&typeof v==='object'&&!Array.isArray(v))store=v}catch(_){}
+// ids come from the address and the device: only the plants and planters of the data count (not constructor etc.)
+const plantBy=new Map(R.plants.map(p=>[p.id,p])),boxBy=new Map(R.planters.map(b=>[b.id,b]));
+const plantOf=id=>plantBy.get(id),boxOf=id=>boxBy.get(id);
+const stored=id=>{const v=Object.hasOwn(store,id)?store[id]:null;return Array.isArray(v)?v:[]};
+const parseList=s=>String(s||'').toUpperCase().split(/[.,\s]+/).filter(ok6).slice(0,MAX);
+const S={p:plantBy.has(P.get('p'))?P.get('p'):plantBy.has(store._p)?store._p:R.plants[0].id,
+  t:ok6((P.get('t')||'').toUpperCase())?P.get('t').toUpperCase():R.presets[0],
+  b:boxBy.has(P.get('b'))?P.get('b'):R.planters[0].id,r:P.get('r')};
+S.g=P.has('g')?parseList(P.get('g')):parseList(stored(S.p).join('.'));
+// how many saplings a list held, read as parseList reads it (an earlier version kept up to 16)
+const heldOf=raw=>String(raw||'').toUpperCase().split(/[.,\s]+/).filter(ok6).length;
+// what was left out when a list beyond MAX was read; from the device, the saved list is kept until the stock changes
+// extra: saplings of the device list beyond MAX, kept in the saved list until a sapling is taken out (adding stops at MAX)
+let extra=0;
+const noteCut=(link,held)=>{if(!link)extra=Math.max(0,held-MAX);
+  if(held>MAX)$('#g-msg').textContent=M(link?'cut_link':'cut_dev',{max:MAX,held,from:MAX+1,n:held-MAX})};
+// the address holds the stock this page wrote itself (at most MAX, the first of the device list) after a reload: read it as the device's
+const devRaw=stored(S.p).join('.'),fromLink=P.has('g')&&(heldOf(P.get('g'))>MAX||parseList(P.get('g')).join('.')!==parseList(devRaw).join('.'));
+const held=heldOf(fromLink?P.get('g'):devRaw);
+const save=(listToo=true)=>{try{if(listToo)store[S.p]=S.g;store._p=S.p;localStorage.setItem(KEY,JSON.stringify(store))}catch(_){}};
+$('#plant').innerHTML=R.plants.map(p=>`<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('');
+$('#goals').innerHTML=[...R.presets,'own'].map(t=>`<label class="ra-tab"><input type="radio" name="goal" value="${esc(t)}">${t==='own'?'自定义':esc(t)}</label>`).join('');
+$('#boxes').innerHTML=R.planters.map(b=>`<label class="ra-tab"><input type="radio" name="box" value="${esc(b.id)}">${esc(b.name)}</label>`).join('');
+const search=()=>searchPlans(S.g,S.t,boxOf(S.b).order.length);
+const L=i=>LET[i];
+const planName=p=>M('plan',{c:L(p.ci),o:p.oi.map(L).join(' → ')});
+function effects(g){const n=count(g),e=R.eff,base=plantOf(S.p).base;
+  return{growth:1+n[e.growth.gene]*e.growth.factor,yield:1+n[e.yield.gene]*e.yield.factor,water:1+n[e.water.gene]*e.water.factor,
+    temp:n[e.temperature.gene]*e.temperature.factor,clones:base+Math.floor(n[R.clones.gene]/R.clones.divisor),n,base}}
+const x2=v=>`× ${v.toFixed(2)}`;
+// The planter seen from above: slots placed by their x (left to right) and z (top is far), the middle and the ones
+// around marked with the sapling and its planting order.
+// the columns (or rows) of a planter: its slots' x (or z) values, those within 5 cm taken as one
+const axis=(vals,desc)=>{const out=[];for(const v of[...vals].sort((a,b)=>desc?b-a:a-b))if(!out.length||Math.abs(out[out.length-1]-v)>=0.05)out.push(v);
+  return{n:out.length,at:v=>out.findIndex(o=>Math.abs(o-v)<0.05)}};
+function boxHTML(p){const box=boxOf(S.b),X=axis(box.slots.map(s=>s[0])),Z=axis(box.slots.map(s=>s[1]),true),cell={};
+  box.slots.forEach((s,i)=>{const at=box.order.indexOf(i);cell[`${Z.at(s[1])},${X.at(s[0])}`]=i===box.center?
+    `<div class="gp-slot is-center"><b>${L(p.ci)}</b>${chips(S.g[p.ci],'gp-sm')}</div>`:at>=0&&at<p.oi.length?
+    `<div class="gp-slot is-nb"><span class="gp-ord">${at+1}</span><b>${L(p.oi[at])}</b>${chips(S.g[p.oi[at]],'gp-sm')}</div>`:'<div class="gp-slot"></div>'});
+  let h='';for(let r=0;r<Z.n;r++)for(let c=0;c<X.n;c++)h+=cell[`${r},${c}`]||'<div class="gp-slot gp-none"></div>';
+  return{h,cols:X.n}}
+let V,memo={};  // what render() last showed, for the share image; the last search and its input
+function render(){
+  const plant=plantOf(S.p);
+  $('#plant').value=S.p;
+  for(const i of document.querySelectorAll('input[name=goal]'))i.checked=R.presets.includes(S.t)?i.value===S.t:i.value==='own';
+  $('#own-wrap').hidden=R.presets.includes(S.t)&&!$('#own-wrap').dataset.open;
+  if(document.activeElement!==$('#own'))$('#own').value=S.t;
+  for(const i of document.querySelectorAll('input[name=box]'))i.checked=i.value===S.b;
+  $('#stock').innerHTML=S.g.map((g,i)=>`<div class="gp-sap" data-i="${i}"><b>${L(i)}</b>${chips(g)}<button type="button" class="gp-x" data-del="${i}" aria-label="${M('del',{s:L(i)})}">×</button></div>`).join('');
+  $('#stock-sub').textContent=M('stock_sub',{plant:plant.name,n:S.g.length});
+  $('#stock-sum').textContent=S.g.length?M('stock_sum',{n:S.g.length,max:MAX}):'还没有幼苗';
+  $('#g-clear').hidden=!S.g.length;
+  $('#goal-sub').textContent=`${S.t} / ${boxOf(S.b).full}`;
+  const key=[S.g.join('.'),S.t,S.b].join('|');if(memo.key!==key)memo={key,plans:S.g.length>=2?search():[]};const plans=memo.plans;
+  const pick=plans.find(p=>p.res===S.r)||plans[0];if(!pick||pick===plans[0])S.r=null;   // a choice no longer listed falls back to the best
+  V=pick?{plans,pick,plant,e:effects(pick.res)}:null;
+  const q=new URLSearchParams({p:S.p,g:S.g.join('.'),t:S.t,b:S.b});if(pick&&pick!==plans[0])q.set('r',pick.res);
+  history.replaceState(null,'','?'+q.toString());
+  $('#none').hidden=!!V;$('#result').hidden=!V;
+  for(const el of document.querySelectorAll('.gp-sap'))el.classList.toggle('is-used',!!V&&[V.pick.ci,...V.pick.oi].includes(+el.dataset.i));
+  if(!V){$('#none-msg').textContent=S.g.length<2?'添加 2 株以上幼苗后，这里会显示种植方法。':'以当前手头的幼苗，没有能在 1 次杂交中改变基因的种植方法。请添加幼苗。';return}
+  const p=V.pick,e=V.e;
+  $('#gene-h').innerHTML=`${p.d===0?'符合目标的幼苗':'最接近的幼苗'} <small>${p.res} / ${p.d===0?'符合目标':M('off',{d:p.d})}</small>`;
+  $('#pick-name').textContent=planName(p);
+  $('#pick-note').textContent=M('pick_note',{n:p.n})+(p===plans[0]?'':M('best_is',{res:plans[0].res}));
+  $('#pick-genes').innerHTML=chips(p.res,'gp-big');
+  $('#gene-rows').innerHTML=plans.map(r=>`<label class="ra-rd-row"><input type="radio" name="plan" value="${r.res}"${r===p?' checked':''}>`+
+    `<span class="ra-rd-name">${chips(r.res)}</span><span class="ra-rd-n">${M('n_sap',{n:r.n})}</span>`+
+    `<span class="ra-rd-bar"><span style="width:${((6-r.d)/6*100).toFixed(1)}%"${r===plans[0]?' class="ra-rd-bar-best"':''}></span></span>`+
+    `<span class="ra-rd-s">${r.d===0?'符合目标':M('n_off',{d:r.d})}</span>`+
+    `<span class="ra-rd-m">${M('plan_row',{plan:planName(r)})}${r===p?' / <b>下方显示种植方法</b>':''}</span></label>`).join('');
+  $('#rows-note').textContent=M('rows_note',{n:plans.length});
+  $('#plan-sub').textContent=planName(p);
+  const c=S.g[p.ci];
+  $('#steps').innerHTML=[M('step1',{c:L(p.ci)}),M('step2',{c:L(p.ci),o:p.oi.map(i=>`<b>${L(i)}</b>`).join(' → ')}),
+    M('step3',{c:L(p.ci),g:chips(p.res)}),M('step4',{c:L(p.ci)})].map(s=>`<li>${s}</li>`).join('');
+  const order=p.oi.map(i=>S.g[i]),why=[];
+  for(let i=0;i<6;i++){if(p.res[i]===c[i])continue;const tot={};for(const n of order)tot[n[i]]=Math.fround((tot[n[i]]||0)+W[n[i]]);
+    why.push(`<div class="ra-rd-stat"><span class="ra-rd-label">${M('col',{i:i+1})}</span><span class="ra-rd-time">${c[i]} → ${p.res[i]}</span><span class="ra-rd-sub">${M('beats',{a:p.res[i],t:+tot[p.res[i]].toFixed(2),b:c[i],w:W[c[i]]===1?'1.0':'0.6'})}</span></div>`)}
+  $('#why').innerHTML=why.join('');
+  $('#why-note').textContent=why.length<6?M('why_note',{c:L(p.ci)}):'';
+  const b=boxHTML(p);$('#box').innerHTML=b.h;$('#box').style.gridTemplateColumns=`repeat(${b.cols},1fr)`;
+  $('#box-cap').textContent=M('box_cap',{box:boxOf(S.b).full})+(S.b==='planter.triangle'?'Triangle Planter 的 4 个格彼此都相邻，图中的格位置为大致位置。':'');
+  $('#eff-sub').textContent=`${plant.name} / ${p.res}`;
+  const li=(name,v)=>`<div class="ra-rd-li"><span class="ra-rd-name">${name}</span><span class="ra-rd-n">${v}</span></div>`;
+  $('#eff-grow').innerHTML=li(M('grow',{n:e.n.G}),x2(e.growth))+li(M('yield',{n:e.n.Y}),x2(e.yield))+li(M('clone',{base:e.base}),M('n_clone',{n:e.clones}));
+  $('#eff-env').innerHTML=li(M('water',{n:e.n.W}),x2(e.water))+li(M('temp',{n:e.n.H}),`+ ${e.temp.toFixed(2)}`)}
+// add the genes v (from the box or a row read from a picture); false when they cannot be added
+const addGenes=(v=$('#g-in').value,fromBox=true)=>{v=String(v).toUpperCase().replace(/\s/g,'');
+  if(!ok6(v)){$('#g-msg').textContent=v.includes('?')?'“?”是无法读取的字母，请改成 G、Y、H、W、X 中的一个。':'请用 G、Y、H、W、X 中的 6 个字母输入。';return false}
+  if(S.g.length>=MAX){$('#g-msg').textContent=M('full',{max:MAX});return false}
+  S.g.push(v);if(fromBox)$('#g-in').value='';$('#g-msg').textContent=M('added',{s:L(S.g.length-1),g:v});save();render();return true};
+// Reading a picture: it stays in this browser. The rows found are shown to check (and fix '?') before adding.
+const showFound=(rows,dim)=>{const box=$('#found');box.hidden=false;
+  box.innerHTML=rows.length?`<p class="ra-rd-hint">${M('found',{n:rows.length})}</p>`+
+    rows.map((r,i)=>`<div class="gp-found-row">${chips(r.genes.replace(/\?/g,'X'),'gp-found-chips')}<input class="gp-in" value="${esc(r.genes)}" maxlength="6" aria-label="${M('found_i',{i:i+1})}" data-found><button type="button" class="ra-button" data-take>添加</button></div>`).join(''):
+    dim?'<p class="ra-rd-hint">找到了疑似基因排列的位置，但字母太小或模糊，无法读取。请使用未缩小的截图（最好是 PNG），或将基因部分放大裁剪。</p>':
+    '<p class="ra-rd-hint">没有找到基因排列（绿色和红色圆圈中的 6 个白色字母）。请使用拍到幼苗说明或已种植作物显示的图片。无法读取没有圆圈、字母带颜色的旧版显示。</p>';
+  // the chips show '?' too
+  box.querySelectorAll('.gp-found-row').forEach((row,i)=>{const g=rows[i].genes;row.querySelectorAll('.gp-g').forEach((el,k)=>{if(g[k]==='?'){el.textContent='?';el.className='gp-g gp-unsure'}})})};
+const readPicture=async file=>{if(!file||!/^image\//.test(file.type))return;
+  $('#g-msg').textContent='正在读取图片…';
+  try{const bmp=await createImageBitmap(file),k=Math.min(1,2600/bmp.width,Math.sqrt(4e6/(bmp.width*bmp.height))),w=Math.max(1,Math.round(bmp.width*k)),h=Math.max(1,Math.round(bmp.height*k));
+    const cv=document.createElement('canvas');cv.width=w;cv.height=h;const x=cv.getContext('2d',{willReadFrequently:true});x.drawImage(bmp,0,0,w,h);
+    const rows=readGenes(x.getImageData(0,0,w,h));$('#g-msg').textContent=HINT;   // {rows, dim} or null
+    if(rows)showFound(rows.rows,rows.dim);else{$('#found').hidden=false;$('#found').innerHTML='<p class="ra-rd-hint">细小的彩色花纹太多，已停止读取。请使用只裁剪了基因部分的图片。</p>'}}
+  catch(_){$('#g-msg').textContent='无法打开图片。请使用 PNG 或 JPEG 截图。'}};
+// Reading the shared screen: a Worker ticks every 0.5 s (its timers keep going while the page is behind the game),
+// each tick reads one frame; liveStep decides what to add. A short tone marks each sapling added.
+const canShare=!!(navigator.mediaDevices&&navigator.mediaDevices.getDisplayMedia);
+let live=null;
+const tone=()=>{try{const a=live.audio||(live.audio=new AudioContext()),o=a.createOscillator(),g=a.createGain();
+  o.frequency.value=880;g.gain.value=0.08;o.connect(g).connect(a.destination);o.start();o.stop(a.currentTime+0.12)}catch(_){}};
+const liveShow=(text,genes)=>{const box=$('#live');box.hidden=false;
+  box.innerHTML=`<p class="ra-rd-hint">${esc(text)}</p>`+(genes?`<div class="gp-found-row">${chips(genes.replace(/\?/g,'X'),'gp-found-chips')}</div>`:'');
+  if(genes)box.querySelectorAll('.gp-g').forEach((el,k)=>{if(genes[k]==='?'){el.textContent='?';el.className='gp-g gp-unsure'}})};
+const stopScreen=()=>{if(!live||live.starting)return;live.worker.terminate();live.stream.getTracks().forEach(t=>t.stop());
+  if(live.audio)live.audio.close().catch(()=>{});
+  $('#read-screen').firstChild.textContent='从屏幕读取';$('#live').hidden=true;live=null};
+// one read per tick; the Worker is asked for the next tick only when this one is done, so ticks never pile up
+const screenTick=()=>{const v=live&&live.video;if(!v||live.starting)return;if(!v.videoWidth){live.worker.postMessage(0);return}
+  try{const k=Math.min(1,Math.sqrt(4e6/(v.videoWidth*v.videoHeight))),w=Math.round(v.videoWidth*k),h=Math.round(v.videoHeight*k);
+    if(live.cv.width!==w||live.cv.height!==h){live.cv.width=w;live.cv.height=h}
+    live.x.drawImage(v,0,0,w,h);const r=readGenes(live.x.getImageData(0,0,w,h)),rows=r&&r.rows;
+    const step=liveStep(live.state,rows);live.state=step.state;
+    if(step.add){if(addGenes(step.add,false)){live.added++;tone()}}
+    const seen=rows&&rows.length?rows[0].genes:null;
+    liveShow(r===null?'细小的花纹太多，无法读取此屏幕。':seen?M('live_n',{n:live.added}):M('live_wait',{n:live.added}),seen)}
+  finally{if(live)live.worker.postMessage(0)}};
+const startScreen=async()=>{if(live){stopScreen();return}
+  live={starting:true};$('#read-screen').disabled=true;   // a second press while the share is being chosen does nothing
+  let stream;try{stream=await navigator.mediaDevices.getDisplayMedia({video:{frameRate:{max:5}},audio:false})}
+  catch(_){live=null;$('#read-screen').disabled=false;$('#g-msg').textContent='屏幕共享未能开始。请检查浏览器的权限。';return}
+  const video=document.createElement('video');video.muted=true;video.playsInline=true;video.srcObject=stream;await video.play().catch(()=>{});
+  // the Worker's timer keeps going while the page is behind the game: each message back is one tick, 0.5 s after asked
+  const src=URL.createObjectURL(new Blob(['onmessage=()=>setTimeout(()=>postMessage(0),500)'],{type:'text/javascript'}));
+  const cv=document.createElement('canvas'),worker=new Worker(src);URL.revokeObjectURL(src);
+  live={stream,video,cv,x:cv.getContext('2d',{willReadFrequently:true}),worker,state:null,added:0};$('#read-screen').disabled=false;
+  worker.onmessage=screenTick;stream.getVideoTracks()[0].addEventListener('ended',stopScreen);worker.postMessage(0);
+  $('#read-screen').firstChild.textContent='停止读取屏幕';liveShow('正在读取屏幕。请在游戏中打开幼苗说明或已种植作物的显示。',null)};
+if(canShare){$('#read-screen').hidden=false;$('#read-screen').addEventListener('click',startScreen)}
+$('#read-img').addEventListener('click',()=>$('#read-file').click());
+$('#read-file').addEventListener('change',ev=>{readPicture(ev.target.files[0]);ev.target.value=''});
+// a picture pasted anywhere is read, unless text is being pasted into a box
+document.addEventListener('paste',ev=>{const cd=ev.clipboardData;if(!cd)return;
+  if(/^(INPUT|TEXTAREA)$/.test((ev.target||{}).tagName||'')&&[...cd.types].includes('text/plain'))return;
+  const it=[...cd.items].find(i=>i.kind==='file'&&/^image\//.test(i.type));if(it){ev.preventDefault();readPicture(it.getAsFile())}});
+const stockSec=$('#h-stock-g').closest('section');
+stockSec.addEventListener('dragover',ev=>{if([...ev.dataTransfer.items].some(i=>i.kind==='file')){ev.preventDefault();stockSec.classList.add('gp-drop')}});
+stockSec.addEventListener('dragleave',()=>stockSec.classList.remove('gp-drop'));
+stockSec.addEventListener('drop',ev=>{stockSec.classList.remove('gp-drop');const fs=[...ev.dataTransfer.files];if(!fs.length)return;
+  ev.preventDefault();const f=fs.find(f=>/^image\//.test(f.type));if(f)readPicture(f);else $('#g-msg').textContent='请拖入图片文件（PNG、JPEG）。'});
+$('#found').addEventListener('click',ev=>{const b=ev.target.closest('[data-take]');if(!b)return;const row=b.closest('.gp-found-row');
+  if(addGenes(row.querySelector('[data-found]').value,false)){row.remove();if(!$('#found').querySelector('.gp-found-row'))$('#found').hidden=true}});
+$('#g-add').addEventListener('click',()=>addGenes());   // not addGenes itself: the click event would be read as the genes
+$('#g-in').addEventListener('keydown',ev=>{if(ev.key==='Enter')addGenes()});
+const dropped=()=>{$('#g-msg').textContent=extra?M('dropped',{from:MAX+1,n:extra}):HINT;extra=0};
+$('#stock').addEventListener('click',ev=>{const b=ev.target.closest('[data-del]');if(!b)return;S.g.splice(+b.dataset.del,1);S.r=null;save();dropped();render()});
+$('#g-clear').addEventListener('click',()=>{S.g=[];S.r=null;save();dropped();render()});
+$('#plant').addEventListener('change',ev=>{S.p=ev.target.value;const raw=stored(S.p).join('.');S.g=parseList(raw);S.r=null;save(false);
+  $('#g-msg').textContent=HINT;render();noteCut(false,heldOf(raw))});
+document.addEventListener('change',ev=>{const t=ev.target;
+  if(t.name==='goal'){if(t.value==='own'){$('#own-wrap').dataset.open='1';$('#own').focus()}else{delete $('#own-wrap').dataset.open;S.t=t.value;S.r=null}render()}
+  else if(t.name==='box'){S.b=t.value;S.r=null;render()}
+  else if(t.name==='plan'){S.r=t.value;render()}});
+$('#own').addEventListener('input',ev=>{const v=ev.target.value.toUpperCase();if(ok6(v)){S.t=v;S.r=null;render()}});
+render();
+noteCut(fromLink,held);
+// The share image: the sapling made, how to plant it, its effects and the planter.
+const card=()=>drawCard(`Gene Planner / ${V.plant.name}`,[],h=>{const{x,W:CW,L:LX,C,f,T,box,rule}=h,p=V.pick,e=V.e;
+  const gene=(g,px,py,sz)=>{for(let i=0;i<6;i++){const gx=px+i*(sz+3);box(GOOD.has(g[i])?css('--added'):css('--removed'),gx,py,sz,sz*1.15);
+    x.font=f(600,Math.round(sz*0.6),'mono');const w=x.measureText(g[i]).width;T(g[i],gx+(sz-w)/2,py+sz*0.82,f(600,Math.round(sz*0.6),'mono'),'#ffffff')}};
+  T(p.d===0?'符合目标的幼苗':M('card_off',{t:S.t,d:p.d}),LX,122,f(400,14,'sans'),C.mute);gene(p.res,LX,136,40);
+  T('种植方法',LX,250,f(400,14,'sans'),C.mute);T(M('plan_row',{plan:planName(p)}),LX,278,f(600,22,'sans'),C.ink);
+  T(M('card_n',{n:p.n}),LX,304,f(400,14,'sans'),C.mute);
+  T('效果',LX,350,f(400,14,'sans'),C.mute);
+  T(M('card_eff',{g:x2(e.growth),y:x2(e.yield),c:e.clones}),LX,378,f(600,18,'sans'),C.ink);
+  T('使用的幼苗',LX,426,f(400,14,'sans'),C.mute);
+  [p.ci,...p.oi].forEach((i,k)=>{const yy=446+k*34;T(L(i),LX,yy+18,f(600,16,'mono'),C.ink);gene(S.g[i],LX+24,yy,20)});
+  // the planter, right
+  const bx=boxOf(S.b),X=axis(bx.slots.map(s=>s[0])),Z=axis(bx.slots.map(s=>s[1]),true);
+  const size=300,cw=(size-16)/Math.max(X.n,Z.n),ox=CW-LX-size,oy=110;
+  box('#5b4330',ox,oy,cw*X.n+16,cw*Z.n+16);
+  bx.slots.forEach((s,i)=>{const cx=ox+8+X.at(s[0])*cw,cy=oy+8+Z.at(s[1])*cw,at=bx.order.indexOf(i),
+    isC=i===bx.center,isN=at>=0&&at<p.oi.length;box(isC?C.up:isN?'#efe6db':'#3b2b1d',cx+2,cy+2,cw-4,cw-4);
+    if(isC)rule(css('--mark'),cx+2,cy+2,cw-4,cw-4,4);
+    if(isC||isN){const si=isC?p.ci:p.oi[at];if(isN)T(String(at+1),cx+10,cy+24,f(600,16,'mono'),C.rust);
+      x.font=f(600,22,'mono');const w=x.measureText(L(si)).width;T(L(si),cx+(cw-w)/2,cy+cw/2,f(600,22,'mono'),C.ink);
+      gene(S.g[si],cx+(cw-6*(12+3))/2,cy+cw/2+12,12)}});
+  T(bx.full,ox,oy+cw*Z.n+44,f(400,13,'sans'),C.mute)});
+shareUI(card,()=>`rust-gene-${S.p}-${V.pick.res}.png`,()=>M('summary',{plant:V.plant.name,res:V.pick.res,plan:planName(V.pick)}),
+  '打开链接，会以相同的手头幼苗和目标打开计算器。图片将种植方法与效果汇总成一张。');
+</script>
+</body></html>

@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<script>(()=>{try{if(/bot|crawl|spider|slurp|lighthouse|inspection/i.test(navigator.userAgent))return;const A={"ja":"../../columns/slot-machine.html","en":"../../en/columns/slot-machine.html","zh":"../../zh/columns/slot-machine.html","ko":"../../ko/columns/slot-machine.html","ru":"../../ru/columns/slot-machine.html"},S=["ja","en","zh","ko","ru"];let w=localStorage.getItem('ra-lang');if(!w){for(const l of navigator.languages||[navigator.language||'']){const c=String(l).toLowerCase().split('-')[0];if(S.includes(c)){w=c;break}}w=w||'en'}if(!A[w])w=A.en?'en':null;if(w&&w!=='ko')location.replace(A[w]+location.search+location.hash)}catch(_){}})()</script><title>슬롯머신은 돌릴수록 줄어든다: 평균 환수율 91.8% | Rust Analysis</title>
+<meta name="description" content="슬롯머신의 그림이 정해지는 방식과 배당을 서버 코드와 데이터에서 읽었습니다. 2 Scrap을 걸면 평균 1.84가 돌아옵니다. 잘 터지는 기계도, 잘 터지는 시간도 없습니다.">
+<meta name="theme-color" content="#f2f4f5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15181a" media="(prefers-color-scheme: dark)">
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+<link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rust Analysis">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:title" content="슬롯머신은 돌릴수록 줄어든다: 평균 환수율 91.8% | Rust Analysis">
+<meta property="og:description" content="슬롯머신의 그림이 정해지는 방식과 배당을 서버 코드와 데이터에서 읽었습니다. 2 Scrap을 걸면 평균 1.84가 돌아옵니다. 잘 터지는 기계도, 잘 터지는 시간도 없습니다.">
+<meta property="og:url" content="https://maco165.github.io/rust-patch-notes/ko/columns/slot-machine.html">
+<meta property="og:image" content="https://maco165.github.io/rust-patch-notes/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://maco165.github.io/rust-patch-notes/ko/columns/slot-machine.html">
+<link rel="alternate" hreflang="ja" href="https://maco165.github.io/rust-patch-notes/columns/slot-machine.html">
+<link rel="alternate" hreflang="en" href="https://maco165.github.io/rust-patch-notes/en/columns/slot-machine.html">
+<link rel="alternate" hreflang="zh" href="https://maco165.github.io/rust-patch-notes/zh/columns/slot-machine.html">
+<link rel="alternate" hreflang="ko" href="https://maco165.github.io/rust-patch-notes/ko/columns/slot-machine.html">
+<link rel="alternate" hreflang="ru" href="https://maco165.github.io/rust-patch-notes/ru/columns/slot-machine.html">
+<link rel="alternate" hreflang="x-default" href="https://maco165.github.io/rust-patch-notes/columns/slot-machine.html">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "슬롯머신은 돌릴수록 줄어든다: 평균 환수율 91.8%", "description": "슬롯머신의 그림이 정해지는 방식과 배당을 서버 코드와 데이터에서 읽었습니다. 2 Scrap을 걸면 평균 1.84가 돌아옵니다. 잘 터지는 기계도, 잘 터지는 시간도 없습니다.", "inLanguage": "ko", "datePublished": "2026-11-12", "dateModified": "2026-11-12", "url": "https://maco165.github.io/rust-patch-notes/ko/columns/slot-machine.html", "mainEntityOfPage": "https://maco165.github.io/rust-patch-notes/ko/columns/slot-machine.html", "image": "https://maco165.github.io/rust-patch-notes/assets/og.png", "author": {"@type": "Organization", "name": "Rust Analysis", "url": "https://maco165.github.io/rust-patch-notes/"}, "publisher": {"@type": "Organization", "name": "Rust Analysis", "url": "https://maco165.github.io/rust-patch-notes/"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Rust Analysis", "item": "https://maco165.github.io/rust-patch-notes/ko/tools.html"}, {"@type": "ListItem", "position": 2, "name": "칼럼", "item": "https://maco165.github.io/rust-patch-notes/ko/columns.html"}, {"@type": "ListItem", "position": 3, "name": "슬롯머신은 돌릴수록 줄어든다: 평균 환수율 91.8%", "item": "https://maco165.github.io/rust-patch-notes/ko/columns/slot-machine.html"}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+JP:wght@400;600&display=swap&family=Noto+Sans+KR:wght@400;600">
+<style>html:lang(ko){--font-sans:"Noto Sans KR","IBM Plex Sans JP",system-ui,sans-serif;--font-display:"Big Shoulders Display","Noto Sans KR",sans-serif}</style>
+<link rel="stylesheet" href="../../assets/style.css">
+</head><body>
+<header class="ra-site">
+  <a class="ra-site-name" href="../tools.html"><b>Rust</b> Analysis</a>
+  <nav class="ra-nav" aria-label="페이지"><a href="../columns.html" aria-current="page"><i class="ra-ico ra-ico-columns" aria-hidden="true"></i>칼럼</a><a href="../tools.html"><i class="ra-ico ra-ico-tools" aria-hidden="true"></i>도구</a></nav>
+  <span class="ra-site-meta">2026-11-05</span>
+  <span class="ra-site-lang"><a href="../../columns/slot-machine.html" lang="ja" hreflang="ja" data-lang="ja">日本語</a><a href="../../en/columns/slot-machine.html" lang="en" hreflang="en" data-lang="en">English</a><a href="../../zh/columns/slot-machine.html" lang="zh" hreflang="zh" data-lang="zh">简体中文</a><a href="../../ru/columns/slot-machine.html" lang="ru" hreflang="ru" data-lang="ru">Русский</a></span><a class="ra-site-link" href="https://github.com/maco165/rust-patch-notes" rel="noopener"><i class="ra-ico ra-ico-github" aria-hidden="true"></i>GitHub</a>
+</header>
+<script>(()=>{const n=document.querySelector('.ra-nav'),a=n&&n.querySelector('[aria-current]');if(a&&n.scrollWidth>n.clientWidth)n.scrollLeft=a.offsetLeft-(n.clientWidth-a.offsetWidth)/2})()</script>
+<main class="ra-page"><article class="ra-prose"><p class="ra-patch-meta"><a class="ra-link" href="../columns.html">칼럼</a><time datetime="2026-11-12">2026-11-12</time><span><i class="ra-ico ra-ico-economy" aria-hidden="true"></i> 경제, 상점</span><span class="ra-src ra-src-export"><i class="ra-ico ra-ico-export" aria-hidden="true"></i>게임 빌드 2026-11-07</span></p><div class="ra-tp-head"><span class="ra-ti ra-ti-page" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke-linecap="round" stroke-linejoin="round">
+<path d="M11.5 57.5Q10.9 37.5 11.9 21.5Q12.5 12.1 21.5 11.7L37.5 11.5Q46.9 12.1 47.5 21.5Q48.3 39.5 47.5 57.5Z" fill="#ffd77a"/>
+<path d="M10 56Q9.4 36 10.4 20Q11 10.6 20 10.2L36 10Q45.4 10.6 46 20Q46.8 38 46 56Q28 57 10 56Z" stroke="#1a1f23" stroke-width="3"/>
+<path d="M15 22.4Q28 21.6 41 22.2Q41.6 29 41.2 36Q28 36.8 15.2 36.2Q14.4 29 15 22.4Z" fill="#f8e1d5" stroke="#1a1f23" stroke-width="2.6"/>
+<path d="M23.6 22.6Q24 29 23.6 36M32.4 22.4Q32.8 29 32.4 36" stroke="#1a1f23" stroke-width="2.2"/>
+<path d="M19.4 29.2h.01M28 29h.01" stroke="#9c1b3d" stroke-width="4.6"/>
+<path d="M36.8 29.2h.01" stroke="#1a1f23" stroke-width="4.6"/>
+<path d="M17 45.4Q28 44.8 39 45.4L38.6 50Q28 50.6 17.4 50Z" fill="#1a1f23" stroke="#1a1f23" stroke-width="2.2"/>
+<path d="M46.4 36Q52.8 36.6 53.4 33Q54.2 24 53.8 17" stroke="#1a1f23" stroke-width="3"/>
+<path d="M49.8 12.6Q49.8 8.6 53.8 8.6Q57.8 8.8 57.6 12.8Q57.4 16.6 53.6 16.6Q49.8 16.4 49.8 12.6Z" fill="#9c1b3d" stroke="#9c1b3d" stroke-width="2.2"/>
+</svg></span><h1 class="ra-prose-title">슬롯머신은 돌릴수록 줄어든다: 평균 환수율 91.8%</h1></div><p class="ra-prose-lead">슬롯머신의 그림이 정해지는 방식과 배당을 서버 코드와 데이터에서 읽었습니다. 2 Scrap을 걸면 평균 1.84가 돌아옵니다. 잘 터지는 기계도, 잘 터지는 시간도 없습니다.</p><div class="ra-callout">
+<p class="ra-callout-label">결론</p>
+<p class="ra-callout-main">2 Scrap을 걸면 평균 1.84가 돌아옵니다</p>
+<p>환수는 평균적으로 베팅액의 91.8%입니다. 그림은 레버를 당기는 순간 3개 모두 정해지며, 이전 결과도, 시각도, 기계도, 베팅 배율도 쓰이지 않습니다. 돌릴수록 평균적으로는 줄어듭니다.</p>
+</div>
+<ul class="ra-facts">
+<li><span class="ra-facts-n">−8.2%</span><span class="ra-facts-l">평균 손익 (베팅액 대비)</span></li>
+<li><span class="ra-facts-n">12.4%</span><span class="ra-facts-l">무언가 돌아오는 회차 (8번에 1번)</span></li>
+<li><span class="ra-facts-n">1/4,406</span><span class="ra-facts-l">7이 3개 맞을 확률</span></li>
+</ul>
+<p>잘 터지는 기계, 잘 터지는 시간, 잘 터지는 돌리는 법은 없습니다. 차이가 나는 것은 "몇 번 돌리는가"와 "얼마를 거는가"뿐이고, 어느 쪽이든 늘릴수록 평균적으로 줄어드는 양이 커집니다.</p>
+<h2 class="ra-section">슬롯머신은 이렇게 움직입니다</h2>
+<h3>1회의 흐름</h3>
+<ol class="ra-timeline" aria-label="슬롯머신 1회의 흐름">
+<li style="--w:30"><strong>Scrap을 넣는다</strong><span>원하는 만큼</span><small>자리에 앉은 사람만 넣을 수 있다. 배율 1~5를 고른다</small></li>
+<li class="ra-timeline-hot" style="--w:18"><strong>레버를 당긴다</strong><span>순식간</span><small>베팅액이 빠지고, 동시에 3개의 그림이 정해진다</small></li>
+<li style="--w:30"><strong>릴이 돈다</strong><span>2.5초</span><small>정해진 그림을 보여 줄 뿐</small></li>
+<li style="--w:18"><strong>배당</strong><span>순식간</span><small>당첨이면 수령 칸에 Scrap이 들어간다</small></li>
+</ol>
+<p>1회 베팅은 2 Scrap입니다. 배율을 2~5로 올리면 베팅은 4, 6, 8, 10이 되고, 배당도 같은 배수가 됩니다.</p>
+<p>그림이 정해지는 것은 릴이 돌기 시작하기 <strong>전</strong>입니다. 도는 동안에는 더 이상 결과가 바뀌지 않습니다. 릴을 멈추는 조작도 없습니다. 슬롯머신 고유의 조작은 "돌리기", "Scrap 넣고 빼기", "배율 바꾸기" 3가지뿐입니다 (나머지는 앉기, 일어서기 같은 공통 조작입니다).</p>
+<h3>그림을 정할 때 쓰는 것, 쓰지 않는 것</h3>
+<div class="ra-uses">
+<div><p class="ra-uses-head ra-uses-yes">쓰는 것</p><ul><li>그림별 가중치 (모든 기계에 공통인 설정)</li><li>그 자리에서 새로 만든 난수</li></ul></div>
+<div><p class="ra-uses-head ra-uses-no">쓰지 않는 것</p><ul><li>이전 회차의 그림</li><li>돌린 횟수, 꽝 횟수</li><li>시각, 서버 인원</li><li>앉아 있는 사람</li><li>어느 기계인지</li><li>베팅 배율</li></ul></div>
+</div>
+<p>그림을 정하는 처리를 말로 쓰면 이렇습니다. 3개의 릴에서 같은 일을 1번씩 합니다.</p>
+<pre class="ra-code">릴 1개분:
+  0부터 999 중 하나를 시드로 뽑는다
+  그 시드로 난수를 새로 만들고, 첫 번째 값 하나만 써서 0부터 329의 위치를 정한다
+  위치를 그림별 가중치로 나눈 표에 대입해 그림 하나를 돌려준다</pre>
+<h3>실제로 호출되는 난수</h3>
+<p>릴 1개마다 다음 순서로 호출됩니다. 모두 Unity와 .NET에 기본으로 있는 메서드이며, Rust가 독자적으로 만든 난수가 아닙니다.</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">순서</th><th scope="col">호출하는 메서드</th><th scope="col">무엇을 정하는가</th></tr></thead><tbody><tr><td>1</td><td><code>UnityEngine.Random.Range(0, 1000)</code></td><td>시드. 0~999의 정수 하나</td></tr><tr><td>2</td><td><code>new System.Random(시드)</code></td><td>그 시드로 .NET의 난수를 새로 만든다</td></tr><tr><td>3</td><td><code>Next(0, 330)</code></td><td>멈추는 위치. 0~329의 정수</td></tr></tbody></table></div>
+<ul><li><strong><code>UnityEngine.Random.Range(최소, 최대)</code></strong>의 정수 버전은 최솟값을 포함하고 최댓값을 포함하지 않습니다. 돌려주는 값은 0~999입니다.</li><li><strong><code>System.Random(시드)</code></strong>는 같은 시드에서는 반드시 같은 수열을 만듭니다. 슬롯머신은 만든 난수의 첫 번째 값 하나만 쓰고, 다음 릴에서는 다시 새로 만듭니다. 이전 회차 수열의 뒤를 잇지 않습니다.</li><li><strong><code>Next(0, 330)</code></strong>은 0~329를 돌려줍니다. 330은 그림 가중치의 합계입니다.</li></ul>
+<h2 class="ra-section">릴 하나는 1,000가지밖에 없다</h2>
+<p>시드는 0~999의 1,000개이고, 같은 시드에서는 반드시 같은 그림이 나옵니다. 즉 릴 하나는 "1,000장짜리 제비뽑기"와 같고, 그림별 장수가 정해져 있습니다. Microsoft가 공개한 <code>System.Random</code>의 방식을 직접 다시 써서, 1,000개의 시드를 하나씩 계산해 세었습니다.</p>
+<h3>그림별 장수 (1,000장 중)</h3>
+<ol class="ra-gbars ra-plain" style="--max:304" aria-label="릴 하나에서 각 그림이 나오는 시드의 수 (1,000 중)"><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Wood</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:304"></span></span><span class="ra-gbar-n">304</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Charcoal</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:303"></span></span><span class="ra-gbar-n">303</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Bandage</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:122"></span></span><span class="ra-gbar-n">122</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Rope</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:121"></span></span><span class="ra-gbar-n">121</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">7</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:61"></span></span><span class="ra-gbar-n">61</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Scrap</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:24"></span></span><span class="ra-gbar-n">24</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Sulfur</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:23"></span></span><span class="ra-gbar-n">23</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Low Grade Fuel</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:22"></span></span><span class="ra-gbar-n">22</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">배당이 없는 그림 (6종)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:20"></span></span><span class="ra-gbar-n">20</span></span></li></ol>
+<p>Wood와 Charcoal이 60%를 차지합니다. 배당이 없는 그림은 Apple, Gun Powder, Hammer 등 6종으로, 합쳐서 20장입니다. 그림의 이름은 게임 데이터 안의 이름을 아이템 이름으로 바꾼 것입니다.</p>
+<h3>설정된 가중치와 실제 확률은 조금 다르다</h3>
+<p>설정에서는 그림마다 "330 중 몇"이라는 가중치가 정해져 있습니다. 그런데 시드가 1,000개뿐이고 1,000은 330으로 나누어떨어지지 않으므로, 실제 확률은 가중치에서 조금 벗어납니다.</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">그림</th><th scope="col">설정된 가중치 (330 중)</th><th scope="col">가중치대로라면</th><th scope="col">실제 (1,000장 중)</th></tr></thead><tbody><tr><td>Wood</td><td>100</td><td>30.3%</td><td>304장 (30.4%)</td></tr><tr><td>Charcoal</td><td>100</td><td>30.3%</td><td>303장 (30.3%)</td></tr><tr><td>Bandage</td><td>40</td><td>12.1%</td><td>122장 (12.2%)</td></tr><tr><td>Rope</td><td>40</td><td>12.1%</td><td>121장 (12.1%)</td></tr><tr><td>7</td><td>20</td><td>6.1%</td><td>61장 (6.1%)</td></tr><tr><td>Scrap</td><td>8</td><td>2.4%</td><td>24장 (2.4%)</td></tr><tr><td>Sulfur</td><td>8</td><td>2.4%</td><td>23장 (2.3%)</td></tr><tr><td>Low Grade Fuel</td><td>8</td><td>2.4%</td><td>22장 (2.2%)</td></tr></tbody></table></div>
+<p>가장 영향이 큰 것은 Low Grade Fuel입니다. 가중치대로라면 24장 정도일 것이 22장이고, 뒤에서 보듯 이 그림은 환수의 큰 부분을 맡고 있습니다. 그 결과 가중치대로라면 92.9%가 되어야 할 평균 환수율이 실제로는 91.8%가 됩니다.</p>
+<p>시드를 1,000개로 제한한 것이 의도된 것인지는 코드를 읽어도 알 수 없습니다.</p>
+<h2 class="ra-section">배당표</h2>
+<p>당첨은 2종류입니다. 같은 그림이 3개 맞는 당첨과, Low Grade Fuel이 1개 나올 때마다 붙는 보너스입니다. 2개 맞는 것에는 배당이 없습니다. 숫자는 2 Scrap 베팅 (배율 1)일 때의 Scrap 개수입니다.</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">당첨</th><th scope="col">배당</th><th scope="col">확률</th><th scope="col">몇 번에 1번</th></tr></thead><tbody><tr><td>7이 3개</td><td>1,000</td><td>0.023%</td><td>4,406번</td></tr><tr><td>Scrap이 3개</td><td>400</td><td>0.0014%</td><td>72,338번</td></tr><tr><td>Sulfur가 3개</td><td>100</td><td>0.0012%</td><td>82,190번</td></tr><tr><td>Low Grade Fuel이 3개</td><td>80 + 보너스 15 = 95</td><td>0.0011%</td><td>93,914번</td></tr><tr><td>Bandage가 3개</td><td>45</td><td>0.18%</td><td>551번</td></tr><tr><td>Rope가 3개</td><td>40</td><td>0.18%</td><td>564번</td></tr><tr><td>Wood가 3개</td><td>25</td><td>2.81%</td><td>36번</td></tr><tr><td>Charcoal이 3개</td><td>15</td><td>2.78%</td><td>36번</td></tr><tr><td>Low Grade Fuel이 1개 나올 때마다 (어느 릴이든)</td><td>5</td><td>6.46% (1개 이상 나옴)</td><td>15~16번</td></tr></tbody></table></div>
+<p>배당은 모두 Scrap이며 수령 칸에 쌓입니다. 당첨되어도 건 2 Scrap 자체는 돌아오지 않습니다. 돌아오는 것은 배당뿐입니다.</p>
+<p>배당표의 최대는 7이 3개일 때의 1,000입니다. 회차를 거듭할수록 쌓이는 잭팟이나 특별한 보너스 회차는 없습니다.</p>
+<h3>평균 환수율 91.8%는 어느 당첨에서 오는가</h3>
+<ol class="ra-gbars ra-plain" style="--max:351" aria-label="평균 환수율 91.8%의 내역 (베팅액 대비 비율)"><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Wood가 3개 (25)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:351"></span></span><span class="ra-gbar-n">35.1%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Charcoal이 3개 (15)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:209"></span></span><span class="ra-gbar-n">20.9%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Low Grade Fuel 보너스 (5)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:165"></span></span><span class="ra-gbar-n">16.5%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">7이 3개 (1,000)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:113"></span></span><span class="ra-gbar-n">11.3%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Bandage가 3개 (45)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:41"></span></span><span class="ra-gbar-n">4.1%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Rope가 3개 (40)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:35"></span></span><span class="ra-gbar-n">3.5%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Scrap, Sulfur, Low Grade Fuel이 3개</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:4"></span></span><span class="ra-gbar-n">0.4%</span></span></li></ol>
+<p>환수의 80% 가까이는 Wood, Charcoal의 3개 맞추기와 Low Grade Fuel의 5라는 작은 당첨입니다. 7이 3개일 때의 1,000은 눈에 띄지만, 평균 환수에서 차지하는 것은 11.3%분이고 4,406번에 1번밖에 오지 않습니다. 7이 3개인 경우를 빼면 환수는 평균적으로 베팅액의 80.5%입니다.</p>
+<h2 class="ra-section">똑같이 움직이는 프로그램</h2>
+<p>읽어서 알아낸 동작을 직접 처음부터 쓴 프로그램입니다. 게임 코드는 베끼지 않았습니다. 돌리는 부분과 배당 부분은 이것뿐입니다.</p>
+<pre class="ra-code ra-code-src"># REEL은 1,000개의 시드가 각각 내는 그림의 표 (릴 하나의 전부)
+def spin(source):
+    """1회분. 릴마다 시드를 하나 뽑고, 그 시드의 그림을 낸다"""
+    return tuple(REEL[source.randrange(1000)] for _ in range(3))
+
+TRIPLES = {"charcoal": 15, "wood": 25, "rope": 40, "bandage": 45,
+           "lowgrade": 80, "sulfur": 100, "scrap": 400, "seven": 1000}
+
+def payout(faces, multiplier=1):
+    """돌아오는 Scrap. Low Grade Fuel 1개마다 5, 3개가 맞으면 그 배당을 더하고, 배율을 곱한다"""
+    total = 5 * faces.count("lowgrade")
+    if faces[0] == faces[1] == faces[2]:
+        total += TRIPLES.get(faces[0], 0)
+    return total * multiplier</pre>
+<p><code>REEL</code> 표는 Microsoft가 공개한 <code>System.Random</code>의 방식 (시드에서 첫 번째 수를 만드는 계산)을 다시 써서, 시드 0~999 각각에서 만들었습니다. 시드를 뽑는 부분 (<code>source.randrange</code>)은 Python의 난수이므로 나오는 순서는 게임과 같지 않지만, 시드에서 그림으로의 대응은 같습니다.</p>
+<p><code>spin</code> 안에는 이전 회차의 결과, 시각, 기계, 배율을 받는 자리가 없습니다. 들어오는 것은 난수의 원천뿐입니다.</p>
+<h3>계산과 돌린 결과</h3>
+<p>평균 환수는 2가지로 냈습니다. 하나는 3개 릴의 그림 조합을 모두 더하는 계산 (분수로 엄밀하게). 다른 하나는 이 프로그램을 실제로 돌린 결과입니다.</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">산출 방법</th><th scope="col">평균 환수 (베팅 2 대비)</th><th scope="col">비율</th><th scope="col">무언가 돌아오는 회차</th><th scope="col">7이 3개</th></tr></thead><tbody><tr><td>계산 (실제 1,000가지)</td><td>1.8368</td><td>91.84%</td><td>12.43%</td><td>4,406번에 1번</td></tr><tr><td>계산 (설정된 가중치대로인 경우)</td><td>1.8589</td><td>92.95%</td><td>13.04%</td><td>4,492번에 1번</td></tr><tr><td>100만 번 돌린 결과 (난수 시드 1)</td><td>1.8438</td><td>92.19%</td><td>12.45%</td><td>231번</td></tr><tr><td>1,000만 번 돌린 결과 (난수 시드 7)</td><td>1.8369</td><td>91.85%</td><td>12.45%</td><td>2,257번</td></tr></tbody></table></div>
+<p>100만 번으로도 계산에서 0.35포인트 벗어났습니다. 7이 3개인 1,000이 몇 번 많은지 적은지로 평균이 움직이기 때문입니다. 흔들림의 기준 (표준 오차)은 100만 번에서 ±0.8포인트, 1,000만 번에서도 ±0.25포인트입니다. 시드 7의 1,000만 번이 계산과 거의 겹친 것은 우연입니다 (시드 1로 1,000만 번이면 91.61%). 수백 번이나 수천 번의 체감으로 "이 기계는 잘 터진다", "오늘은 안 터진다"고 느끼는 것은 이 흔들림입니다.</p>
+<p>100만 번 중에서 아무것도 돌아오지 않는 회차의 연속은 최장 115번이었습니다.</p>
+<p>프로그램 전체는 <a class="ra-link" href="slot-machine.py">slot-machine.py</a>에 있습니다. <code>python3 slot-machine.py</code>로 100만 번, <code>python3 slot-machine.py 10000000 7</code>로 1,000만 번의 숫자가 나옵니다.</p>
+<h2 class="ra-section">자주 듣는 이야기를 확인한다</h2>
+<div class="ra-myth"><p class="ra-myth-q">"잘 터지는 기계와 안 터지는 기계가 있다"</p><p class="ra-myth-a"><span class="ra-verdict">없다</span>데이터 안의 슬롯머신은 32대이고, 모두 같은 하나의 배당 설정을 씁니다. 도는 시간 같은 값도 같습니다. 그림을 정하는 처리는 어느 기계인지를 보지 않습니다.</p></div>
+<div class="ra-myth"><p class="ra-myth-q">"연속으로 돌리고 있으면 슬슬 당첨된다"</p><p class="ra-myth-a"><span class="ra-verdict">성립하지 않는다</span>돌린 횟수나 꽝 횟수를 세는 곳이 어디에도 없습니다. 시드로 만드는 난수도 릴마다, 회차마다 새로 만들어집니다. 시드를 내는 Unity의 난수는 서버 전체에서 하나를 공유하며, 슬롯머신의 꽝 횟수와 관계없이 진행됩니다. 50번 꽝이 난 뒤에도 다음에 무언가 돌아올 확률은 12.4% 그대로입니다.</p></div>
+<div class="ra-myth"><p class="ra-myth-q">"배율을 올리면 잘 당첨된다 (또는 잘 안 된다)"</p><p class="ra-myth-a"><span class="ra-verdict">달라지지 않는다</span>배율은 베팅액과 배당에 똑같이 곱해질 뿐입니다. 그림을 정하는 처리에는 들어가지 않습니다. 배율 5는 배율 1을 5번분 한꺼번에 거는 것과 평균적으로 같고, 흔들림만 커집니다.</p></div>
+<div class="ra-myth"><p class="ra-myth-q">"레버를 당기는 타이밍으로 결과가 바뀐다"</p><p class="ra-myth-a"><span class="ra-verdict">노릴 수 없다</span>시드는 서버 안의 난수에서 뽑힙니다. 그 상태는 플레이어에게 전송되지 않는다고 보고 있습니다 (추정). 당기는 순간 3개 모두 정해지고, 릴을 멈추는 조작은 없습니다. 눈으로 보고 멈추기는 불가능합니다.</p></div>
+<div class="ra-myth"><p class="ra-myth-q">"7이 2개 멈췄다. 아까웠으니 다음엔 온다"</p><p class="ra-myth-a"><span class="ra-verdict">관계없다</span>3개의 릴은 따로따로 정해지고, 2개 맞는 것에는 배당이 없습니다. 이전 회차의 그림은 표시를 위해 기록될 뿐, 다음 그림을 정하는 처리에는 넘어가지 않습니다. 다음에 7이 3개 맞을 확률은 언제나 4,406번에 1번입니다.</p></div>
+<div class="ra-myth"><p class="ra-myth-q">"시간대나 서버 인원에 따라 나오는 정도가 달라진다"</p><p class="ra-myth-a"><span class="ra-verdict">달라지지 않는다</span>그림을 정하는 처리가 쓰는 것은 그림의 가중치와 난수뿐입니다. 시각도 플레이어 수도 들어가지 않습니다.</p></div>
+<div class="ra-myth"><p class="ra-myth-q">"서버 관리자는 결과를 조작할 수 있다"</p><p class="ra-myth-a"><span class="ra-verdict">기본 설정으로는 당첨 고정만 가능</span>서버 관리자용 설정 <code>slotmachine.forcepayoutindex</code>가 있습니다. 초깃값은 −1 (무효)이고, 0~7로 하면 그 서버의 모든 기계가 매번 배당표의 그 번호에 해당하는 당첨을 냅니다. 고를 수 있는 것은 당첨의 종류뿐이며, 꽝이 잘 나게 하는 설정은 아닙니다. 플러그인으로 처리를 고쳐 쓴 서버는 이 글의 대상이 아닙니다. 각 서버가 이 값을 어떻게 하고 있는지는 밖에서 확인할 수 없습니다.</p></div>
+<h2 class="ra-section">얼마나 줄어드는가</h2>
+<p>평균적으로 건 금액의 8.2%가 줄어듭니다.</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table ra-prose-short"><thead><tr><th scope="col">돌리는 방법</th><th scope="col">베팅 합계</th><th scope="col">평균적으로 줄어드는 양</th></tr></thead><tbody><tr><td>배율 1로 100번</td><td>200</td><td>16</td></tr><tr><td>배율 1로 1,000번</td><td>2,000</td><td>163</td></tr><tr><td>배율 5로 100번</td><td>1,000</td><td>82</td></tr><tr><td>배율 5로 1,000번</td><td>10,000</td><td>816</td></tr></tbody></table></div>
+<p>이것은 평균이며, 실제 결과는 7이 3개 오는지에 따라 크게 흔들립니다. 1,000번 돌려도 7이 3개인 경우가 한 번도 오지 않을 확률은 80%입니다.</p>
+<h3>꽝이 이어질 확률</h3>
+<ul class="ra-facts">
+<li><span class="ra-facts-n">27%</span><span class="ra-facts-l">10번 연속으로 아무것도 돌아오지 않을 확률</span></li>
+<li><span class="ra-facts-n">7%</span><span class="ra-facts-l">20번 연속으로 아무것도 돌아오지 않을 확률</span></li>
+<li><span class="ra-facts-n">80%</span><span class="ra-facts-l">1,000번 돌려서 7이 3개인 경우가 오지 않을 확률</span></li>
+</ul>
+<p>10번 연속 꽝은 4번에 1번은 일어나는 평범한 일입니다.</p>
+<h3>Big Wheel과 비교한다</h3>
+<p>같은 버전 Big Wheel의 평균 환수와 나란히 놓습니다 (100 Scrap을 걸었을 때 평균적으로 줄어드는 양).</p>
+<ol class="ra-gbars ra-plain" style="--max:160" aria-label="100 Scrap을 걸었을 때 평균적으로 줄어드는 양. Big Wheel과 슬롯머신"><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Big Wheel의 1, 3, 5</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:40"></span></span><span class="ra-gbar-n">−4</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">슬롯머신</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:82"></span></span><span class="ra-gbar-n">−8.2</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Big Wheel의 10</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:120"></span></span><span class="ra-gbar-n">−12</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Big Wheel의 20</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:160"></span></span><span class="ra-gbar-n">−16</span></span></li></ol>
+<p>같은 금액을 건다면 슬롯머신은 Big Wheel의 1, 3, 5보다 2배 빠르게 줄어듭니다. 게다가 1회가 최단 2.5초로 짧아서, 시간당 거는 횟수가 늘어나기 쉬운 게임입니다.</p>
+<h2 class="ra-section">알 수 없는 것</h2>
+<ul><li><strong>Unity 난수의 내부.</strong> 시드를 뽑는 <code>UnityEngine.Random.Range</code>는 Unity 본체 안에 있고, 이번에는 읽지 않았습니다. 0~999가 거의 같은 확률로 나온다는 것은 Unity 문서의 설명에 근거합니다. 연속으로 뽑은 3개의 시드끼리 관계가 없다는 것은 문서에 쓰여 있지 않으며, 의사 난수의 성질로서의 전제입니다. 이 글의 확률과 평균 환수는 그 전제로 계산한 것입니다.</li><li><strong>화면 표시.</strong> 그림의 이미지와 게임 화면에 나오는 배당표는 보지 않았습니다. 그림의 이름은 데이터 안의 이름에서 붙였습니다.</li><li><strong>베팅 칸에 남긴 Scrap.</strong> 배당은 자리에서 일어나면 인벤토리로 옮겨집니다. 베팅 칸에 넣은 채 남긴 Scrap이 자리에서 일어날 때 어떻게 되는지는 확인하지 않았습니다.</li><li><strong>언제부터 이 배당인지.</strong> 슬롯머신이 추가된 뒤의 변경 경위는 조사하지 않았습니다.</li><li><strong>이 글의 대상.</strong> 2026-11-07 버전의 PC판 서버입니다. 앞으로의 업데이트에서 바뀔 수 있습니다.</li></ul>
+<h2 class="ra-section">조사 방법</h2>
+<p>서버 본체의 코드 (슬롯머신 클래스의 중간 코드)를 읽고, 배당 설정과 슬롯머신의 값을 데이터 파일에서 읽었습니다. 서버는 실행하지 않았습니다. 베팅액 2, 배율 1~5, 도는 시간 2.5초, 그림의 가중치, 배당표는 모두 읽은 값입니다.</p>
+<p>그림별 장수 (1,000장 중)는 공개된 .NET 난수 방식을 다시 써서 시드를 하나씩 계산한 것입니다. 다시 쓴 방식이 올바르다는 것은 잘 알려진 값 (시드 0의 첫 번째 수가 1559595546, 시드 42가 1434747710)과 일치하는 것으로 확인했습니다. 확률과 평균 환수는 그 장수에서 계산한 것입니다.</p>
+<p>게임 안에서 실제로 돌려서 센 결과가 아닙니다. 코드가 그렇게 쓰여 있다는 확인입니다. 글 안의 100만 번, 1,000만 번의 결과는 똑같이 움직이는 직접 만든 프로그램을 돌린 것입니다.</p><h2 class="ra-section">출처</h2><ul><li><a class="ra-link" href="https://docs.unity3d.com/ScriptReference/Random.Range.html" rel="noopener">Unity docs, UnityEngine.Random.Range</a></li><li><a class="ra-link" href="https://docs.unity3d.com/ScriptReference/Random.html" rel="noopener">Unity docs, UnityEngine.Random</a></li><li><a class="ra-link" href="https://learn.microsoft.com/en-us/dotnet/api/system.random" rel="noopener">.NET docs, System.Random</a></li><li><a class="ra-link" href="https://learn.microsoft.com/en-us/dotnet/api/system.random.-ctor" rel="noopener">.NET docs, System.Random constructors</a></li><li><a class="ra-link" href="https://learn.microsoft.com/en-us/dotnet/api/system.random.next" rel="noopener">.NET docs, System.Random.Next</a></li><li><a class="ra-link" href="https://github.com/microsoft/referencesource/blob/master/mscorlib/system/random.cs" rel="noopener">System.Random source published by Microsoft</a></li></ul></article></main>
+<footer class="ra-foot"><p>Facepunch Studios와 관계없이 개인이 분석해서 만든 비공식 사이트입니다. 값은 게임 서버의 데이터와 코드에서 읽은 것이며, 정확성은 보증하지 않습니다.</p>
+<p>일부 아이콘은 <a class="ra-link" href="https://lucide.dev/" rel="noopener">Lucide</a> (ISC License)입니다.</p></footer>
+<script>document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('[data-lang]');if(a)try{localStorage.setItem('ra-lang',a.dataset.lang)}catch(_){}})</script></body></html>

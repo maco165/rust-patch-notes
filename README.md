@@ -58,15 +58,15 @@ flowchart LR
 
 ## 言語 / Languages
 
-ツール (Raid Planner・Craft Planner) とコラムは日本語と英語、ほかのページは日本語だけです。README は 5 言語あります。変更点の一覧は公式の英語の文章を日本語にしたものなので、英語にはしません。
+ツールとコラムは日本語・英語・中国語 (簡体字)・韓国語・ロシア語、ほかのページは日本語だけです。ツールとコラムのページは、初めて開いたときにブラウザの言語の版へ移ります (言語のリンクで選ぶと、その言語を覚えます)。アイテム名はどの言語でもゲームの英語名です。README は 5 言語あります。変更点の一覧は公式の英語の文章を日本語にしたものなので、ほかの言語にはしません。
 
 | 言語 | 状態 |
 |---|---|
 | 日本語 | 対応済み |
-| English | ツールとコラムは英語版あり。README は [English](README.en.md) — The tools and the articles are in English. For the change lists, read the official page: https://rust.facepunch.com/changes |
-| 简体中文 | README は [简体中文](README.zh.md)。ページは今後対応する予定 |
-| 한국어 | README は [한국어](README.ko.md)。ページは今後対応する予定 |
-| Русский | README は [Русский](README.ru.md)。ページは今後対応する予定 |
+| English | ツールとコラム。README は [English](README.en.md) — The tools and the articles are in English. For the change lists, read the official page: https://rust.facepunch.com/changes |
+| 简体中文 | ツールとコラム。README は [简体中文](README.zh.md) |
+| 한국어 | ツールとコラム。README は [한국어](README.ko.md) |
+| Русский | ツールとコラム。README は [Русский](README.ru.md) |
 
 ## 各ページが何を元に描かれているか
 
@@ -88,16 +88,53 @@ flowchart LR
 | [tools/raid.html](tools/raid.html) | 壁・扉・外壁・設置物をまとめて壊すのに要る爆発物の数・硫黄・材料と、硫黄鉱石・木の数と炉の時間 | サーバー本体のデータ (建材・爆発物・炉、版 2026-11-07) と、ダメージと製錬の計算の仕方をサーバーの処理 (IL) から確かめた結果 |
 | [404.html](404.html) | 見つからないアドレスで出るページ (検索には載せない) | このサイトの文言 |
 | [en/tools.html](en/tools.html) | English の tools.html | tools.html と同じ計算。文言は content/i18n/en.yml から |
-| [en/tools/craft.html](en/tools/craft.html) | English の tools/craft.html | tools/craft.html と同じ計算。文言は content/i18n/en.yml から |
 | [en/tools/raid.html](en/tools/raid.html) | English の tools/raid.html | tools/raid.html と同じ計算。文言は content/i18n/en.yml から |
+| [en/tools/craft.html](en/tools/craft.html) | English の tools/craft.html | tools/craft.html と同じ計算。文言は content/i18n/en.yml から |
+| [en/tools/gene.html](en/tools/gene.html) | English の tools/gene.html | tools/gene.html と同じ計算。文言は content/i18n/en.yml から |
 | [en/tools/buff.html](en/tools/buff.html) | English の tools/buff.html | tools/buff.html と同じ計算。文言は content/i18n/en.yml から |
 | [en/tools/ttk.html](en/tools/ttk.html) | English の tools/ttk.html | tools/ttk.html と同じ計算。文言は content/i18n/en.yml から |
+| [zh/tools.html](zh/tools.html) | 简体中文 の tools.html | tools.html と同じ計算。文言は content/i18n/zh.yml から |
+| [zh/tools/raid.html](zh/tools/raid.html) | 简体中文 の tools/raid.html | tools/raid.html と同じ計算。文言は content/i18n/zh.yml から |
+| [zh/tools/craft.html](zh/tools/craft.html) | 简体中文 の tools/craft.html | tools/craft.html と同じ計算。文言は content/i18n/zh.yml から |
+| [zh/tools/gene.html](zh/tools/gene.html) | 简体中文 の tools/gene.html | tools/gene.html と同じ計算。文言は content/i18n/zh.yml から |
+| [zh/tools/buff.html](zh/tools/buff.html) | 简体中文 の tools/buff.html | tools/buff.html と同じ計算。文言は content/i18n/zh.yml から |
+| [zh/tools/ttk.html](zh/tools/ttk.html) | 简体中文 の tools/ttk.html | tools/ttk.html と同じ計算。文言は content/i18n/zh.yml から |
+| [ko/tools.html](ko/tools.html) | 한국어 の tools.html | tools.html と同じ計算。文言は content/i18n/ko.yml から |
+| [ko/tools/raid.html](ko/tools/raid.html) | 한국어 の tools/raid.html | tools/raid.html と同じ計算。文言は content/i18n/ko.yml から |
+| [ko/tools/craft.html](ko/tools/craft.html) | 한국어 の tools/craft.html | tools/craft.html と同じ計算。文言は content/i18n/ko.yml から |
+| [ko/tools/gene.html](ko/tools/gene.html) | 한국어 の tools/gene.html | tools/gene.html と同じ計算。文言は content/i18n/ko.yml から |
+| [ko/tools/buff.html](ko/tools/buff.html) | 한국어 の tools/buff.html | tools/buff.html と同じ計算。文言は content/i18n/ko.yml から |
+| [ko/tools/ttk.html](ko/tools/ttk.html) | 한국어 の tools/ttk.html | tools/ttk.html と同じ計算。文言は content/i18n/ko.yml から |
+| [ru/tools.html](ru/tools.html) | Русский の tools.html | tools.html と同じ計算。文言は content/i18n/ru.yml から |
+| [ru/tools/raid.html](ru/tools/raid.html) | Русский の tools/raid.html | tools/raid.html と同じ計算。文言は content/i18n/ru.yml から |
+| [ru/tools/craft.html](ru/tools/craft.html) | Русский の tools/craft.html | tools/craft.html と同じ計算。文言は content/i18n/ru.yml から |
+| [ru/tools/gene.html](ru/tools/gene.html) | Русский の tools/gene.html | tools/gene.html と同じ計算。文言は content/i18n/ru.yml から |
+| [ru/tools/buff.html](ru/tools/buff.html) | Русский の tools/buff.html | tools/buff.html と同じ計算。文言は content/i18n/ru.yml から |
+| [ru/tools/ttk.html](ru/tools/ttk.html) | Русский の tools/ttk.html | tools/ttk.html と同じ計算。文言は content/i18n/ru.yml から |
 | [en/columns.html](en/columns.html) | English の columns.html | content/columns/en/ の記事 (日本語の記事と同じ内容) |
 | [en/columns/buff-ranking.html](en/columns/buff-ranking.html) | English の columns/buff-ranking.html | content/columns/en/ の記事 (日本語の記事と同じ内容) |
 | [en/columns/wheel-myths.html](en/columns/wheel-myths.html) | English の columns/wheel-myths.html | content/columns/en/ の記事 (日本語の記事と同じ内容) |
 | [en/columns/slot-machine.html](en/columns/slot-machine.html) | English の columns/slot-machine.html | content/columns/en/ の記事 (日本語の記事と同じ内容) |
 | [en/columns/loot-containers.html](en/columns/loot-containers.html) | English の columns/loot-containers.html | content/columns/en/ の記事 (日本語の記事と同じ内容) |
 | [en/columns/card-games.html](en/columns/card-games.html) | English の columns/card-games.html | content/columns/en/ の記事 (日本語の記事と同じ内容) |
+| [zh/columns.html](zh/columns.html) | 简体中文 の columns.html | content/columns/zh/ の記事 (日本語の記事と同じ内容) |
+| [zh/columns/buff-ranking.html](zh/columns/buff-ranking.html) | 简体中文 の columns/buff-ranking.html | content/columns/zh/ の記事 (日本語の記事と同じ内容) |
+| [zh/columns/wheel-myths.html](zh/columns/wheel-myths.html) | 简体中文 の columns/wheel-myths.html | content/columns/zh/ の記事 (日本語の記事と同じ内容) |
+| [zh/columns/slot-machine.html](zh/columns/slot-machine.html) | 简体中文 の columns/slot-machine.html | content/columns/zh/ の記事 (日本語の記事と同じ内容) |
+| [zh/columns/loot-containers.html](zh/columns/loot-containers.html) | 简体中文 の columns/loot-containers.html | content/columns/zh/ の記事 (日本語の記事と同じ内容) |
+| [zh/columns/card-games.html](zh/columns/card-games.html) | 简体中文 の columns/card-games.html | content/columns/zh/ の記事 (日本語の記事と同じ内容) |
+| [ko/columns.html](ko/columns.html) | 한국어 の columns.html | content/columns/ko/ の記事 (日本語の記事と同じ内容) |
+| [ko/columns/buff-ranking.html](ko/columns/buff-ranking.html) | 한국어 の columns/buff-ranking.html | content/columns/ko/ の記事 (日本語の記事と同じ内容) |
+| [ko/columns/wheel-myths.html](ko/columns/wheel-myths.html) | 한국어 の columns/wheel-myths.html | content/columns/ko/ の記事 (日本語の記事と同じ内容) |
+| [ko/columns/slot-machine.html](ko/columns/slot-machine.html) | 한국어 の columns/slot-machine.html | content/columns/ko/ の記事 (日本語の記事と同じ内容) |
+| [ko/columns/loot-containers.html](ko/columns/loot-containers.html) | 한국어 の columns/loot-containers.html | content/columns/ko/ の記事 (日本語の記事と同じ内容) |
+| [ko/columns/card-games.html](ko/columns/card-games.html) | 한국어 の columns/card-games.html | content/columns/ko/ の記事 (日本語の記事と同じ内容) |
+| [ru/columns.html](ru/columns.html) | Русский の columns.html | content/columns/ru/ の記事 (日本語の記事と同じ内容) |
+| [ru/columns/buff-ranking.html](ru/columns/buff-ranking.html) | Русский の columns/buff-ranking.html | content/columns/ru/ の記事 (日本語の記事と同じ内容) |
+| [ru/columns/wheel-myths.html](ru/columns/wheel-myths.html) | Русский の columns/wheel-myths.html | content/columns/ru/ の記事 (日本語の記事と同じ内容) |
+| [ru/columns/slot-machine.html](ru/columns/slot-machine.html) | Русский の columns/slot-machine.html | content/columns/ru/ の記事 (日本語の記事と同じ内容) |
+| [ru/columns/loot-containers.html](ru/columns/loot-containers.html) | Русский の columns/loot-containers.html | content/columns/ru/ の記事 (日本語の記事と同じ内容) |
+| [ru/columns/card-games.html](ru/columns/card-games.html) | Русский の columns/card-games.html | content/columns/ru/ の記事 (日本語の記事と同じ内容) |
 
 ## コラム
 

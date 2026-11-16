@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<script>(()=>{try{if(/bot|crawl|spider|slurp|lighthouse|inspection/i.test(navigator.userAgent))return;const A={"ja":"../../columns/loot-containers.html","en":"../../en/columns/loot-containers.html","zh":"../../zh/columns/loot-containers.html","ko":"../../ko/columns/loot-containers.html","ru":"../../ru/columns/loot-containers.html"},S=["ja","en","zh","ko","ru"];let w=localStorage.getItem('ra-lang');if(!w){for(const l of navigator.languages||[navigator.language||'']){const c=String(l).toLowerCase().split('-')[0];if(S.includes(c)){w=c;break}}w=w||'en'}if(!A[w])w=A.en?'en':null;if(w&&w!=='ko')location.replace(A[w]+location.search+location.hash)}catch(_){}})()</script><title>상자의 내용물은 언제 정해질까? | Rust Analysis</title>
+<meta name="description" content="Barrel, Military Crate, Locked Crate의 내용물이 언제, 어떻게 정해지는지 서버 코드로 확인했습니다. 내용물은 상자가 스폰될 때 정해지며, 여는 사람이나 시각으로는 바뀌지 않습니다.">
+<meta name="theme-color" content="#f2f4f5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15181a" media="(prefers-color-scheme: dark)">
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+<link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rust Analysis">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:title" content="상자의 내용물은 언제 정해질까? | Rust Analysis">
+<meta property="og:description" content="Barrel, Military Crate, Locked Crate의 내용물이 언제, 어떻게 정해지는지 서버 코드로 확인했습니다. 내용물은 상자가 스폰될 때 정해지며, 여는 사람이나 시각으로는 바뀌지 않습니다.">
+<meta property="og:url" content="https://maco165.github.io/rust-patch-notes/ko/columns/loot-containers.html">
+<meta property="og:image" content="https://maco165.github.io/rust-patch-notes/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://maco165.github.io/rust-patch-notes/ko/columns/loot-containers.html">
+<link rel="alternate" hreflang="ja" href="https://maco165.github.io/rust-patch-notes/columns/loot-containers.html">
+<link rel="alternate" hreflang="en" href="https://maco165.github.io/rust-patch-notes/en/columns/loot-containers.html">
+<link rel="alternate" hreflang="zh" href="https://maco165.github.io/rust-patch-notes/zh/columns/loot-containers.html">
+<link rel="alternate" hreflang="ko" href="https://maco165.github.io/rust-patch-notes/ko/columns/loot-containers.html">
+<link rel="alternate" hreflang="ru" href="https://maco165.github.io/rust-patch-notes/ru/columns/loot-containers.html">
+<link rel="alternate" hreflang="x-default" href="https://maco165.github.io/rust-patch-notes/columns/loot-containers.html">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "상자의 내용물은 언제 정해질까?", "description": "Barrel, Military Crate, Locked Crate의 내용물이 언제, 어떻게 정해지는지 서버 코드로 확인했습니다. 내용물은 상자가 스폰될 때 정해지며, 여는 사람이나 시각으로는 바뀌지 않습니다.", "inLanguage": "ko", "datePublished": "2026-11-12", "dateModified": "2026-11-12", "url": "https://maco165.github.io/rust-patch-notes/ko/columns/loot-containers.html", "mainEntityOfPage": "https://maco165.github.io/rust-patch-notes/ko/columns/loot-containers.html", "image": "https://maco165.github.io/rust-patch-notes/assets/og.png", "author": {"@type": "Organization", "name": "Rust Analysis", "url": "https://maco165.github.io/rust-patch-notes/"}, "publisher": {"@type": "Organization", "name": "Rust Analysis", "url": "https://maco165.github.io/rust-patch-notes/"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Rust Analysis", "item": "https://maco165.github.io/rust-patch-notes/ko/tools.html"}, {"@type": "ListItem", "position": 2, "name": "칼럼", "item": "https://maco165.github.io/rust-patch-notes/ko/columns.html"}, {"@type": "ListItem", "position": 3, "name": "상자의 내용물은 언제 정해질까?", "item": "https://maco165.github.io/rust-patch-notes/ko/columns/loot-containers.html"}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+JP:wght@400;600&display=swap&family=Noto+Sans+KR:wght@400;600">
+<style>html:lang(ko){--font-sans:"Noto Sans KR","IBM Plex Sans JP",system-ui,sans-serif;--font-display:"Big Shoulders Display","Noto Sans KR",sans-serif}</style>
+<link rel="stylesheet" href="../../assets/style.css">
+</head><body>
+<header class="ra-site">
+  <a class="ra-site-name" href="../tools.html"><b>Rust</b> Analysis</a>
+  <nav class="ra-nav" aria-label="페이지"><a href="../columns.html" aria-current="page"><i class="ra-ico ra-ico-columns" aria-hidden="true"></i>칼럼</a><a href="../tools.html"><i class="ra-ico ra-ico-tools" aria-hidden="true"></i>도구</a></nav>
+  <span class="ra-site-meta">2026-11-05</span>
+  <span class="ra-site-lang"><a href="../../columns/loot-containers.html" lang="ja" hreflang="ja" data-lang="ja">日本語</a><a href="../../en/columns/loot-containers.html" lang="en" hreflang="en" data-lang="en">English</a><a href="../../zh/columns/loot-containers.html" lang="zh" hreflang="zh" data-lang="zh">简体中文</a><a href="../../ru/columns/loot-containers.html" lang="ru" hreflang="ru" data-lang="ru">Русский</a></span><a class="ra-site-link" href="https://github.com/maco165/rust-patch-notes" rel="noopener"><i class="ra-ico ra-ico-github" aria-hidden="true"></i>GitHub</a>
+</header>
+<script>(()=>{const n=document.querySelector('.ra-nav'),a=n&&n.querySelector('[aria-current]');if(a&&n.scrollWidth>n.clientWidth)n.scrollLeft=a.offsetLeft-(n.clientWidth-a.offsetWidth)/2})()</script>
+<main class="ra-page"><article class="ra-prose"><p class="ra-patch-meta"><a class="ra-link" href="../columns.html">칼럼</a><time datetime="2026-11-12">2026-11-12</time><span><i class="ra-ico ra-ico-monuments" aria-hidden="true"></i> 모뉴먼트, 이벤트</span><span class="ra-src ra-src-export"><i class="ra-ico ra-ico-export" aria-hidden="true"></i>게임 빌드 2026-11-07</span></p><div class="ra-tp-head"><span class="ra-ti ra-ti-page" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke-linecap="round" stroke-linejoin="round">
+<path d="M17.5 13.5Q12.1 33.5 17.9 55.5Q33.5 58.9 49.1 55.5Q54.9 33.5 49.5 13.5Z" fill="#f8e1d5"/>
+<path d="M16 12Q10.6 32 16.4 54Q32 57.4 47.6 54Q53.4 32 48 12" stroke="#a83a0c" stroke-width="3.2"/>
+<path d="M24.8 17Q22.6 34 25.2 55M39.2 17Q41.4 34 38.8 55" stroke="#a83a0c" stroke-width="2.2"/>
+<path d="M16 12C16.4 8.6 23 7.2 32 7.4C41 7.4 47.8 8.8 48 12C47.8 15.4 41 16.6 32 16.4C23 16.4 16.2 15.2 16 12Z" fill="#ffd77a" stroke="#a83a0c" stroke-width="3"/>
+<path d="M13.8 24.2Q32 28.8 50.2 24M14 42.2Q32 46.8 50 42" stroke="#6b757e" stroke-width="3.2"/>
+</svg></span><h1 class="ra-prose-title">상자의 내용물은 언제 정해질까?</h1></div><p class="ra-prose-lead">Barrel, Military Crate, Locked Crate의 내용물이 언제, 어떻게 정해지는지 서버 코드로 확인했습니다. 내용물은 상자가 스폰될 때 정해지며, 여는 사람이나 시각으로는 바뀌지 않습니다.</p><div class="ra-callout">
+<p class="ra-callout-label">결론</p>
+<p class="ra-callout-main">내용물은 상자가 스폰될 때 정해집니다</p>
+<p>열 때가 아닙니다. 상자가 서버에 나타나는 순간 추첨이 끝나고, 실제 아이템이 상자 안에 들어갑니다. 여는 사람, 시각, 장소, 근처의 플레이어는 추첨에 쓰이지 않습니다.</p>
+</div>
+<ul class="ra-facts">
+<li><span class="ra-facts-n">0회</span><span class="ra-facts-l">열 때 이루어지는 추첨</span></li>
+<li><span class="ra-facts-n">60~120분</span><span class="ra-facts-l">모뉴먼트의 Barrel, Crate, Military Crate의 내용물이 갱신되는 간격</span></li>
+<li><span class="ra-facts-n">52%</span><span class="ra-facts-l">Elite Crate에서 총이 1정 이상 나올 확률</span></li>
+</ul>
+<p>2026-11-07 버전 서버의 코드와 데이터를 읽은 결과입니다.</p>
+<h2 class="ra-section">상자의 일생</h2>
+<ol class="ra-timeline" aria-label="상자가 스폰되고 나서 사라질 때까지">
+<li class="ra-timeline-hot" style="--w:16"><strong>스폰</strong><span>순식간</span><small>여기서 추첨이 끝나고 내용물이 들어간다</small></li>
+<li style="--w:40"><strong>놓여 있음</strong><span>60~120분</span><small>내용물은 바뀌지 않는다</small></li>
+<li style="--w:22"><strong>갱신</strong><span>순식간</span><small>내용물을 전부 지우고 다시 추첨한다</small></li>
+<li style="--w:22"><strong>비워짐</strong><span>—</span><small>상자가 사라지고, 나중에 새 상자가 스폰된다</small></li>
+</ol>
+<ul><li><strong>여는</strong> 처리는 처음 연 사람을 기록할 뿐, 추첨은 하지 않습니다.</li><li>재시작 후 세이브에서 복원되는 상자는 추첨 없이 이전 내용물을 되돌립니다.</li></ul>
+<h3>추첨에 쓰는 것, 쓰지 않는 것</h3>
+<div class="ra-uses">
+<div><p class="ra-uses-head ra-uses-yes">쓰는 것</p><ul><li>상자 종류별 설정 (슬롯 목록, Scrap 개수)</li><li>추첨 테이블 (가중치와 개수)</li><li>난수</li><li>서버의 시대 설정</li></ul></div>
+<div><p class="ra-uses-head ra-uses-no">쓰지 않는 것</p><ul><li>여는 사람</li><li>시각, 와이프 후 경과 일수</li><li>상자의 위치</li><li>근처의 플레이어, 서버 인원</li><li>이전에 나온 내용물</li><li>여는 방법, 부수는 방법</li></ul></div>
+</div>
+<h2 class="ra-section">내용물이 정해지는 방식</h2>
+<p>추첨은 2단계로 되어 있습니다. 상자마다의 "슬롯"과, 슬롯이 뽑는 "테이블"입니다.</p>
+<pre class="ra-code">상자가 스폰될 때:
+  상자의 슬롯을 위에서부터 차례로 본다
+    슬롯마다 정해진 횟수만큼:
+      0 이상 1 이하의 난수가 슬롯의 확률 이하이면, 그 슬롯의 테이블을 1번 뽑는다
+  Scrap을 상자마다 정해진 개수만큼 넣는다
+
+테이블을 1번 뽑는다:
+  하위 테이블이 나열되어 있으면, 가중치에 비례해 하나를 골라 그 테이블을 뽑는다 (잎에 닿을 때까지 반복)
+  아이템이 나열되어 있으면 (잎), 나열된 아이템을 전부 넣는다</pre>
+<h3>슬롯: Military Crate의 예</h3>
+<p>Military Crate (<code>crate_normal</code>)에는 슬롯이 8개 있습니다. 슬롯은 서로 관계없이 뽑힙니다.</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">슬롯</th><th scope="col">뽑는 횟수</th><th scope="col">1회당 확률</th><th scope="col">내용물</th></tr></thead><tbody><tr><td>부품 테이블</td><td>1</td><td>100%</td><td>SMG Body, Rifle Body, Tech Trash, Metal Pipe, High Quality Metal, 터렛 부품 중 하나</td></tr><tr><td>Workbench Level 2 아이템</td><td>1</td><td>40%</td><td>96종 중 하나 (Thompson, Semi-Automatic Rifle, Rocket Launcher 등)</td></tr><tr><td>Blueprint Page</td><td>1</td><td>10%</td><td>Blueprint Page 1</td></tr><tr><td>Heavy Fuse</td><td>1</td><td>6%</td><td>Heavy Fuse 1</td></tr><tr><td>Large Backpack</td><td>1</td><td>5%</td><td>Large Backpack 1</td></tr><tr><td>Metal Armor Insert</td><td>1</td><td>5%</td><td>Metal Armor Insert 1</td></tr><tr><td>Workbench Upgrade</td><td>1</td><td>5%</td><td>3종 중 하나</td></tr><tr><td>Supply Signal</td><td>1</td><td>1%</td><td>Supply Signal 1</td></tr></tbody></table></div>
+<p>여기에 Scrap 8이 반드시 들어갑니다.</p>
+<h3>테이블: 가중치로 하나를 고른다</h3>
+<p>테이블 (<code>LootSpawn</code>)은 트리 구조입니다. Military Crate의 "부품 테이블"은 6개의 하위 테이블을 가중치로 고릅니다. 가중치의 합계는 600입니다.</p>
+<ol class="ra-gbars ra-plain" style="--max:20" aria-label="Military Crate의 부품 테이블에서 각각이 골라질 확률"><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">SMG Body</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:20"></span></span><span class="ra-gbar-n">20%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Tech Trash</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:16.7"></span></span><span class="ra-gbar-n">17%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Metal Pipe</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:16.7"></span></span><span class="ra-gbar-n">17%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">High Quality Metal</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:16.7"></span></span><span class="ra-gbar-n">17%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">터렛 부품</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:16.7"></span></span><span class="ra-gbar-n">17%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">Rifle Body</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:13.3"></span></span><span class="ra-gbar-n">13%</span></span></li></ol>
+<p>"터렛 부품"은 다시 하위 테이블로, Targeting Computer (가중치 55), CCTV Camera (45), Auto Turret (5) 중 하나를 고릅니다. 부품 테이블에서 Auto Turret이 나올 확률은 100/600 × 5/105 = 0.79%입니다.</p>
+<p>잎에 닿으면 나열된 아이템이 전부 들어갑니다 ("Uzi와 탄약"이라면 Uzi와 Pistol Bullet 15발).</p>
+<h3>호출하는 난수</h3>
+<p>추첨이 쓰는 난수는 Unity에 기본으로 있는 <code>UnityEngine.Random.Range</code>뿐입니다.</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">정하는 것</th><th scope="col">호출하는 메서드</th><th scope="col">성질</th></tr></thead><tbody><tr><td>슬롯이 당첨되는지</td><td><code>UnityEngine.Random.Range(0f, 1f)</code></td><td>0 이상 1 이하의 실수. 슬롯의 확률 이하이면 당첨</td></tr><tr><td>하위 테이블 중 어느 것</td><td><code>UnityEngine.Random.Range(0, 가중치 합계)</code></td><td>정수 버전. 최솟값을 포함하고 최댓값을 포함하지 않는다</td></tr><tr><td>개수</td><td><code>UnityEngine.Random.Range(최소, 최대)</code></td><td>실수 버전. 결과의 소수점을 버려서 쓴다</td></tr><tr><td>무기의 내구도</td><td><code>UnityEngine.Random.Range(하한, 상한)</code></td><td>실수 버전. 최대 내구도에 곱한다</td></tr><tr><td>다음 갱신까지의 초</td><td><code>UnityEngine.Random.Range(최소, 최대)</code></td><td>실수 버전</td></tr></tbody></table></div>
+<p>난수의 상태는 서버 전체에서 공유되므로 밖에서는 읽을 수 없습니다.</p>
+<h2 class="ra-section">의외였던 4가지</h2>
+<h3>개수의 "최대"는 나오지 않는다</h3>
+<p>개수는 "최소~최대의 실수를 버림"이므로 최대는 거의 나오지 않습니다.</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">아이템</th><th scope="col">테이블에 적힌 개수</th><th scope="col">실제로 나오는 개수</th></tr></thead><tbody><tr><td>Tech Trash (Military Crate의 부품 테이블)</td><td>2~4</td><td>2 또는 3 (반반)</td></tr><tr><td>Metal Pipe (같음)</td><td>5~6</td><td>항상 5</td></tr><tr><td>High Quality Metal (같음)</td><td>15~25</td><td>15~24</td></tr><tr><td>MLRS Rocket (Elite Crate의 슬롯)</td><td>1~2</td><td>항상 1</td></tr></tbody></table></div>
+<h3>블루프린트가 되는 "확률"은 없다</h3>
+<p>블루프린트로 나오는지는 아이템마다 정해져 있습니다. 블루프린트로 나오는 것은 12종 (Barbeque, Wheelbarrow Piano, Minicopter 등)뿐입니다.</p>
+<h3>같은 것의 재추첨은 없다</h3>
+<p>같은 것이 2번 당첨되면 그대로 2개가 들어갑니다. 상자의 칸을 넘친 것은 사라집니다 (Bradley Crate에서 6%).</p>
+<h3>횟수가 0인 슬롯이 있다</h3>
+<p>Crate의 "터렛 부품 4%" 슬롯은 횟수가 0이라 당첨되지 않습니다.</p>
+<h2 class="ra-section">상자별 확률</h2>
+<p>"상자 1개에 1개 이상 들어 있을 확률"입니다.</p>
+<h3>총이 1정 이상 들어 있을 확률</h3>
+<ol class="ra-gbars ra-plain ra-boxes" style="--max:100" aria-label="상자별, 총이 1정 이상 들어 있을 확률"><li><span class="ra-gbar"><i class="ra-ico ra-ii-lock" aria-hidden="true"></i><span class="ra-gbar-name">Locked Crate</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:100"></span></span><span class="ra-gbar-n">100%</span></span></li><li><span class="ra-gbar"><i class="ra-ico ra-ii-supply-drop" aria-hidden="true"></i><span class="ra-gbar-name">Supply Drop</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:100"></span></span><span class="ra-gbar-n">100%</span></span></li><li><span class="ra-gbar"><i class="ra-ico ra-ii-crate-elite" aria-hidden="true"></i><span class="ra-gbar-name">Elite Crate</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:51.9"></span></span><span class="ra-gbar-n">52%</span></span></li><li><span class="ra-gbar"><i class="ra-ico ra-ii-helicopter" aria-hidden="true"></i><span class="ra-gbar-name">Heli Crate</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:28.2"></span></span><span class="ra-gbar-n">28%</span></span></li><li><span class="ra-gbar"><i class="ra-ico ra-ii-tank" aria-hidden="true"></i><span class="ra-gbar-name">Bradley</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:25"></span></span><span class="ra-gbar-n">25%</span></span></li><li><span class="ra-gbar"><i class="ra-ico ra-ii-waves" aria-hidden="true"></i><span class="ra-gbar-name">수중 (상급)</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:4.4"></span></span><span class="ra-gbar-n">4.4%</span></span></li><li><span class="ra-gbar"><i class="ra-ico ra-ii-crate-military" aria-hidden="true"></i><span class="ra-gbar-name">Military Crate</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:4.2"></span></span><span class="ra-gbar-n">4.2%</span></span></li><li><span class="ra-gbar"><i class="ra-ico ra-ii-crate" aria-hidden="true"></i><span class="ra-gbar-name">Crate</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:1.8"></span></span><span class="ra-gbar-n">1.8%</span></span></li><li><span class="ra-gbar"><i class="ra-ico ra-ii-barrel" aria-hidden="true"></i><span class="ra-gbar-name">Barrel</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:0"></span></span><span class="ra-gbar-n">0%</span></span></li><li><span class="ra-gbar"><i class="ra-ico ra-ii-toolbox" aria-hidden="true"></i><span class="ra-gbar-name">Tool Box</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:0"></span></span><span class="ra-gbar-n">0%</span></span></li></ol>
+<p>헬기 (최대 4상자)와 Bradley (최대 3상자)는 상자 1개당 값입니다.</p>
+<h3>Timed Explosive Charge (C4)가 들어 있을 확률</h3>
+<ol class="ra-gbars ra-plain ra-boxes" style="--max:36" aria-label="상자별, Timed Explosive Charge (C4)가 1개 이상 들어 있을 확률"><li><span class="ra-gbar"><i class="ra-ico ra-ii-tank" aria-hidden="true"></i><span class="ra-gbar-name">Bradley</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:35.7"></span></span><span class="ra-gbar-n">36%</span></span></li><li><span class="ra-gbar"><i class="ra-ico ra-ii-supply-drop" aria-hidden="true"></i><span class="ra-gbar-name">Supply Drop</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:26.5"></span></span><span class="ra-gbar-n">27%</span></span></li><li><span class="ra-gbar"><i class="ra-ico ra-ii-helicopter" aria-hidden="true"></i><span class="ra-gbar-name">Heli Crate</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:25.7"></span></span><span class="ra-gbar-n">26%</span></span></li><li><span class="ra-gbar"><i class="ra-ico ra-ii-lock" aria-hidden="true"></i><span class="ra-gbar-name">Locked Crate</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:9.6"></span></span><span class="ra-gbar-n">9.6%</span></span></li><li><span class="ra-gbar"><i class="ra-ico ra-ii-crate-elite" aria-hidden="true"></i><span class="ra-gbar-name">Elite Crate</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:1.9"></span></span><span class="ra-gbar-n">1.9%</span></span></li><li><span class="ra-gbar"><i class="ra-ico ra-ii-crate-military" aria-hidden="true"></i><span class="ra-gbar-name">Military Crate</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:0"></span></span><span class="ra-gbar-n">0%</span></span></li><li><span class="ra-gbar"><i class="ra-ico ra-ii-crate" aria-hidden="true"></i><span class="ra-gbar-name">Crate</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:0"></span></span><span class="ra-gbar-n">0%</span></span></li></ol>
+<h3>길가와 마을의 상자</h3>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">상자</th><th scope="col">프리팹 이름</th><th scope="col">Scrap</th><th scope="col">주요 내용물 (상자 1개에 1개 이상일 확률)</th></tr></thead><tbody><tr><td><i class="ra-ico ra-ii-barrel" aria-hidden="true"></i> Barrel</td><td><code>loot_barrel_1</code>, <code>loot_barrel_2</code></td><td>2</td><td>Blueprint Fragment 16.7%, Rope 15.4%, Metal Blade 15.4%, Empty Propane Tank, Tarp, Sewing Kit 각 8.0%, Gears나 Metal Spring 같은 부품 각 1.4%</td></tr><tr><td><i class="ra-ico ra-ii-barrel-oil" aria-hidden="true"></i> Oil Barrel</td><td><code>oil_barrel</code></td><td>0</td><td>Crude Oil 15~19와 Low Grade Fuel 5~9 (항상 둘 다)</td></tr><tr><td><i class="ra-ico ra-ii-box" aria-hidden="true"></i> Basic Crate</td><td><code>crate_basic</code></td><td>3</td><td>Blueprint Fragment 20%, Workbench 없이 만들 수 있는 아이템 31종 각 4.8%</td></tr><tr><td><i class="ra-ico ra-ii-crate" aria-hidden="true"></i> Crate</td><td><code>crate_normal_2</code></td><td>5</td><td>Blueprint Fragment 20% (2개), Gears, Metal Pipe, Metal Spring, Road Signs, Sheet Metal, Semi Automatic Body, Electric Fuse 각 14.3%, Hazmat Suit 4.0%, Heavy Fuse 3.0%</td></tr><tr><td><i class="ra-ico ra-ii-toolbox" aria-hidden="true"></i> Tool Box</td><td><code>crate_tools</code></td><td>5</td><td>Hatchet 7.8%, Pickaxe 7.8%, Targeting Computer 3.1%, CCTV Camera 2.5%, Chainsaw 1.0%, Jackhammer 1.0%</td></tr><tr><td><i class="ra-ico ra-ii-medkit" aria-hidden="true"></i> Medical Crate</td><td><code>crate_normal_2_medical</code></td><td>0</td><td>Large Medkit 50%, Bandage 40%, Medical Syringe 10% 중 하나</td></tr><tr><td><i class="ra-ico ra-ii-car" aria-hidden="true"></i> Vehicle Parts Crate</td><td><code>vehicle_parts</code></td><td>8</td><td>Low Quality Pistons, Spark Plugs, Valves 각 40.8%, Carburetor, Crankshaft 각 28.4%</td></tr></tbody></table></div>
+<h3>Military Crate와 Elite Crate</h3>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">아이템</th><th scope="col"><i class="ra-ico ra-ii-crate-military" aria-hidden="true"></i> Military Crate (<code>crate_normal</code>)</th><th scope="col"><i class="ra-ico ra-ii-crate-elite" aria-hidden="true"></i> Elite Crate (<code>crate_elite</code>)</th></tr></thead><tbody><tr><td>Scrap</td><td>8 (항상)</td><td>25 (항상)</td></tr><tr><td>SMG Body</td><td>20.0%</td><td>32.6%</td></tr><tr><td>Rifle Body</td><td>13.3%</td><td>22.7%</td></tr><tr><td>Tech Trash</td><td>16.7% (2~3개)</td><td>27.7%</td></tr><tr><td>High Quality Metal</td><td>16.7% (15~24개)</td><td>27.7%</td></tr><tr><td>Targeting Computer</td><td>8.7%</td><td>15.3%</td></tr><tr><td>CCTV Camera</td><td>7.1%</td><td>12.6%</td></tr><tr><td>Auto Turret</td><td>1.2%</td><td>2.2%</td></tr><tr><td>Supply Signal</td><td>1.0%</td><td>3.7%</td></tr><tr><td>MLRS Rocket</td><td>안 나옴</td><td>20.0% (1발)</td></tr><tr><td>Blueprint Book</td><td>안 나옴</td><td>10.0%</td></tr><tr><td>Uzi</td><td>안 나옴</td><td>5.0%</td></tr><tr><td>Assault Rifle</td><td>안 나옴</td><td>3.9%</td></tr><tr><td>Bolt Action Rifle</td><td>안 나옴</td><td>3.9%</td></tr><tr><td>MP5A4</td><td>안 나옴</td><td>3.9%</td></tr><tr><td>Thompson</td><td>0.42%</td><td>2.8%</td></tr><tr><td>Custom SMG</td><td>0.42%</td><td>2.8%</td></tr><tr><td>Semi-Automatic Rifle</td><td>0.42%</td><td>0.78%</td></tr><tr><td>Rocket Launcher</td><td>0.42%</td><td>0.78%</td></tr><tr><td>Timed Explosive Charge (C4)</td><td>안 나옴</td><td>1.9%</td></tr><tr><td>Explosives</td><td>안 나옴</td><td>1.9%</td></tr></tbody></table></div>
+<h3>이벤트 상자</h3>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">아이템</th><th scope="col"><i class="ra-ico ra-ii-lock" aria-hidden="true"></i> Locked Crate (<code>codelockedhackablecrate</code>)</th><th scope="col"><i class="ra-ico ra-ii-supply-drop" aria-hidden="true"></i> Supply Drop (<code>supply_drop</code>)</th><th scope="col"><i class="ra-ico ra-ii-helicopter" aria-hidden="true"></i> Heli Crate (<code>heli_crate</code>)</th><th scope="col"><i class="ra-ico ra-ii-tank" aria-hidden="true"></i> Bradley Crate (<code>bradley_crate</code>)</th></tr></thead><tbody><tr><td>Assault Rifle</td><td>27.8%</td><td>안 나옴</td><td>2.2%</td><td>0.9%</td></tr><tr><td>LR-300 Assault Rifle</td><td>17.6%</td><td>3.8%</td><td>0.9%</td><td>0.5%</td></tr><tr><td>Bolt Action Rifle</td><td>16.7%</td><td>안 나옴</td><td>2.2%</td><td>0.8%</td></tr><tr><td>L96 Rifle</td><td>5.9%</td><td>안 나옴</td><td>0.6%</td><td>8.8%</td></tr><tr><td>M249</td><td>안 나옴</td><td>안 나옴</td><td>10.0%</td><td>8.3%</td></tr><tr><td>Minigun</td><td>10.0%</td><td>안 나옴</td><td>안 나옴</td><td>안 나옴</td></tr><tr><td>Rocket Launcher</td><td>7.1%</td><td>안 나옴</td><td>안 나옴</td><td>안 나옴</td></tr><tr><td>Timed Explosive Charge (C4)</td><td>9.6%</td><td>26.5%</td><td>25.7%</td><td>35.7%</td></tr><tr><td>Rocket</td><td>5.6%</td><td>안 나옴</td><td>25.0% (3발)</td><td>안 나옴</td></tr><tr><td>MLRS Rocket</td><td>안 나옴</td><td>안 나옴</td><td>15.0% (2발)</td><td>97.6%</td></tr><tr><td>Explosive 5.56 Rifle Ammo</td><td>33.9%</td><td>12.6%</td><td>15.0%</td><td>18.7%</td></tr><tr><td>Satchel Charge</td><td>8.6%</td><td>49.0%</td><td>안 나옴</td><td>안 나옴</td></tr><tr><td>Auto Turret</td><td>15.9%</td><td>안 나옴</td><td>안 나옴</td><td>4.6%</td></tr><tr><td>Blueprint Book</td><td>100% (2개)</td><td>안 나옴</td><td>안 나옴</td><td>안 나옴</td></tr><tr><td>Blueprint Page</td><td>안 나옴</td><td>100% (2개)</td><td>안 나옴</td><td>안 나옴</td></tr></tbody></table></div>
+<ul><li><i class="ra-ico ra-ii-lock" aria-hidden="true"></i> <strong>Locked Crate</strong>는 좋은 라이플 슬롯이 반드시 당첨되어, 총이 반드시 들어 있습니다.</li><li><i class="ra-ico ra-ii-helicopter" aria-hidden="true"></i> <strong>Heli Crate</strong>는 4상자 중 1상자 이상에 C4가 들어 있을 확률이 69.5%입니다.</li></ul>
+<h2 class="ra-section">내버려 두면 갱신된다</h2>
+<ul class="ra-facts">
+<li><span class="ra-facts-n">15~30분</span><span class="ra-facts-l">Food Box, 쓰레기 더미</span></li>
+<li><span class="ra-facts-n">30~60분</span><span class="ra-facts-l">Oil Barrel</span></li>
+<li><span class="ra-facts-n">60~120분</span><span class="ra-facts-l">Barrel, Crate, Military Crate, Tool Box, 수중 상자 등</span></li>
+</ul>
+<ul><li>아무도 열지 않은 상자도, 조금 남겨 둔 상자도 시간이 되면 내용물이 전부 갱신됩니다.</li><li>길가의 잡동사니 더미는 약 30분이면 상자째 사라집니다 (1개를 가져간 뒤에는 사람이 떠나고 90초).</li><li>Elite Crate, Locked Crate, Supply Drop, Heli Crate와 Bradley Crate는 갱신되지 않습니다.</li></ul>
+<h2 class="ra-section">주운 무기의 내구도</h2>
+<p>마을과 길가의 상자에서 나온 무기는 내구도가 다시 정해집니다.</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table ra-prose-short"><thead><tr><th scope="col">무기</th><th scope="col">내구도 (최대에 대한 비율)</th></tr></thead><tbody><tr><td>Assault Rifle, MP5A4, Thompson, Custom SMG, Uzi, Semi-Automatic Rifle, Revolver 등 30종</td><td>10~20%</td></tr><tr><td>M92 Pistol</td><td>20~30%</td></tr><tr><td>LR-300 Assault Rifle</td><td>50~100%</td></tr><tr><td>Python Revolver, Double Barrel Shotgun</td><td>10%</td></tr><tr><td>Bolt Action Rifle, L96 Rifle</td><td>1~5%</td></tr><tr><td>Pump Shotgun, Spas-12 Shotgun, M4 Shotgun</td><td>1~3%</td></tr></tbody></table></div>
+<p>Locked Crate, Supply Drop, Heli Crate와 Bradley Crate는 내구도를 다시 정하지 않습니다.</p>
+<h2 class="ra-section">추첨 테이블의 변천</h2>
+<h3>2020년 개정을 숫자로</h3>
+<p>Tech Tree Update (2020-12-03) 전후 버전의 테이블을 비교했습니다. Barrel은 테이블을 1번 뽑을 때마다, 헬기는 헬기 테이블을 1번 뽑을 때마다의 확률입니다.</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table ra-prose-short"><thead><tr><th scope="col"></th><th scope="col">2020-11</th><th scope="col">2021-08</th><th scope="col">현재</th></tr></thead><tbody><tr><td><i class="ra-ico ra-ii-barrel" aria-hidden="true"></i> <strong>Barrel에서 블루프린트</strong></td><td><strong>10.4%</strong></td><td><strong>0%</strong></td><td>0%</td></tr><tr><td>블루프린트로 나오는 아이템</td><td>23종</td><td>7종</td><td>12종</td></tr><tr><td><i class="ra-ico ra-ii-helicopter" aria-hidden="true"></i> Targeting Computer</td><td>5.9%</td><td>0.3%</td><td>0%</td></tr><tr><td><i class="ra-ico ra-ii-helicopter" aria-hidden="true"></i> CCTV</td><td>5.9%</td><td>0.3%</td><td>0%</td></tr><tr><td><i class="ra-ico ra-ii-helicopter" aria-hidden="true"></i> C4</td><td>15.2%</td><td>17.3%</td><td>25.7%</td></tr><tr><td><i class="ra-ico ra-ii-helicopter" aria-hidden="true"></i> M249</td><td>5.9%</td><td>6.6%</td><td>10.0%</td></tr><tr><td>Metal Pipe (대)의 개수</td><td>3~5</td><td>5</td><td>5</td></tr></tbody></table></div>
+<ul><li>블루프린트로 나오지 않게 된 16종은 Sandbag Barricade, Chair, Table, Water Pump, Watch Tower 등입니다. 2021-08에는 실물로 나옵니다.</li><li>Workbench Level 1 테이블의 17개 아이템 (Smart Switch, Tesla Coil 등 전기 아이템)이 Level 2 테이블로 옮겨졌습니다.</li><li>Barrel 테이블 자체 (Workbench Level 0 아이템 35%, 부품 65%)는 3개 버전 모두 같습니다.</li></ul>
+<h3><i class="ra-ico ra-ii-supply-drop" aria-hidden="true"></i> Supply Drop의 내용물 (2020-11 → 현재)</h3>
+<p>2020-11에는 하나의 테이블 (<code>LootSpawn.SupplyDrop</code>)을 8번 뽑는 상자였습니다. 지금은 총, 방어구, 자원, 도구, 탄약 테이블을 슬롯별로 뽑습니다 (이 형태는 2021-08 버전에 이미 있습니다). 숫자는 상자 1개에 1개 이상 들어 있을 확률입니다.</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table ra-prose-short"><thead><tr><th scope="col"></th><th scope="col">2020-11</th><th scope="col">현재</th></tr></thead><tbody><tr><td><strong>사라짐</strong></td><td></td><td></td></tr><tr><td>Assault Rifle</td><td>2.1%</td><td>안 나옴</td></tr><tr><td>Bolt Action Rifle</td><td>2.0%</td><td>안 나옴</td></tr><tr><td>L96 Rifle</td><td>0.8%</td><td>안 나옴</td></tr><tr><td>Double Barrel Shotgun</td><td>37.6%</td><td>안 나옴</td></tr><tr><td>Auto Turret</td><td>73.1%</td><td>안 나옴</td></tr><tr><td>Shotgun Trap, Homemade Landmine, Snap Trap</td><td>각 64.2%</td><td>안 나옴</td></tr><tr><td>Crossbow, Revolver, Waterpipe Shotgun, 근접 무기 등 13종</td><td>각 약 10%</td><td>안 나옴</td></tr><tr><td><strong>늘어남</strong></td><td></td><td></td></tr><tr><td>Thompson, Custom SMG</td><td>각 6.0%</td><td>각 38.8%</td></tr><tr><td>M92, Spas-12, MP5A4</td><td>각 2~4%</td><td>각 18.3%</td></tr><tr><td>M39 Rifle</td><td>1.3%</td><td>18.4%</td></tr><tr><td>LR-300</td><td>1.3%</td><td>3.9%</td></tr><tr><td>F1 Grenade</td><td>17.2%</td><td>48.7%</td></tr><tr><td>5.56 Rifle Ammo</td><td>29.6%</td><td>78.2%</td></tr><tr><td>Timed Explosive Charge (C4)</td><td>21.8%</td><td>26.6%</td></tr><tr><td><strong>새로 추가</strong></td><td></td><td></td></tr><tr><td>Pump Shotgun, Semi-Automatic Rifle</td><td>안 나옴</td><td>각 38.8%</td></tr><tr><td>Blueprint Page</td><td>안 나옴</td><td>100%</td></tr><tr><td>Satchel Charge</td><td>안 나옴</td><td>49.1%</td></tr><tr><td>Road Sign 방어구 3종</td><td>안 나옴</td><td>각 37.6%</td></tr><tr><td>Chainsaw, Jackhammer</td><td>안 나옴</td><td>각 약 27%</td></tr><tr><td>Scrap</td><td>안 나옴</td><td>55.6%</td></tr></tbody></table></div>
+<p>강한 라이플 (Assault Rifle, Bolt Action, L96)과 함정, 터렛이 빠지고, SMG와 샷건이 잘 나오는 상자가 되었습니다.</p>
+<h3>연표</h3>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">날짜</th><th scope="col">업데이트</th><th scope="col">바뀐 것</th></tr></thead><tbody><tr><td>2016-08</td><td>Devblog 121, 122</td><td>마을과 <i class="ra-ico ra-ii-supply-drop" aria-hidden="true"></i> Supply Drop 테이블에서 잡동사니를 줄였다</td></tr><tr><td>2017-08-31</td><td>Devblog 175</td><td><i class="ra-ico ra-ii-tank" aria-hidden="true"></i> Bradley의 폭발물을 크게 줄였다</td></tr><tr><td>2019-06-06</td><td>Giddy Up!</td><td>Oil Rig의 내용물을 약하게 했다</td></tr><tr><td>2020-08-06</td><td>Mixing Table Update</td><td><i class="ra-ico ra-ii-car" aria-hidden="true"></i> Vehicle Parts Crate에 부품이 2개 들어가도록</td></tr><tr><td><strong>2020-12-03</strong></td><td><strong>Tech Tree Update</strong></td><td><strong><i class="ra-ico ra-ii-barrel" aria-hidden="true"></i> Barrel과 상자에서 블루프린트가 사라졌다</strong> (위의 표)</td></tr><tr><td>2022-12-01</td><td>The Big QOL Update</td><td><i class="ra-ico ra-ii-helicopter" aria-hidden="true"></i> 헬기 테이블을 갱신</td></tr><tr><td>2025-10-02</td><td>Meta Shift</td><td><i class="ra-ico ra-ii-lock" aria-hidden="true"></i> Locked Crate와 <i class="ra-ico ra-ii-crate-elite" aria-hidden="true"></i> Elite Crate를 다시 만들고, Blueprint Fragment가 들어갔다</td></tr><tr><td>2026-09-03</td><td>Breach and Clear</td><td>SMG Body를 잘 나오게, Rifle Body를 덜 나오게</td></tr><tr><td>2026-11-05</td><td>Printed and Polished</td><td>Blueprint Fragment, Page, Book으로 교체</td></tr></tbody></table></div>
+<p>2020년에 사라진 블루프린트는 2025년부터 조각으로 돌아와 있습니다 (지금의 Barrel에서 16.7%).</p>
+<h2 class="ra-section">똑같이 움직이는 프로그램</h2>
+<p>직접 처음부터 쓴, 똑같이 움직이는 프로그램입니다 (게임 코드는 베끼지 않았습니다). 예시는 Military Crate의 부품 테이블과 작은 슬롯 몇 개뿐입니다.</p>
+<pre class="ra-code ra-code-src">def roll_amount(amount, maximum, rng):
+    """최소부터 최대까지의 실수를 뽑아 소수점을 버린다. 최대 그 자체는 나오지 않는다"""
+    if maximum &gt; 0 and maximum &gt; amount:
+        return max(1, int(rng.uniform(amount, maximum)))
+    return max(1, int(amount))
+
+def spawn(table, rng, box):
+    """테이블을 1번 뽑는다. 하위 테이블이 있으면 가중치로 하나를 고르고, 잎에 닿으면 전부 넣는다"""
+    subs = TABLES.get(table)
+    if subs:
+        left = sum(weight for weight, _ in subs)
+        pick = rng.randrange(left)
+        for weight, name in subs:
+            left -= weight
+            if pick &gt;= left:
+                spawn(name, rng, box)
+                return
+    for item, amount, maximum in ITEMS.get(table, []):
+        box[item] += roll_amount(amount, maximum, rng)
+
+def fill(rng):
+    """상자 1개. 여는 사람도 시각도 장소도 들어오지 않는다. 테이블과 난수뿐"""
+    box = collections.Counter()
+    for table, tries, chance in SLOTS:
+        for _ in range(tries):
+            if rng.random() &lt;= chance:
+                spawn(table, rng, box)
+    box["scrap"] += SCRAP
+    return box</pre>
+<h3>10만 상자를 만든 결과</h3>
+<p>10만 상자 (난수 시드 1).</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table ra-prose-short"><thead><tr><th scope="col">아이템</th><th scope="col">1개 이상 나올 확률 (계산)</th><th scope="col">나온 비율 (10만 상자)</th><th scope="col">개수</th></tr></thead><tbody><tr><td>Scrap</td><td>100%</td><td>100%</td><td>8</td></tr><tr><td>SMG Body</td><td>20.00%</td><td>19.96%</td><td>1</td></tr><tr><td>Tech Trash</td><td>16.67%</td><td>16.54%</td><td>2~3</td></tr><tr><td>Metal Pipe</td><td>16.67%</td><td>16.67%</td><td>5</td></tr><tr><td>High Quality Metal</td><td>16.67%</td><td>16.79%</td><td>15~24</td></tr><tr><td>Rifle Body</td><td>13.33%</td><td>13.39%</td><td>1</td></tr><tr><td>Blueprint Page</td><td>10.00%</td><td>10.12%</td><td>1</td></tr><tr><td>Targeting Computer</td><td>8.73%</td><td>8.72%</td><td>1</td></tr><tr><td>CCTV Camera</td><td>7.14%</td><td>7.14%</td><td>1</td></tr><tr><td>Heavy Fuse</td><td>6.00%</td><td>6.00%</td><td>1</td></tr><tr><td>Large Backpack</td><td>5.00%</td><td>4.98%</td><td>1</td></tr><tr><td>Metal Armor Insert</td><td>5.00%</td><td>4.98%</td><td>1</td></tr><tr><td>Supply Signal</td><td>1.00%</td><td>1.03%</td><td>1</td></tr><tr><td>Auto Turret</td><td>0.79%</td><td>0.80%</td><td>1</td></tr></tbody></table></div>
+<p>전체는 <a class="ra-link" href="loot-containers.py">loot-containers.py</a>입니다.</p>
+<h2 class="ra-section">자주 듣는 이야기를 확인한다</h2>
+<div class="ra-myth"><p class="ra-myth-q">"여는 사람에 따라 내용물이 달라진다"</p><p class="ra-myth-a"><span class="ra-verdict">달라지지 않는다</span>내용물은 상자가 스폰될 때 이미 들어 있고, 여는 처리는 추첨을 하지 않습니다. 누가 열어도 같은 상자에서는 같은 것이 나옵니다.</p></div>
+<div class="ra-myth"><p class="ra-myth-q">"사람이 적은 시간대에는 좋은 것이 나온다"</p><p class="ra-myth-a"><span class="ra-verdict">달라지지 않는다</span>추첨은 시각도 서버 인원도 쓰지 않습니다. 인원이 관계하는 것은 비워진 상자가 다시 스폰될 때까지의 속도뿐입니다.</p></div>
+<div class="ra-myth"><p class="ra-myth-q">"Locked Crate는 해킹이 끝났을 때 내용물이 정해진다"</p><p class="ra-myth-a"><span class="ra-verdict">놓였을 때 정해져 있다</span>Locked Crate도 나타났을 때 추첨을 마칩니다. 15분은 열 수 있게 될 때까지의 대기 시간입니다.</p></div>
+<div class="ra-myth"><p class="ra-myth-q">"Barrel은 부수는 방법에 따라 떨어지는 것이 달라진다"</p><p class="ra-myth-a"><span class="ra-verdict">달라지지 않는다</span>Barrel의 내용물도 스폰될 때 정해져 있고, 부수면 들어 있던 것이 그대로 떨어집니다. Scrap이 늘어나는 효과의 추가분만 부술 때 더해집니다.</p></div>
+<div class="ra-myth"><p class="ra-myth-q">"조금만 남겨 두면 그 상자는 계속 그대로다"</p><p class="ra-myth-a"><span class="ra-verdict">시간이 되면 갱신된다</span>모뉴먼트의 상자는 남겨 둬도 사라지지 않지만, 60~120분의 갱신 때 남은 것이 사라지고 새 내용물이 됩니다. 길가의 잡동사니 더미 상자는 1개라도 가져가면 사람이 떠나고 90초 뒤 더미째 사라집니다. 비운 상자가 몇 분 만에 다시 스폰되는지는 아직 조사하지 않았습니다.</p></div>
+<div class="ra-myth"><p class="ra-myth-q">"좋은 것이 나온 상자 자리는 다음에도 좋은 것이 나온다"</p><p class="ra-myth-a"><span class="ra-verdict">관계없다</span>추첨은 상자의 위치도 이전에 나온 내용물도 쓰지 않습니다. 매번 같은 테이블에서 다시 뽑을 뿐입니다.</p></div>
+<div class="ra-myth"><p class="ra-myth-q">"Military Crate를 계속 돌면 언젠가 Timed Explosive Charge (C4)가 나온다"</p><p class="ra-myth-a"><span class="ra-verdict">나오지 않는다</span>Military Crate의 테이블에는 Timed Explosive Charge (C4)가 없습니다. 상자에서 노린다면 Bradley Crate (36%), Supply Drop (27%), Heli Crate (26%), Locked Crate (9.6%), Elite Crate (1.9%)입니다.</p></div>
+<h2 class="ra-section">알 수 없는 것</h2>
+<ul><li><strong>갱신 시간이 무한대인 상자.</strong> Elite Crate와 Locked Crate는 갱신 시간에 무한대가 들어 있습니다. 타이머는 "예약 시각이 되면 움직이는" 구조이므로, 무한대라면 움직이지 않는다고 읽힙니다. 다만 무한대를 받은 Unity의 난수가 무엇을 돌려주는지는 Unity 본체 안의 일이라 확인하지 않았습니다.</li><li><strong>재스폰 간격과 장소.</strong> 비워진 상자가 몇 분 만에 다시 스폰되는지, 어느 장소에 어떤 상자가 스폰되는지는 모뉴먼트 데이터를 읽지 않았으므로 알 수 없습니다.</li><li><strong>게임 모드의 보너스.</strong> 추첨 가중치에는 게임 모드별 보너스를 더하는 구조가 있습니다. 일반 모드는 보너스가 없고, 이 글의 숫자는 그 경우입니다. 서버의 시대 설정은 기본값 (제한 없음)으로 가정했습니다. Hardcore나 Primitive 같은 모드에서는 달라집니다.</li><li><strong>상자 외형과의 대응.</strong> 프리팹 이름과 게임 안 상자의 외형, 이름의 대응은 프리팹 이름으로 추정한 것입니다.</li><li><strong>이 글의 대상.</strong> 2026-11-07 버전입니다. 테이블의 가중치는 업데이트로 자주 바뀝니다.</li><li><strong>2020년 Supply Drop의 횟수.</strong> "8번"은 지금의 Supply Drop 상자에 남아 있는 옛 설정 (<code>maxDefinitionsToSpawn</code> 8)입니다. 슬롯이 없는 상자가 이 횟수만큼 테이블을 뽑는 처리는 지금도 남아 있지만, 2020년의 값이 8이었는지는 확인하지 않았습니다.</li><li><strong>2020년의 코드.</strong> 옛 서버 버전은 구할 수 없으므로 2020-11과 2021-08은 클라이언트의 테이블만 읽었고, 블루프린트가 되는지는 지금과 같은 아이템 플래그 (<code>spawnAsBlueprint</code>)로 정해진다고 보고 계산했습니다. 2021-08과의 차이에는 Tech Tree Update 이외의 업데이트에서 바뀐 것도 들어 있습니다.</li><li><strong>2020년 이전.</strong> 연표에서 그보다 앞선 업데이트는 공식 변경 사항의 글만으로 썼습니다.</li></ul>
+<h2 class="ra-section">조사 방법</h2>
+<p>서버의 코드와 상자 설정 105개, 추첨 테이블 1,327개를 읽었습니다 (서버는 실행하지 않았습니다). 확률은 테이블에서 계산했고, 직접 만든 프로그램의 10만 상자와 0.5포인트 이내로 맞는 것을 확인했습니다 ("총 1정 이상"과 Bradley는 시뮬레이션 값). 옛 버전의 테이블은 <code>scripts/dump_loot_spawns.py</code>로 읽었습니다. 게임 안에서 상자를 열어 센 결과가 아닙니다.</p><h2 class="ra-section">출처</h2><ul><li><a class="ra-link" href="https://rust.facepunch.com/changes" rel="noopener">Official list of changes (how the loot tables changed)</a></li><li><a class="ra-link" href="https://docs.unity3d.com/ScriptReference/Random.Range.html" rel="noopener">Unity documentation, UnityEngine.Random.Range</a></li><li><a class="ra-link" href="https://docs.unity3d.com/ScriptReference/Random.html" rel="noopener">Unity documentation, UnityEngine.Random</a></li><li><a class="ra-link" href="https://docs.unity3d.com/ScriptReference/ScriptableObject.html" rel="noopener">Unity documentation, ScriptableObject</a></li></ul></article></main>
+<footer class="ra-foot"><p>Facepunch Studios와 관계없이 개인이 분석해서 만든 비공식 사이트입니다. 값은 게임 서버의 데이터와 코드에서 읽은 것이며, 정확성은 보증하지 않습니다.</p>
+<p>일부 아이콘은 <a class="ra-link" href="https://lucide.dev/" rel="noopener">Lucide</a> (ISC License)입니다.</p></footer>
+<script>document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('[data-lang]');if(a)try{localStorage.setItem('ra-lang',a.dataset.lang)}catch(_){}})</script></body></html>

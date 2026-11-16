@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<script>(()=>{try{if(/bot|crawl|spider|slurp|lighthouse|inspection/i.test(navigator.userAgent))return;const A={"ja":"../../tools/craft.html","en":"../../en/tools/craft.html","zh":"../../zh/tools/craft.html","ko":"../../ko/tools/craft.html","ru":"../../ru/tools/craft.html"},S=["ja","en","zh","ko","ru"];let w=localStorage.getItem('ra-lang');if(!w){for(const l of navigator.languages||[navigator.language||'']){const c=String(l).toLowerCase().split('-')[0];if(S.includes(c)){w=c;break}}w=w||'en'}if(!A[w])w=A.en?'en':null;if(w&&w!=='zh')location.replace(A[w]+location.search+location.hash)}catch(_){}})()</script><title>Craft Planner：Rust 爆炸物的材料与熔炉时间 | Rust Analysis</title>
+<meta name="description" content="游戏 Rust 中制作 C4、火箭弹等爆炸物时，根据手头物资和熔炉数量，计算还缺少的硫磺、木炭和材料，还需开采的硫磺矿石、收集的木头，以及熔炉烧制时间的工具。">
+<meta name="theme-color" content="#f2f4f5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15181a" media="(prefers-color-scheme: dark)">
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+<link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rust Analysis">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:title" content="Craft Planner：Rust 爆炸物的材料与熔炉时间 | Rust Analysis">
+<meta property="og:description" content="游戏 Rust 中制作 C4、火箭弹等爆炸物时，根据手头物资和熔炉数量，计算还缺少的硫磺、木炭和材料，还需开采的硫磺矿石、收集的木头，以及熔炉烧制时间的工具。">
+<meta property="og:url" content="https://maco165.github.io/rust-patch-notes/zh/tools/craft.html">
+<meta property="og:image" content="https://maco165.github.io/rust-patch-notes/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://maco165.github.io/rust-patch-notes/zh/tools/craft.html">
+<link rel="alternate" hreflang="ja" href="https://maco165.github.io/rust-patch-notes/tools/craft.html">
+<link rel="alternate" hreflang="en" href="https://maco165.github.io/rust-patch-notes/en/tools/craft.html">
+<link rel="alternate" hreflang="zh" href="https://maco165.github.io/rust-patch-notes/zh/tools/craft.html">
+<link rel="alternate" hreflang="ko" href="https://maco165.github.io/rust-patch-notes/ko/tools/craft.html">
+<link rel="alternate" hreflang="ru" href="https://maco165.github.io/rust-patch-notes/ru/tools/craft.html">
+<link rel="alternate" hreflang="x-default" href="https://maco165.github.io/rust-patch-notes/tools/craft.html">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Craft Planner", "url": "https://maco165.github.io/rust-patch-notes/zh/tools/craft.html", "description": "游戏 Rust 中制作 C4、火箭弹等爆炸物时，根据手头物资和熔炉数量，计算还缺少的硫磺、木炭和材料，还需开采的硫磺矿石、收集的木头，以及熔炉烧制时间的工具。", "applicationCategory": "GameApplication", "operatingSystem": "Any", "inLanguage": "zh", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "isPartOf": {"@type": "WebSite", "name": "Rust Analysis", "url": "https://maco165.github.io/rust-patch-notes/"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Rust Analysis", "item": "https://maco165.github.io/rust-patch-notes/zh/tools.html"}, {"@type": "ListItem", "position": 2, "name": "工具", "item": "https://maco165.github.io/rust-patch-notes/zh/tools.html"}, {"@type": "ListItem", "position": 3, "name": "Craft Planner", "item": "https://maco165.github.io/rust-patch-notes/zh/tools/craft.html"}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+JP:wght@400;600&display=swap&family=Noto+Sans+SC:wght@400;600">
+<style>html:lang(zh){--font-sans:"Noto Sans SC","IBM Plex Sans JP",system-ui,sans-serif;--font-display:"Big Shoulders Display","Noto Sans SC",sans-serif}</style>
+<link rel="stylesheet" href="../../assets/style.css">
+</head><body>
+<header class="ra-site">
+  <a class="ra-site-name" href="../tools.html"><b>Rust</b> Analysis</a>
+  <nav class="ra-nav" aria-label="页面"><a href="../columns.html"><i class="ra-ico ra-ico-columns" aria-hidden="true"></i>文章</a><a href="../tools.html" aria-current="page"><i class="ra-ico ra-ico-tools" aria-hidden="true"></i>工具</a></nav>
+  <span class="ra-site-meta">2026-11-05</span>
+  <span class="ra-site-lang"><a href="../../tools/craft.html" lang="ja" hreflang="ja" data-lang="ja">日本語</a><a href="../../en/tools/craft.html" lang="en" hreflang="en" data-lang="en">English</a><a href="../../ko/tools/craft.html" lang="ko" hreflang="ko" data-lang="ko">한국어</a><a href="../../ru/tools/craft.html" lang="ru" hreflang="ru" data-lang="ru">Русский</a></span><a class="ra-site-link" href="https://github.com/maco165/rust-patch-notes" rel="noopener"><i class="ra-ico ra-ico-github" aria-hidden="true"></i>GitHub</a>
+</header>
+<script>(()=>{const n=document.querySelector('.ra-nav'),a=n&&n.querySelector('[aria-current]');if(a&&n.scrollWidth>n.clientWidth)n.scrollLeft=a.offsetLeft-(n.clientWidth-a.offsetWidth)/2})()</script>
+<main class="ra-page">
+<div class="ra-block">
+  <p class="ra-patch-meta"><a class="ra-link" href="../tools.html">工具</a><a class="ra-link" href="raid.html" id="back-top" lang="en">Raid Planner</a><span class="ra-src ra-src-export"><i class="ra-ico ra-ico-export" aria-hidden="true"></i>游戏版本 2026-11-07</span></p>
+  <div class="ra-tp-head"><span class="ra-ti ra-ti-page" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke-linecap="round" stroke-linejoin="round">
+<path d="M17.5 55.5Q15.5 39.5 19.5 27.5Q21.5 21.5 27.5 20.5L39.5 20.1Q45.5 21 47.5 27.5Q51.5 39.5 49.5 55.9Z" fill="#ffd77a"/>
+<path d="M16 54.2Q14 38 18 26Q20 20 26 19L38 18.6Q44 19.5 46 26Q50 38 48 54.5Q32 55.4 16 54.2Z" stroke="#1a1f23" stroke-width="3"/>
+<path d="M22.5 54Q21 36.5 31.6 35.6Q42.6 36 41.6 54.2Z" fill="#1a1f23" stroke="#1a1f23" stroke-width="2.6"/>
+<path d="M27 53Q23.6 46.6 29.4 42.6Q29.6 45.6 31.6 46Q31 41.4 34.4 38.6Q34.2 43 37 45.6Q39.6 49.6 36.6 53.2Z" fill="#ffd77a" stroke="#a83a0c" stroke-width="2.2"/>
+<path d="M18.6 26.4Q32 25.2 45.6 26.2" stroke="#1a1f23" stroke-width="2.6"/>
+<path d="M26 19L26.4 11.6L37.6 11.2L38 18.6" fill="#ffd77a" stroke="#1a1f23" stroke-width="3"/>
+<path d="M29 7Q27.4 4.6 29.6 2.6M35 7.4Q36.8 4.8 34.8 2.4" stroke="#a83a0c" stroke-width="2.5"/>
+<path d="M9 55Q32 56.6 56 54.8" stroke="#1a1f23" stroke-width="3"/>
+</svg></span><h1 class="ra-patch-sub" lang="en">Craft Planner</h1></div>
+  <p class="ra-lead">输入要制作的爆炸物、手头的物资和熔炉数量，即可算出还缺少的材料，以及备齐它们所需的时间。</p>
+</div>
+<section class="ra-block" aria-labelledby="h-make"><details class="ra-sec" open data-fold="h-make"><summary><h2 class="ra-section" id="h-make">要制作的物品 <small>输入制作数量</small></h2><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i></summary><div class="ra-block">
+  <p class="ra-cp-from" id="from" hidden>已填入在 Raid Planner 中所选方式的数量。<a href="raid.html" id="back">返回 Raid Planner 重新选择</a></p>
+  <div class="ra-rd-tiles" role="group" aria-label="要制作的爆炸物" id="makes"></div>
+</div></details></section>
+<section class="ra-block" aria-labelledby="h-stock"><details class="ra-sec" data-fold="h-stock"><summary><h2 class="ra-section" id="h-stock">手头的物资 <small id="stock-sub"></small></h2><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i></summary><div class="ra-block">
+  <div class="ra-cp-stock" id="stocks"></div>
+  <p class="ra-rd-hint" id="stock-note"></p>
+</div></details></section>
+<section class="ra-block" aria-labelledby="h-oven"><details class="ra-sec" open data-fold="h-oven"><summary><h2 class="ra-section" id="h-oven">设备 <small>用于烧制的熔炉</small></h2><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i></summary><div class="ra-block">
+  <div class="ra-rd-controls">
+    <div class="ra-rd-field"><span id="l-oven">熔炉</span><div class="ra-tabs" role="radiogroup" aria-labelledby="l-oven" id="ovens-pick"></div></div>
+    <div class="ra-rd-field"><label for="ovens">台数</label>
+      <div class="ra-step"><button type="button" data-step="ovens" data-d="-1" aria-label="减少 1 台">−</button><input id="ovens" type="number" min="1" max="50" value="1" inputmode="numeric"><button type="button" data-step="ovens" data-d="1" aria-label="增加 1 台">+</button></div></div>
+  </div>
+</div></details></section>
+<section class="ra-block" id="none">
+  <h2 class="ra-section">结果</h2>
+  <p class="ra-lead">将要制作的物品数量设为 1 以上后，这里会显示缺少的材料与时间。</p>
+</section>
+<div id="result" class="ra-rd-result">
+<section class="ra-block" aria-live="polite" aria-labelledby="h-result"><details class="ra-sec" open data-fold="h-result"><summary><h2 class="ra-section" id="h-result">还需准备的物资与时间 <small id="make-sub"></small></h2><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i></summary><div class="ra-block">
+  <div class="ra-cp-top">
+    <div class="ra-rd-stat"><span class="ra-rd-label">还需开采的硫磺矿石</span><span class="ra-rd-big ra-rd-sulfur" id="mine"></span><span class="ra-rd-label" id="mine-note"></span></div>
+    <div class="ra-rd-stat"><span class="ra-rd-label">还需收集的木头</span><span class="ra-rd-big" id="wood"></span><span class="ra-rd-label" id="wood-note"></span></div>
+    <div class="ra-rd-stat"><span class="ra-rd-label">熔炉所需时间</span><span class="ra-rd-big ra-cp-time" id="all-time"></span><span class="ra-rd-label" id="time-note"></span></div>
+  </div>
+  <div class="ra-rd-share ra-cp-share"><span class="ra-rd-label">分享当前结果</span>
+    <div class="ra-rd-share-row"><button type="button" class="ra-rd-share-go" id="sh-link"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>复制链接</button>
+      <div class="ra-rd-img" role="group" aria-label="结果图片"><span><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>图片</span><button type="button" id="sh-send" aria-label="分享图片" hidden><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><path d="m8.59 13.51 6.83 3.98"></path><path d="m15.41 6.51-6.82 3.98"></path></svg>分享</button><button type="button" id="sh-copy" aria-label="复制图片" hidden><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>复制</button><button type="button" id="sh-save" aria-label="保存图片"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="m7 10 5 5 5-5"></path><path d="M12 15V3"></path></svg>保存</button></div></div>
+    <span class="ra-rd-share-msg" id="sh-msg" role="status"></span></div>
+  <div class="ra-cp-row ra-cp-head" aria-hidden="true"><span>材料</span><span class="ra-rd-n">所需数量</span><span class="ra-rd-n">持有</span><span class="ra-rd-n">缺口</span></div>
+  <div id="rows"></div>
+  <p class="ra-more">缺口显示为“足够”的材料，用手头的物资即可满足。</p>
+</div></details></section>
+<section class="ra-block" aria-live="polite" aria-labelledby="h-time"><details class="ra-sec" open data-fold="h-time"><summary><h2 class="ra-section" id="h-time">熔炉时间 <small id="oven-sub"></small></h2><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i></summary><div class="ra-block">
+  <div class="ra-rd-smelt">
+    <div class="ra-rd-stat"><span class="ra-rd-label">烧制硫磺矿石</span><span class="ra-rd-time" id="s-time"></span><span class="ra-rd-sub" id="s-ore"></span></div>
+    <div class="ra-rd-stat"><span class="ra-rd-label">烧木头制木炭</span><span class="ra-rd-time" id="c-time"></span><span class="ra-rd-sub" id="c-wood"></span></div>
+    <div class="ra-rd-stat"><span class="ra-rd-label">同一批熔炉兼顾两者</span><span class="ra-rd-time" id="b-time"></span><span class="ra-rd-sub" id="b-wood"></span></div>
+  </div>
+</div></details></section>
+</div>
+<section class="ra-block" aria-labelledby="h-notes"><details class="ra-sec" open data-fold="h-notes"><summary><h2 class="ra-section" id="h-notes">计算前提</h2><i class="ra-ico ra-ico-chevron" aria-hidden="true"></i></summary><div class="ra-block">
+  <ul class="ra-cp-notes">
+    <li>材料一直追溯到制作 Explosives、Gun Powder、Beancan Grenade 为止来计算。</li>
+    <li>时间只包括熔炉烧制的时间，不包括在工作台制作的时间（制作时间）以及开采、收集的时间。</li>
+    <li>1 个木头平均产出 0.75 个木炭。木头数量为期望值。</li>
+    <li>Metal Fragments 按其本身计算，不包括烧制金属矿石的数量和时间。</li>
+    <li>时间为服务器不卡时的数值。服务器卡顿时，木头和木炭所需时间可能更长。</li>
+  </ul>
+</div></details></section>
+</main>
+<footer class="ra-foot"><p>本站为个人分析制作的非官方网站，与 Facepunch Studios 无关。数值读取自游戏服务器的数据与代码，不保证准确。</p>
+<p>部分图标来自 <a class="ra-link" href="https://lucide.dev/" rel="noopener">Lucide</a> (ISC License)。</p></footer>
+<script>document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('[data-lang]');if(a)try{localStorage.setItem('ra-lang',a.dataset.lang)}catch(_){}})</script><script>
+const R={"version":"2026-11-07","targets":[{"id":"wall.stone","name":"Stone Wall","icon":"brick-wall","health":500.0,"kind":"墙","n":{"explosive.timed":2,"ammo.rocket.basic":4,"ammo.rocket.hv":32,"explosive.satchel":10,"ammo.rifle.explosive":182,"grenade.beancan":64,"grenade.f1":870},"soft":{"ammo.rifle.explosive":167}},{"id":"wall.metal","name":"Sheet Metal Wall","icon":"wall-metal","health":1000.0,"kind":"墙","n":{"explosive.timed":4,"ammo.rocket.basic":8,"ammo.rocket.hv":67,"explosive.satchel":23,"ammo.rifle.explosive":399,"grenade.beancan":131,"grenade.f1":9638},"soft":{"ammo.rifle.explosive":399}},{"id":"wall.toptier","name":"Armored Wall","icon":"wall-hqm","health":2000.0,"kind":"墙","n":{"explosive.timed":8,"ammo.rocket.basic":15,"ammo.rocket.hv":134,"explosive.satchel":46,"ammo.rifle.explosive":798,"grenade.beancan":262,"grenade.f1":19276},"soft":{"ammo.rifle.explosive":797}},{"id":"door.hinged.metal","name":"Sheet Metal Door","icon":"door-sheet","health":250.0,"kind":"门","n":{"explosive.timed":1,"ammo.rocket.basic":2,"ammo.rocket.hv":11,"explosive.satchel":4,"ammo.rifle.explosive":63,"grenade.beancan":21,"grenade.f1":500}},{"id":"wall.frame.garagedoor","name":"Garage Door","icon":"door-garage","health":600.0,"kind":"门","n":{"explosive.timed":2,"ammo.rocket.basic":3,"ammo.rocket.hv":25,"explosive.satchel":9,"ammo.rifle.explosive":150,"grenade.beancan":49,"grenade.f1":1200}},{"id":"door.hinged.toptier","name":"Armored Door","icon":"door-armored","health":1000.0,"kind":"门","n":{"explosive.timed":3,"ammo.rocket.basic":5,"ammo.rocket.hv":42,"explosive.satchel":15,"ammo.rifle.explosive":250,"grenade.beancan":82,"grenade.f1":2000}},{"id":"wall.external.high","name":"High External Wooden Wall","icon":"palisade","health":500.0,"kind":"外墙","n":{"explosive.timed":2,"ammo.rocket.basic":3,"ammo.rocket.hv":18,"explosive.satchel":6,"ammo.rifle.explosive":96,"grenade.beancan":36,"grenade.f1":378}},{"id":"wall.external.high.stone","name":"High External Stone Wall","icon":"wall-stone-high","health":500.0,"kind":"外墙","n":{"explosive.timed":2,"ammo.rocket.basic":4,"ammo.rocket.hv":32,"explosive.satchel":10,"ammo.rifle.explosive":182,"grenade.beancan":64,"grenade.f1":870}},{"id":"autoturret","name":"Auto Turret","icon":"turret","health":1000.0,"kind":"放置物","n":{"explosive.timed":2,"ammo.rocket.basic":4,"ammo.rocket.hv":3,"explosive.satchel":4,"ammo.rifle.explosive":100,"grenade.beancan":16,"grenade.f1":10},"use":"ammo.rocket.hv"},{"id":"sam.site","name":"SAM Site","icon":"sam-site","health":1000.0,"kind":"放置物","n":{"explosive.timed":2,"ammo.rocket.basic":4,"ammo.rocket.hv":34,"explosive.satchel":4,"ammo.rifle.explosive":200,"grenade.beancan":16,"grenade.f1":20},"use":"ammo.rocket.hv"}],"explosives":[{"id":"explosive.timed","name":"C4 (Timed Explosive)","icon":"c4","opt":true,"gp":1000.0,"dud":0.0,"cost":{"charcoal":3000.0,"sulfur":2200.0,"metal.fragments":200.0,"lowgradefuel":60.0,"cloth":5.0,"techparts":2.0},"bullet":false},{"id":"ammo.rocket.basic","name":"Rocket","icon":"rocket","opt":true,"gp":650.0,"dud":0.0,"cost":{"charcoal":1950.0,"sulfur":1400.0,"metal.fragments":100.0,"lowgradefuel":30.0,"metalpipe":2.0},"bullet":false},{"id":"ammo.rocket.hv","name":"HV Rocket","icon":"rocket","opt":false,"gp":100.0,"dud":0.0,"cost":{"charcoal":300.0,"sulfur":200.0,"metalpipe":1.0},"bullet":false},{"id":"explosive.satchel","name":"Satchel Charge","icon":"satchel","opt":true,"gp":240.0,"dud":0.2,"cost":{"charcoal":720.0,"sulfur":480.0,"metal.fragments":80.0,"stash.small":1.0,"rope":1.0},"bullet":false},{"id":"ammo.rifle.explosive","name":"Explosive 5.56 Ammo","icon":"bullet","opt":true,"gp":10.0,"dud":0.0,"cost":{"charcoal":30.0,"sulfur":25.0,"metal.fragments":5.0},"bullet":true},{"id":"grenade.beancan","name":"Beancan Grenade","icon":"beancan","opt":true,"gp":60.0,"dud":0.15,"cost":{"charcoal":180.0,"sulfur":120.0,"metal.fragments":20.0},"bullet":false},{"id":"grenade.f1","name":"F1 Grenade","icon":"grenade","opt":true,"gp":30.0,"dud":0.0,"cost":{"charcoal":90.0,"sulfur":60.0,"metal.fragments":25.0},"bullet":false}],"ovens":[{"id":"furnace","name":"Furnace","sulfur":1.6666666666666667,"ore":1.0,"ore_name":"Sulfur Ore","burn":2.0,"charcoal":0.75},{"id":"furnace.large","name":"Large Furnace","sulfur":0.3333333333333333,"ore":1.0,"ore_name":"Sulfur Ore","burn":2.0,"charcoal":0.75},{"id":"electric.furnace","name":"Electric Furnace","sulfur":1.0,"ore":1.0,"ore_name":"Sulfur Ore","burn":null,"charcoal":0}],"materials":{"charcoal":"Charcoal","cloth":"Cloth","lowgradefuel":"Low Grade Fuel","metal.fragments":"Metal Fragments","metalpipe":"Metal Pipe","rope":"Rope","stash.small":"Small Stash","sulfur":"Sulfur","techparts":"Tech Trash"},"icons":{"beancan":"<path d=\"M6 8h12v13H6z\"/><path d=\"M6 12h12\"/><path d=\"M6 17h12\"/><path d=\"M12 8V6.5c0-2 3-1.5 3-3.5\"/>","brick-wall":"<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\"/><path d=\"M12 9v6\"/><path d=\"M16 15v6\"/><path d=\"M16 3v6\"/><path d=\"M3 15h18\"/><path d=\"M3 9h18\"/><path d=\"M8 15v6\"/><path d=\"M8 3v6\"/>","bullet":"<path d=\"M9 21V10c0-4 1.5-6 3-7 1.5 1 3 3 3 7v11z\"/><path d=\"M9 17h6\"/><path d=\"M9 11h6\"/>","c4":"<path d=\"M3 10h18v10H3z\"/><path d=\"M9 10v10\"/><path d=\"M15 10v10\"/><path d=\"M8 4h8v6H8z\"/><path d=\"M10.5 7h3\"/><path d=\"M5 10V6\"/>","door-armored":"<path d=\"M6 21V3h12v18\"/><path d=\"M3 21h18\"/><path d=\"M9 6h6v4H9z\"/><path d=\"M9 14v.01\"/><path d=\"M15 14v.01\"/><path d=\"M9 18v.01\"/><path d=\"M15 18v.01\"/>","door-garage":"<path d=\"M3 21V5h18v16\"/><path d=\"M1 21h22\"/><path d=\"M3 9h18\"/><path d=\"M3 13h18\"/><path d=\"M3 17h18\"/>","door-sheet":"<path d=\"M6 21V3h12v18\"/><path d=\"M3 21h18\"/><path d=\"M6 8h12\"/><path d=\"M6 13h12\"/><path d=\"M15.5 10.5v.01\"/>","grenade":"<ellipse cx=\"12\" cy=\"15\" rx=\"5\" ry=\"6\"/><path d=\"M10 9V6h4v3\"/><path d=\"M14 6h3l1.5 5\"/><circle cx=\"7.5\" cy=\"5\" r=\"1.5\"/><path d=\"M9 5.5l1 .5\"/><path d=\"M7 15h10\"/>","palisade":"<path d=\"M3 21V7l3-4 3 4v14\"/><path d=\"m9 7 3-4 3 4v14\"/><path d=\"m15 7 3-4 3 4v14\"/><path d=\"M3 21h18\"/><path d=\"M3 13h18\"/>","rocket":"<path d=\"M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z\"/><path d=\"m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z\"/><path d=\"M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0\"/><path d=\"M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5\"/>","sam-site":"<path d=\"M4 21h16\"/><path d=\"M12 21v-5\"/><path d=\"m5 12.5 11-6.5 2.5 4.3-11 6.5z\"/><path d=\"m10.5 9.3 2.5 4.3\"/><path d=\"M19.5 4.5v.01\"/>","satchel":"<path d=\"M4 9h16v11H4z\"/><path d=\"M4 14h16\"/><path d=\"M10 9v11\"/><path d=\"M13 9V7c0-2 3-1.5 3-3.5\"/><path d=\"M18 2v.01\"/>","turret":"<path d=\"M6 21h12\"/><path d=\"M12 21v-5\"/><path d=\"M6 9h10v7H6z\"/><path d=\"M16 11h6\"/><path d=\"M16 14h6\"/><circle cx=\"9.5\" cy=\"12.5\" r=\"1\"/><path d=\"M9 9V6h4\"/>","wall-hqm":"<path d=\"M3 3h18v18H3z\"/><path d=\"M7 7h10v10H7z\"/><path d=\"m3 3 4 4\"/><path d=\"m21 3-4 4\"/><path d=\"m3 21 4-4\"/><path d=\"m21 21-4-4\"/>","wall-metal":"<path d=\"M3 3h18v18H3z\"/><path d=\"M3 12h18\"/><path d=\"M6.5 6.5v.01\"/><path d=\"M17.5 6.5v.01\"/><path d=\"M6.5 17.5v.01\"/><path d=\"M17.5 17.5v.01\"/>","wall-stone-high":"<path d=\"M3 21V4h4v3h3.5V4h3v3H17V4h4v17z\"/><path d=\"M3 12h18\"/><path d=\"M3 16.5h18\"/><path d=\"M12 7v5\"/><path d=\"M8 12v4.5\"/><path d=\"M16 12v4.5\"/><path d=\"M12 16.5V21\"/>"},"order":["sulfur","charcoal","metal.fragments","lowgradefuel","cloth","techparts","metalpipe","stash.small","rope"],"stock":[["sulfur","Sulfur"],["sulfur.ore","Sulfur Ore"],["gunpowder","Gun Powder"],["charcoal","Charcoal"],["metal.fragments","Metal Fragments"],["lowgradefuel","Low Grade Fuel"],["cloth","Cloth"],["techparts","Tech Trash"],["metalpipe","Metal Pipe"],["stash.small","Small Stash"],["rope","Rope"]],"gunpowder":{"charcoal":3.0,"sulfur":2.0}};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const num=n=>Number(n).toLocaleString('en-US',{maximumFractionDigits:1});
+const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,parseInt(v,10)||lo));
+// The sections fold at their headings; which ones are folded is remembered on this device, per page.
+const FOLD='ra-fold-'+location.pathname.split('/').pop(),folds=()=>[...document.querySelectorAll('details[data-fold]')];
+try{const st=JSON.parse(localStorage.getItem(FOLD)||'{}');for(const d of folds())if(d.dataset.fold in st)d.open=!!st[d.dataset.fold]}catch(_){}
+document.addEventListener('toggle',ev=>{if(ev.target.dataset&&ev.target.dataset.fold)try{localStorage.setItem(FOLD,JSON.stringify(Object.fromEntries(folds().map(d=>[d.dataset.fold,d.open]))))}catch(_){}},true);
+// The share image: a 1200x675 card (drawn at 2x) in the page's own colours and fonts, with the site's name and `title` on
+// top and the page's address below. paint(h) draws the rest with the helpers h; icons are the names it draws with h.pic.
+const css=k=>getComputedStyle(document.documentElement).getPropertyValue(k).trim();
+async function drawCard(title,icons,paint){
+  const W=1200,H=675,K=2,L=48,HALF=(W-L*2-24)/2,cv=document.createElement('canvas');cv.width=W*K;cv.height=H*K;
+  const x=cv.getContext('2d');x.scale(K,K);
+  const C={bg:css('--plate'),up:css('--plate-raised'),sunk:css('--plate-sunken'),line:css('--line'),strong:css('--line-strong'),ink:css('--ink'),mute:css('--ink-muted'),rust:css('--rust')};
+  const F={sans:css('--font-sans'),mono:css('--font-mono'),disp:css('--font-display')},f=(w,px,fam)=>`${w} ${px}px ${F[fam]}`;
+  const used=[],pics={};
+  const pic=(k,px,py,sz)=>{if(pics[k])x.drawImage(pics[k],px,py,sz,sz)};
+  const M=(s,font)=>{x.font=font;return x.measureText(s).width};
+  // T draws text and returns the x where it ended (where it began, when right-aligned)
+  const T=(s,px,py,font,col,right)=>{used.push([font,s]);x.font=font;x.fillStyle=col;x.textAlign=right?'right':'left';x.fillText(s,px,py);
+    const w=x.measureText(s).width;return right?px-w:px+w};
+  const fit=(s,font,max)=>{if(M(s,font)<=max)return s;while(s.length>1&&M(s+'…',font)>max)s=s.slice(0,-1);return s+'…'};
+  const box=(col,a,b,w,h)=>{x.fillStyle=col;x.fillRect(a,b,w,h)};
+  const rule=(col,a,b,w,h,lw)=>{x.strokeStyle=col;x.lineWidth=lw;x.strokeRect(a+lw/2,b+lw/2,w-lw,h-lw)};
+  const h={x,W,H,L,HALF,C,f,T,M,fit,box,rule,pic};
+  const all=()=>{box(C.bg,0,0,W,H);const e=T('Rust Analysis',L,60,f(700,26,'disp'),C.ink);T(title,e+16,60,f(600,17,'sans'),C.mute);
+    T(`游戏版本 ${R.version}`,W-L,60,f(400,14,'mono'),C.mute,1);box(C.ink,L,78,W-L*2,2);paint(h);
+    box(C.line,L,642,W-L*2,1);T('maco165.github.io/rust-patch-notes/zh/tools/craft.html',L,662,f(400,13,'mono'),C.mute);T('根据游戏数据计算 / 非官方',W-L,662,f(400,13,'sans'),C.mute,1)};
+  // the first pass lists the text of each font, so the web fonts (split by unicode range) load before the pass that counts
+  all();try{await Promise.all(used.map(([font,s])=>document.fonts.load(font,s)))}catch(_){}
+  // the icons, as SVG images stroked in the ink colour; one that fails to load is left out
+  await Promise.all([...new Set(icons.filter(Boolean))].map(async k=>{try{const im=new Image();
+    im.src='data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 24 24" fill="none" stroke="${C.ink}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${R.icons[k]}</svg>`);
+    await im.decode();pics[k]=im}catch(_){}}));
+  used.length=0;all();return cv}
+// The buttons under "分享当前结果": the link, and the image made by card() shared, copied or saved as name().
+let say=()=>{};
+function shareUI(card,name,summary,hint){
+  const png=async()=>{const cv=await card();return new Promise((ok,ng)=>cv.toBlob(b=>b?ok(b):ng(new Error('toBlob')),'image/png'))};
+  say=m=>{$('#sh-msg').textContent=m||hint};say();document.addEventListener('change',()=>say());
+  const clip=navigator.clipboard;
+  $('#sh-link').addEventListener('click',async()=>{try{await clip.writeText(location.href);say('已复制链接。')}
+    catch(_){say('无法复制。可以直接使用地址栏中的 URL。')}});
+  $('#sh-save').addEventListener('click',async()=>{try{const a=document.createElement('a');a.href=URL.createObjectURL(await png());a.download=name();
+    document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),10000);say(`已保存图片 (${name()})。`)}
+    catch(_){say('无法生成图片。')}});
+  if(clip&&clip.write&&window.ClipboardItem){$('#sh-copy').hidden=false;
+    $('#sh-copy').addEventListener('click',async()=>{try{await clip.write([new ClipboardItem({'image/png':png()})]);say('已复制图片，可以粘贴发送。')}
+      catch(_){say('无法复制图片，请使用“保存”。')}})}
+  const probe=()=>{try{return navigator.canShare&&navigator.canShare({files:[new File([''],'a.png',{type:'image/png'})]})}catch(_){return false}};
+  if(probe()){$('#sh-send').hidden=false;
+    $('#sh-send').addEventListener('click',async()=>{try{const file=new File([await png()],name(),{type:'image/png'});
+        await navigator.share({files:[file],text:`${summary()}\n${location.href}`});say('')}
+      catch(e){if(e.name!=='AbortError')say('无法分享，请使用“保存”。')}})}}
+const dur=s=>{s=Math.round(s);const h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return h?`${h} 小时 ${m} 分`:m?`${m} 分${x?` ${x} 秒`:''}`:`${x} 秒`};
+const unit=e=>e.id.startsWith('ammo.')?'发':'个';
+const ii=k=>`<i class="ra-ico ra-ii-${esc(k)}" aria-hidden="true"></i>`;
+const EX=Object.fromEntries(R.explosives.map(e=>[e.id,e]));
+const fuelOven=R.ovens.find(o=>o.burn);
+// sulphur Su and charcoal C on c ovens of the kind o: seconds for the ore, wood for the charcoal and its seconds
+const smelt=(Su,C,o,c)=>{const burner=o.burn?o:fuelOven,ts=Su*o.sulfur/c,wood=C/burner.charcoal,tc=wood*burner.burn/c,both=Math.max(ts,tc);
+  return{ts,tc,wood,both,bothWood:o.burn?both*c/o.burn:null}};
+const showSmelt=(m,Su,o,c)=>{$('#s-time').textContent=dur(m.ts);$('#s-ore').textContent=`硫磺矿石 ${num(Math.ceil(Su*o.ore))} 个`;
+  $('#c-time').textContent=dur(m.tc);$('#c-wood').textContent=`木头 ${num(Math.ceil(m.wood))} 个`;
+  $('#b-time').textContent=o.burn?dur(m.both):'';
+  $('#b-wood').textContent=o.burn?`木头 ${num(Math.ceil(m.bothWood))} 个`:'Electric Furnace 不能烧木头。左侧时间按木炭在燃料熔炉中制作来计算。';
+  $('#b-wood').classList.toggle('ra-rd-plain',!o.burn)};
+const matOrder=mats=>Object.keys(mats).sort((a,b)=>(b==='sulfur')-(a==='sulfur')||mats[b]-mats[a]);
+// The three stats of the smelting, at the left edge sx and the top sy of a half-width column.
+const cardSmelt=(h,sx,sy,m,Su,o,c)=>{const{HALF,C,f,T}=h,stat=(px,label,time,sub)=>{T(label,px,sy,f(400,12,'sans'),C.mute);T(time,px,sy+30,f(600,26,'disp'),C.ink);T(sub,px,sy+50,f(400,12,'mono'),C.ink)};
+  stat(sx,'烧制硫磺矿石',dur(m.ts),`硫磺矿石 ${num(Math.ceil(Su*o.ore))} 个`);
+  stat(sx+HALF/3,o.burn?'烧木头制木炭':`制作木炭 (${fuelOven.name} ${c} 台)`,dur(m.tc),`木头 ${num(Math.ceil(m.wood))} 个`);
+  if(o.burn)stat(sx+HALF*2/3,'同一批熔炉兼顾两者',dur(m.both),`木头 ${num(Math.ceil(m.bothWood))} 个`)};
+
+const P=new URLSearchParams(location.search);
+const pairs=(s,ok)=>{const out={};for(const part of(s||'').split(',')){const[id,q]=part.split(':'),n=parseInt(q,10);if(ok(id)&&n>0)out[id]=Math.min(n,9999999)}return out};
+const S={m:pairs(P.get('m'),id=>EX[id]),k:pairs(P.get('k'),id=>R.stock.some(k=>k[0]===id)),o:R.ovens.some(o=>o.id===P.get('o'))?P.get('o'):R.ovens[0].id,c:clamp(P.get('c'),1,50)};
+if(P.get('r')){$('#from').hidden=false;$('#back').href=$('#back-top').href=`raid.html?${P.get('r')}`}
+$('#makes').innerHTML=R.explosives.map(e=>`<div class="ra-rd-tile ra-cp-tile" data-tile="${esc(e.id)}"><span class="ra-rd-tname">${ii(e.icon)}<span><b>${esc(e.name)}</b></span></span>`+
+  `<div class="ra-step"><button type="button" data-t="${esc(e.id)}" data-d="-1" aria-label="${esc(e.name)} 减少 1 个">−</button>`+
+  `<input type="number" min="0" max="9999999" inputmode="numeric" data-q="${esc(e.id)}" aria-label="${esc(e.name)} 的制作数量">`+
+  `<button type="button" data-t="${esc(e.id)}" data-d="1" aria-label="${esc(e.name)} 增加 1 个">+</button></div></div>`).join('');
+$('#stocks').innerHTML=R.stock.map(k=>`<label>${esc(k[1])}<input type="number" min="0" inputmode="numeric" data-k="${esc(k[0])}"></label>`).join('');
+$('#ovens-pick').innerHTML=R.ovens.map(o=>`<label class="ra-tab"><input type="radio" name="oven" value="${esc(o.id)}">${esc(o.name)}</label>`).join('');
+const GP=R.gunpowder,gpName=R.stock.find(k=>k[0]==='gunpowder')[1],oreName=R.stock.find(k=>k[0]==='sulfur.ore')[1];
+$('#stock-note').textContent=`${gpName} 在配方用量以内，按每个折合 ${matOrder(GP).map(m=>`${R.materials[m]} ${num(GP[m])}`).join(' 和 ')} 计算。${oreName} 会优先烧成所缺的硫磺。`;
+let V;  // what render() last showed, for the share image
+function render(){
+  for(const e of R.explosives){const q=S.m[e.id]||0,i=document.querySelector(`[data-q="${e.id}"]`);
+    if(document.activeElement!==i||i.value!=='')i.value=q;document.querySelector(`[data-tile="${e.id}"]`).classList.toggle('is-on',q>0)}
+  for(const k of R.stock){const i=document.querySelector(`[data-k="${k[0]}"]`);if(document.activeElement!==i||i.value!=='')i.value=S.k[k[0]]||0}
+  for(const i of document.querySelectorAll('input[name=oven]'))i.checked=i.value===S.o;
+  if(document.activeElement!==$('#ovens')||$('#ovens').value!=='')$('#ovens').value=S.c;
+  const made=R.explosives.filter(e=>S.m[e.id]>0),o=R.ovens.find(x=>x.id===S.o),c=S.c;
+  $('#none').hidden=made.length>0;$('#result').hidden=!made.length;
+  const u=new URLSearchParams({m:made.map(e=>`${e.id}:${S.m[e.id]}`).join(',')});const ks=R.stock.filter(k=>S.k[k[0]]>0).map(k=>`${k[0]}:${S.k[k[0]]}`).join(',');
+  if(ks)u.set('k',ks);u.set('o',S.o);if(c>1)u.set('c',c);if(P.get('r'))u.set('r',P.get('r'));history.replaceState(null,'',`?${u}`);
+  const held=R.stock.filter(k=>S.k[k[0]]>0);
+  $('#stock-sub').textContent=held.length?held.map(k=>`${k[1]} ${num(S.k[k[0]])}`).join('、'):'如有现成物资，请展开输入数量';
+  V=null;if(!made.length)return;
+  const need={};for(const e of made)for(const[m,v]of Object.entries(e.cost))need[m]=(need[m]||0)+v*S.m[e.id];
+  // gunpowder in hand stands for the sulphur and charcoal it is made of, up to the gunpowder the recipes take (it cannot be
+  // turned back into sulphur); ore in hand is smelted before any is mined
+  const gp=Math.min(S.k.gunpowder||0,made.reduce((a,e)=>a+e.gp*S.m[e.id],0)),ore=S.k['sulfur.ore']||0,have=m=>(S.k[m]||0)+gp*(GP[m]||0),lack=m=>Math.max(0,(need[m]||0)-have(m));
+  const Ls=lack('sulfur'),Lc=lack('charcoal'),mine=Math.max(0,Ls*o.ore-ore),m=smelt(Ls,Lc,o,c);
+  $('#make-sub').textContent=made.map(e=>`${e.name} ${num(S.m[e.id])} ${unit(e)}`).join('、');
+  $('#mine').textContent=num(Math.ceil(mine));
+  $('#mine-note').textContent=Ls?`缺少硫磺 ${num(Ls)} 个，其中手头矿石可提供 ${num(Math.min(ore/o.ore,Ls))} 个`:'手头的硫磺已足够';
+  $('#wood').textContent=num(Math.ceil(m.wood));$('#wood-note').textContent=Lc?`用于烧制所缺的木炭 ${num(Lc)} (平均)`:'手头的木炭已足够';
+  $('#all-time').textContent=dur(m.both);$('#time-note').textContent=`${o.name} ${c} 台${o.burn?'':` 和 ${fuelOven.name} ${c} 台`}，烧完硫磺矿石和木头所需`;
+  $('#rows').innerHTML=matOrder(need).sort((a,b)=>R.order.indexOf(a)-R.order.indexOf(b)).map(k=>{const l=lack(k);
+    return`<div class="ra-cp-row"><span class="ra-cp-name"><b>${esc(R.materials[k])}</b>${gp&&GP[k]?`<small>${esc(gpName)} ${num(gp)} 个已折算计入持有量</small>`:''}</span>`+
+      `<span class="ra-rd-n ra-cp-need">${num(need[k])}</span><span class="ra-rd-n ra-cp-have">${num(have(k))}</span>`+
+      `<span class="ra-rd-n ra-cp-lack${l?' is-short':''}">${l?num(l):'足够'}</span></div>`}).join('');
+  $('#oven-sub').textContent=`${o.name} ${c} 台`;showSmelt(m,Ls,o,c);
+  V={made,need,have,lack,held,gp,Ls,Lc,mine,m,o,c}}
+const setN=(box,id,v,max)=>{const q=Math.max(0,Math.min(max,parseInt(v,10)||0));if(q)box[id]=q;else delete box[id]};
+const onPick=ev=>{const i=ev.target;
+  if(i.dataset.q)setN(S.m,i.dataset.q,i.value,9999999);else if(i.dataset.k)setN(S.k,i.dataset.k,i.value,9999999);else if(i.name==='oven')S.o=i.value;
+  else if(i.id==='ovens')S.c=clamp(i.value,1,50);else return;
+  render();if(ev.type==='change'){if(i.dataset.q)i.value=S.m[i.dataset.q]||0;if(i.dataset.k)i.value=S.k[i.dataset.k]||0;if(i.id==='ovens')i.value=S.c}};
+document.addEventListener('change',onPick);
+document.addEventListener('input',ev=>{if(ev.target.dataset.q||ev.target.dataset.k||ev.target.id==='ovens')onPick(ev)});
+document.addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b)return;
+  if(b.dataset.t)setN(S.m,b.dataset.t,(S.m[b.dataset.t]||0)+Number(b.dataset.d),9999999);else if(b.dataset.step)S.c=clamp(S.c+Number(b.dataset.d),1,50);else return;render();say()});
+// stock that came with the link is shown; otherwise the section starts folded (the page's HTML) unless it was opened before
+if(Object.keys(S.k).length)document.querySelector('[data-fold="h-stock"]').open=true;
+render();
+// The share image: what is made, the three totals, the materials (needed, in hand, short) and the ovens' time.
+const card=()=>drawCard('Craft Planner',V.made.map(e=>e.icon),h=>{
+  const{W,L,HALF,C,f,T,M,fit,box,rule,pic}=h,{made,need,have,lack,held,Ls,mine,m,o,c}=V;
+  let px=T('要制作的物品',L,124,f(600,34,'sans'),C.ink)+28,py=124;const cf=f(400,17,'sans');
+  for(const e of made){const s=`${e.name} ${num(S.m[e.id])} ${unit(e)}`,w=26+M(s,cf);if(px+w>W-L){px=L;py+=30}pic(e.icon,px,py-16,20);T(s,px+26,py,cf,C.ink);px+=w+20}
+  const top=py+18,TW=(W-L*2-48)/3,big=(i,label,v,col,note)=>{const bx=L+i*(TW+24);rule(i?C.strong:C.ink,bx,top,TW,92,i?1:2);if(!i)box(C.up,bx+2,top+2,TW-4,88);
+    T(label,bx+16,top+23,f(400,13,'sans'),C.mute);T(v,bx+16,top+62,f(600,i===2?32:40,'disp'),col);T(fit(note,f(400,12,'sans'),TW-32),bx+16,top+82,f(400,12,'sans'),C.mute)};
+  big(0,'还需开采的硫磺矿石',num(Math.ceil(mine)),C.rust,Ls?`缺少硫磺 ${num(Ls)}`:'手头的硫磺已足够');
+  big(1,'还需收集的木头',num(Math.ceil(m.wood)),C.ink,V.Lc?`用于烧制所缺的木炭 ${num(V.Lc)} (平均)`:'手头的木炭已足够');
+  big(2,'熔炉所需时间',dur(m.both),C.ink,`${o.name} ${c} 台${o.burn?'':` 和 ${fuelOven.name} ${c} 台`}`);
+  const lt=top+92+20,RX=L+HALF+24,hf=f(600,16,'sans'),sf=f(400,13,'sans'),keys=matOrder(need).sort((a,b)=>R.order.indexOf(a)-R.order.indexOf(b));
+  T('材料',L,lt+16,hf,C.ink);T('所需数量',L+HALF-230,lt+16,sf,C.mute,1);T('持有',L+HALF-115,lt+16,sf,C.mute,1);T('缺口',L+HALF,lt+16,sf,C.mute,1);box(C.ink,L,lt+26,HALF,2);
+  const rh=Math.min(34,Math.floor((632-lt-28)/keys.length)),fs=rh<26?12:15;
+  keys.forEach((k,i)=>{const y=lt+28+i*rh,b=y+rh/2+fs*.36,l=lack(k);T(R.materials[k],L,b,f(600,fs,'sans'),C.ink);
+    T(num(need[k]),L+HALF-230,b,f(400,fs,'mono'),C.ink,1);T(num(have(k)),L+HALF-115,b,f(400,fs,'mono'),C.mute,1);
+    T(l?num(l):'足够',L+HALF,b,l?f(500,fs,'mono'):f(400,fs-1,'sans'),l?C.rust:C.mute,1);box(C.line,L,y+rh-1,HALF,1)});
+  T('熔炉时间',RX,lt+16,hf,C.ink);T(`${o.name} ${c} 台`,RX+HALF,lt+16,sf,C.mute,1);box(C.ink,RX,lt+26,HALF,2);
+  cardSmelt(h,RX,lt+50,m,Ls,o,c);
+  box(C.line,RX,lt+116,HALF,1);T('手头的物资',RX,lt+138,f(400,12,'sans'),C.mute);
+  let cx=RX,cy=lt+160;const mf=f(400,14,'sans'),hs=held.length?held.map(k=>`${k[1]} ${num(S.k[k[0]])}`):['未输入'];
+  hs.forEach((s,i,a)=>{s+=i<a.length-1?'、':'';const w=M(s,mf);if(cx+w>RX+HALF){cx=RX;cy+=22}T(s,cx,cy,mf,C.ink);cx+=w})});
+shareUI(card,()=>`rust-craft-${V.made.map(e=>`${e.id}-x${S.m[e.id]}`).join('_').slice(0,80)}.png`,
+  ()=>`${V.made.map(e=>`${e.name} ${num(S.m[e.id])} ${unit(e)}`).join('、')}：还需开采硫磺矿石 ${num(Math.ceil(V.mine))}、木头 ${num(Math.ceil(V.m.wood))}、熔炉 ${dur(V.m.both)}`,
+  '打开链接，会以相同的输入打开本页面。图片将缺少的材料与熔炉时间汇总成一张。');
+</script>
+</body></html>

@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Gene Planner: Rust の種子の配合 (遺伝子の組み合わせ) | Rust Analysis</title>
+<script>(()=>{try{if(/bot|crawl|spider|slurp|lighthouse|inspection/i.test(navigator.userAgent))return;const A={"ja":"../tools/gene.html","en":"../en/tools/gene.html","zh":"../zh/tools/gene.html","ko":"../ko/tools/gene.html","ru":"../ru/tools/gene.html"},S=["ja","en","zh","ko","ru"];let w=localStorage.getItem('ra-lang');if(!w){for(const l of navigator.languages||[navigator.language||'']){const c=String(l).toLowerCase().split('-')[0];if(S.includes(c)){w=c;break}}w=w||'en'}if(!A[w])w=A.en?'en':null;if(w&&w!=='ja')location.replace(A[w]+location.search+location.hash)}catch(_){}})()</script><title>Gene Planner: Rust の種子の配合 (遺伝子の組み合わせ) | Rust Analysis</title>
 <meta name="description" content="ゲーム Rust の植物の遺伝子 (G・Y・H・W・X) の配合を計算するツール。手持ちの苗から、GGGYYY など目標に近い苗を作る植え方 (真ん中とまわりに植える苗と順番) と、育った苗の効き目を出します。">
 <meta name="theme-color" content="#f2f4f5" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15181a" media="(prefers-color-scheme: dark)">
@@ -18,6 +18,10 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="canonical" href="https://maco165.github.io/rust-patch-notes/tools/gene.html">
 <link rel="alternate" hreflang="ja" href="https://maco165.github.io/rust-patch-notes/tools/gene.html">
+<link rel="alternate" hreflang="en" href="https://maco165.github.io/rust-patch-notes/en/tools/gene.html">
+<link rel="alternate" hreflang="zh" href="https://maco165.github.io/rust-patch-notes/zh/tools/gene.html">
+<link rel="alternate" hreflang="ko" href="https://maco165.github.io/rust-patch-notes/ko/tools/gene.html">
+<link rel="alternate" hreflang="ru" href="https://maco165.github.io/rust-patch-notes/ru/tools/gene.html">
 <link rel="alternate" hreflang="x-default" href="https://maco165.github.io/rust-patch-notes/tools/gene.html">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Gene Planner", "url": "https://maco165.github.io/rust-patch-notes/tools/gene.html", "description": "ゲーム Rust の植物の遺伝子 (G・Y・H・W・X) の配合を計算するツール。手持ちの苗から、GGGYYY など目標に近い苗を作る植え方 (真ん中とまわりに植える苗と順番) と、育った苗の効き目を出します。", "applicationCategory": "GameApplication", "operatingSystem": "Any", "inLanguage": "ja", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "isPartOf": {"@type": "WebSite", "name": "Rust Analysis", "url": "https://maco165.github.io/rust-patch-notes/"}}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Rust Analysis", "item": "https://maco165.github.io/rust-patch-notes/"}, {"@type": "ListItem", "position": 2, "name": "ツール", "item": "https://maco165.github.io/rust-patch-notes/tools.html"}, {"@type": "ListItem", "position": 3, "name": "Gene Planner", "item": "https://maco165.github.io/rust-patch-notes/tools/gene.html"}]}</script>
@@ -30,7 +34,7 @@
   <a class="ra-site-name" href="../index.html"><b>Rust</b> Analysis</a>
   <nav class="ra-nav" aria-label="ページ"><a href="../index.html"><i class="ra-ico ra-ico-month" aria-hidden="true"></i>今月</a><a href="../history.html"><i class="ra-ico ra-ico-history" aria-hidden="true"></i>これまで</a><a href="../genres.html"><i class="ra-ico ra-ico-genres" aria-hidden="true"></i>ジャンル</a><a href="../numbers.html"><i class="ra-ico ra-ico-numbers" aria-hidden="true"></i>数値</a><a href="../diffs.html"><i class="ra-ico ra-ico-diffs" aria-hidden="true"></i>版の差分</a><a href="../items.html"><i class="ra-ico ra-ico-items" aria-hidden="true"></i>アイテム</a><a href="../spec.html"><i class="ra-ico ra-ico-spec" aria-hidden="true"></i>仕様書</a><a href="../columns.html"><i class="ra-ico ra-ico-columns" aria-hidden="true"></i>コラム</a><a href="../tools.html" aria-current="page"><i class="ra-ico ra-ico-tools" aria-hidden="true"></i>ツール</a></nav>
   <span class="ra-site-meta"><span class="ra-site-meta-w">データ </span>2026-11-05<span class="ra-site-meta-w"> まで</span></span>
-  <span class="ra-site-lang"><a href="../en/tools.html" lang="en" title="The English pages are the tools and the articles. This page is in Japanese only.">English</a></span><a class="ra-site-link" href="https://github.com/maco165/rust-patch-notes" rel="noopener"><i class="ra-ico ra-ico-github" aria-hidden="true"></i>GitHub</a>
+  <span class="ra-site-lang"><a href="../en/tools/gene.html" lang="en" hreflang="en" data-lang="en">English</a><a href="../zh/tools/gene.html" lang="zh" hreflang="zh" data-lang="zh">简体中文</a><a href="../ko/tools/gene.html" lang="ko" hreflang="ko" data-lang="ko">한국어</a><a href="../ru/tools/gene.html" lang="ru" hreflang="ru" data-lang="ru">Русский</a></span><a class="ra-site-link" href="https://github.com/maco165/rust-patch-notes" rel="noopener"><i class="ra-ico ra-ico-github" aria-hidden="true"></i>GitHub</a>
 </header>
 <script>(()=>{const n=document.querySelector('.ra-nav'),a=n&&n.querySelector('[aria-current]');if(a&&n.scrollWidth>n.clientWidth)n.scrollLeft=a.offsetLeft-(n.clientWidth-a.offsetWidth)/2})()</script>
 <main class="ra-page">
@@ -138,8 +142,8 @@
 </main>
 <footer class="ra-foot"><p>Facepunch Studios とは関係のない、個人が解析して作った非公式のサイトです。変更点は公式の変更点の一覧を自分の言葉で日本語にしたもので、各回に出典のリンクがあります。アイテムの値はゲームのサーバーのデータから、版の差分はゲームの本体 (クライアント) の各月の版のデータから読んだもので、正しさは保証しません。</p>
 <p>アイコンの一部は <a class="ra-link" href="https://lucide.dev/" rel="noopener">Lucide</a> (ISC License) です。</p></footer>
-<script>
-const R={"version":"2026-11-07","w":{"X":1.0,"W":1.0,"G":0.6000000238418579,"Y":0.6000000238418579,"H":0.6000000238418579},"eff":{"ground":{"gene":"H","factor":0.2},"growth":{"gene":"G","factor":0.25},"temperature":{"gene":"H","factor":0.05},"water":{"gene":"W","factor":0.1},"yield":{"gene":"Y","factor":0.25}},"clones":{"gene":"Y","divisor":2},"plants":[{"id":"corn","name":"とうもろこし","base":2},{"id":"hemp","name":"麻","base":2},{"id":"potato","name":"じゃがいも","base":2},{"id":"pumpkin","name":"かぼちゃ","base":2},{"id":"wheat","name":"小麦","base":2},{"id":"red.berry","name":"赤のベリー","base":2},{"id":"blue.berry","name":"青のベリー","base":2},{"id":"green.berry","name":"緑のベリー","base":2},{"id":"yellow.berry","name":"黄のベリー","base":2},{"id":"white.berry","name":"白のベリー","base":2},{"id":"black.berry","name":"黒のベリー","base":2},{"id":"rose","name":"バラ","base":2},{"id":"orchid","name":"ラン","base":1},{"id":"sunflower","name":"ひまわり","base":2}],"planters":[{"id":"planter.large","name":"大きい","full":"大きい植木鉢","center":0,"order":[5,1,2,6,3,4,8,7],"slots":[[0.0,0.0],[0.92,0.0],[-0.92,0.0],[-0.92,0.896],[0.936,0.896],[0.0,0.896],[0.0,-0.954],[0.936,-0.954],[-0.92,-0.954]]},{"id":"planter.small","name":"小さい","full":"小さい植木鉢","center":0,"order":[1,2],"slots":[[0.0,0.0],[0.92,0.0],[-0.92,0.0]]},{"id":"planter.triangle","name":"三角","full":"三角の植木鉢","center":0,"order":[3,1,2],"slots":[[0.126,0.492],[0.123,-0.493],[-0.738,0.0],[-0.172,0.0]]}],"presets":["GGGYYY","GGYYYY","GGGGYY"],"icons":{}};
+<script>document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('[data-lang]');if(a)try{localStorage.setItem('ra-lang',a.dataset.lang)}catch(_){}})</script><script>
+const R={"version":"2026-11-07","w":{"X":1.0,"W":1.0,"G":0.6000000238418579,"Y":0.6000000238418579,"H":0.6000000238418579},"eff":{"ground":{"gene":"H","factor":0.2},"growth":{"gene":"G","factor":0.25},"temperature":{"gene":"H","factor":0.05},"water":{"gene":"W","factor":0.1},"yield":{"gene":"Y","factor":0.25}},"clones":{"gene":"Y","divisor":2},"plants":[{"id":"corn","name":"とうもろこし","base":2},{"id":"hemp","name":"麻","base":2},{"id":"potato","name":"じゃがいも","base":2},{"id":"pumpkin","name":"かぼちゃ","base":2},{"id":"wheat","name":"小麦","base":2},{"id":"red.berry","name":"赤のベリー","base":2},{"id":"blue.berry","name":"青のベリー","base":2},{"id":"green.berry","name":"緑のベリー","base":2},{"id":"yellow.berry","name":"黄のベリー","base":2},{"id":"white.berry","name":"白のベリー","base":2},{"id":"black.berry","name":"黒のベリー","base":2},{"id":"rose","name":"バラ","base":2},{"id":"orchid","name":"ラン","base":1},{"id":"sunflower","name":"ひまわり","base":2}],"planters":[{"id":"planter.large","name":"大きい","full":"大きい植木鉢","center":0,"order":[5,1,2,6,3,4,8,7],"slots":[[0.0,0.0],[0.92,0.0],[-0.92,0.0],[-0.92,0.896],[0.936,0.896],[0.0,0.896],[0.0,-0.954],[0.936,-0.954],[-0.92,-0.954]]},{"id":"planter.small","name":"小さい","full":"小さい植木鉢","center":0,"order":[1,2],"slots":[[0.0,0.0],[0.92,0.0],[-0.92,0.0]]},{"id":"planter.triangle","name":"三角","full":"三角の植木鉢","center":0,"order":[3,1,2],"slots":[[0.126,0.492],[0.123,-0.493],[-0.738,0.0],[-0.172,0.0]]}],"presets":["GGGYYY","GGYYYY","GGGGYY"],"icons":{},"msg":{"cut_link":"苗は {max} 株までです。リンクの {held} 株のうち、{from} 株目から {n} 株は外しました。","cut_dev":"苗は {max} 株までです。この端末に保存してあった苗の {held} 株のうち、{from} 株目から {n} 株は外しました (苗を外すと、外した分は保存からも消えます)。","dropped":"保存してあった {from} 株目から後ろの {n} 株も、保存から消えました。","plan":"真ん中 {c}、まわり {o}","plan_row":"{plan} の順","del":"{s} を外す","stock_sub":"{plant} {n} 株","stock_sum":"{n} 株 (最大 {max})","full":"苗は {max} 株までです。使わない苗を外してください。","added":"{s} として {g} を足しました。","off":"目標と {d} 文字違い","card_off":"目標 {t} と {d} 文字違い","pick_note":"苗は {n} 株。書いた順に植えれば、必ずこの苗になります。","best_is":"いちばん近いのは {res} です。","n_sap":"{n}<small>株<\/small>","n_off":"{d}<small>文字<\/small>","rows_note":"1 回の配合で作れる苗を、目標との違いが少ない順に、同じなら悪い遺伝子 (W・X) の少ない順、株の少ない順に {n} 件まで出しています。行を選ぶと、上の「選んだ植え方」と、下の植え方・効き目・共有の画像がその苗に切り替わります。","step1":"真ん中に <b>{c}<\/b> を植え、先に育てる (G の多い苗ほど早く育つ)","step2":"{c} が苗のうちに、まわりへ {o} の順で植える","step3":"{c} が「配合」の段階に入ると、遺伝子が {g} に変わる","step4":"育ったら {c} からクローンを取る","col":"{i} 列目","beats":"{a} {t} が {b} の {w} を超える","why_note":"変わる列だけを出しています。残りの列は {c} のままです。","box_cap":"上から見た{box}。数字は植える順で、空いた枠には何も植えないか、別の種類の植物を植えます。","grow":"育つ速さ (G {n})","yield":"実の量 (Y {n})","clone":"クローン (基本 {base} + Y ÷ 2)","n_clone":"{n}<small>本<\/small>","water":"吸う水 (W {n})","temp":"温度の条件 (H {n})","found":"{n} 列の遺伝子が見つかりました。確かめて (「?」は読めなかった文字) から足してください。","found_i":"読んだ遺伝子 {i}","live_n":"読んでいます: {n} 株を足しました。","live_wait":"画面を読んでいます ({n} 株を足しました)。ゲームで苗の説明か、植わった株の表示を出してください。","card_n":"苗 {n} 株。書いた順に植えれば必ずこの苗になる","card_eff":"育つ速さ {g} ／ 実の量 {y} ／ クローン {c} 本","summary":"{plant}: {res} を作る植え方 {plan}"}};
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const num=n=>Number(n).toLocaleString('en-US',{maximumFractionDigits:1});
@@ -351,6 +355,7 @@ function liveStep(state,rows){const st=state||{cand:null,n:0,added:[],empty:2};
 // sapling names leave out the gene letters. 10 saplings keep the search within 0.6 s at most (node on NucBox5, Celeron
 // N5105, random saplings, the large planter, target GGGYYY, 20 tries); 12 took up to 2.1 s
 const LET='ABCDEFJKLM',MAX=10;
+const M=(k,o={})=>R.msg[k].replace(/\{(\w+)\}/g,(_,n)=>o[n]);
 const ok6=s=>/^[GYHWX]{6}$/.test(s);
 const HINT=document.querySelector('#g-msg').textContent;
 const chips=(g,cls='')=>`<span class="gp-genes ${cls}">${[...g].map(c=>`<i class="gp-g ${GOOD.has(c)?'gp-good':'gp-bad'}">${c}</i>`).join('')}</span>`;
@@ -371,8 +376,7 @@ const heldOf=raw=>String(raw||'').toUpperCase().split(/[.,\s]+/).filter(ok6).len
 // extra: saplings of the device list beyond MAX, kept in the saved list until a sapling is taken out (adding stops at MAX)
 let extra=0;
 const noteCut=(link,held)=>{if(!link)extra=Math.max(0,held-MAX);
-  if(held>MAX)$('#g-msg').textContent=`苗は ${MAX} 株までです。${link?'リンク':'この端末に保存してあった苗'}の ${held} 株のうち、${MAX + 1} 株目から ${held-MAX} 株は外しました`+
-  (link?'。':' (苗を外すと、外した分は保存からも消えます)。')};
+  if(held>MAX)$('#g-msg').textContent=M(link?'cut_link':'cut_dev',{max:MAX,held,from:MAX+1,n:held-MAX})};
 // the address holds the stock this page wrote itself (at most MAX, the first of the device list) after a reload: read it as the device's
 const devRaw=stored(S.p).join('.'),fromLink=P.has('g')&&(heldOf(P.get('g'))>MAX||parseList(P.get('g')).join('.')!==parseList(devRaw).join('.'));
 const held=heldOf(fromLink?P.get('g'):devRaw);
@@ -382,7 +386,7 @@ $('#goals').innerHTML=[...R.presets,'own'].map(t=>`<label class="ra-tab"><input 
 $('#boxes').innerHTML=R.planters.map(b=>`<label class="ra-tab"><input type="radio" name="box" value="${esc(b.id)}">${esc(b.name)}</label>`).join('');
 const search=()=>searchPlans(S.g,S.t,boxOf(S.b).order.length);
 const L=i=>LET[i];
-const planName=p=>`真ん中 ${L(p.ci)}、まわり ${p.oi.map(L).join(' → ')}`;
+const planName=p=>M('plan',{c:L(p.ci),o:p.oi.map(L).join(' → ')});
 function effects(g){const n=count(g),e=R.eff,base=plantOf(S.p).base;
   return{growth:1+n[e.growth.gene]*e.growth.factor,yield:1+n[e.yield.gene]*e.yield.factor,water:1+n[e.water.gene]*e.water.factor,
     temp:n[e.temperature.gene]*e.temperature.factor,clones:base+Math.floor(n[R.clones.gene]/R.clones.divisor),n,base}}
@@ -406,9 +410,9 @@ function render(){
   $('#own-wrap').hidden=R.presets.includes(S.t)&&!$('#own-wrap').dataset.open;
   if(document.activeElement!==$('#own'))$('#own').value=S.t;
   for(const i of document.querySelectorAll('input[name=box]'))i.checked=i.value===S.b;
-  $('#stock').innerHTML=S.g.map((g,i)=>`<div class="gp-sap" data-i="${i}"><b>${L(i)}</b>${chips(g)}<button type="button" class="gp-x" data-del="${i}" aria-label="${L(i)} を外す">×</button></div>`).join('');
-  $('#stock-sub').textContent=`${plant.name} ${S.g.length} 株`;
-  $('#stock-sum').textContent=S.g.length?`${S.g.length} 株 (最大 ${MAX})`:'まだ苗がありません';
+  $('#stock').innerHTML=S.g.map((g,i)=>`<div class="gp-sap" data-i="${i}"><b>${L(i)}</b>${chips(g)}<button type="button" class="gp-x" data-del="${i}" aria-label="${M('del',{s:L(i)})}">×</button></div>`).join('');
+  $('#stock-sub').textContent=M('stock_sub',{plant:plant.name,n:S.g.length});
+  $('#stock-sum').textContent=S.g.length?M('stock_sum',{n:S.g.length,max:MAX}):'まだ苗がありません';
   $('#g-clear').hidden=!S.g.length;
   $('#goal-sub').textContent=`${S.t} ／ ${boxOf(S.b).full}`;
   const key=[S.g.join('.'),S.t,S.b].join('|');if(memo.key!==key)memo={key,plans:S.g.length>=2?search():[]};const plans=memo.plans;
@@ -420,41 +424,40 @@ function render(){
   for(const el of document.querySelectorAll('.gp-sap'))el.classList.toggle('is-used',!!V&&[V.pick.ci,...V.pick.oi].includes(+el.dataset.i));
   if(!V){$('#none-msg').textContent=S.g.length<2?'苗を 2 株以上足すと、ここに植え方が出ます。':'この手持ちでは、1 回の配合で遺伝子が変わる植え方がありません。苗を足してください。';return}
   const p=V.pick,e=V.e;
-  $('#gene-h').innerHTML=`${p.d===0?'目標どおりの苗':'いちばん近い苗'} <small>${p.res} ／ ${p.d===0?'目標どおり':`目標と ${p.d} 文字違い`}</small>`;
+  $('#gene-h').innerHTML=`${p.d===0?'目標どおりの苗':'いちばん近い苗'} <small>${p.res} ／ ${p.d===0?'目標どおり':M('off',{d:p.d})}</small>`;
   $('#pick-name').textContent=planName(p);
-  $('#pick-note').textContent=`苗は ${p.n} 株。書いた順に植えれば、必ずこの苗になります。`+(p===plans[0]?'':`いちばん近いのは ${plans[0].res} です。`);
+  $('#pick-note').textContent=M('pick_note',{n:p.n})+(p===plans[0]?'':M('best_is',{res:plans[0].res}));
   $('#pick-genes').innerHTML=chips(p.res,'gp-big');
   $('#gene-rows').innerHTML=plans.map(r=>`<label class="ra-rd-row"><input type="radio" name="plan" value="${r.res}"${r===p?' checked':''}>`+
-    `<span class="ra-rd-name">${chips(r.res)}</span><span class="ra-rd-n">${r.n}<small>株</small></span>`+
+    `<span class="ra-rd-name">${chips(r.res)}</span><span class="ra-rd-n">${M('n_sap',{n:r.n})}</span>`+
     `<span class="ra-rd-bar"><span style="width:${((6-r.d)/6*100).toFixed(1)}%"${r===plans[0]?' class="ra-rd-bar-best"':''}></span></span>`+
-    `<span class="ra-rd-s">${r.d===0?'目標どおり':`${r.d}<small>文字</small>`}</span>`+
-    `<span class="ra-rd-m">${planName(r)} の順${r===p?' ／ <b>下に植え方を表示中</b>':''}</span></label>`).join('');
-  $('#rows-note').textContent=`1 回の配合で作れる苗を、目標との違いが少ない順に、同じなら悪い遺伝子 (W・X) の少ない順、株の少ない順に ${plans.length} 件まで出しています。行を選ぶと、上の「選んだ植え方」と、下の植え方・効き目・共有の画像がその苗に切り替わります。`;
+    `<span class="ra-rd-s">${r.d===0?'目標どおり':M('n_off',{d:r.d})}</span>`+
+    `<span class="ra-rd-m">${M('plan_row',{plan:planName(r)})}${r===p?' ／ <b>下に植え方を表示中</b>':''}</span></label>`).join('');
+  $('#rows-note').textContent=M('rows_note',{n:plans.length});
   $('#plan-sub').textContent=planName(p);
   const c=S.g[p.ci];
-  $('#steps').innerHTML=[`真ん中に <b>${L(p.ci)}</b> を植え、先に育てる (G の多い苗ほど早く育つ)`,
-    `${L(p.ci)} が苗のうちに、まわりへ ${p.oi.map(i=>`<b>${L(i)}</b>`).join(' → ')} の順で植える`,
-    `${L(p.ci)} が「配合」の段階に入ると、遺伝子が ${chips(p.res)} に変わる`,`育ったら ${L(p.ci)} からクローンを取る`].map(s=>`<li>${s}</li>`).join('');
+  $('#steps').innerHTML=[M('step1',{c:L(p.ci)}),M('step2',{c:L(p.ci),o:p.oi.map(i=>`<b>${L(i)}</b>`).join(' → ')}),
+    M('step3',{c:L(p.ci),g:chips(p.res)}),M('step4',{c:L(p.ci)})].map(s=>`<li>${s}</li>`).join('');
   const order=p.oi.map(i=>S.g[i]),why=[];
   for(let i=0;i<6;i++){if(p.res[i]===c[i])continue;const tot={};for(const n of order)tot[n[i]]=Math.fround((tot[n[i]]||0)+W[n[i]]);
-    why.push(`<div class="ra-rd-stat"><span class="ra-rd-label">${i+1} 列目</span><span class="ra-rd-time">${c[i]} → ${p.res[i]}</span><span class="ra-rd-sub">${p.res[i]} ${(+tot[p.res[i]].toFixed(2))} が ${c[i]} の ${W[c[i]]===1?'1.0':'0.6'} を超える</span></div>`)}
+    why.push(`<div class="ra-rd-stat"><span class="ra-rd-label">${M('col',{i:i+1})}</span><span class="ra-rd-time">${c[i]} → ${p.res[i]}</span><span class="ra-rd-sub">${M('beats',{a:p.res[i],t:+tot[p.res[i]].toFixed(2),b:c[i],w:W[c[i]]===1?'1.0':'0.6'})}</span></div>`)}
   $('#why').innerHTML=why.join('');
-  $('#why-note').textContent=why.length<6?`変わる列だけを出しています。残りの列は ${L(p.ci)} のままです。`:'';
+  $('#why-note').textContent=why.length<6?M('why_note',{c:L(p.ci)}):'';
   const b=boxHTML(p);$('#box').innerHTML=b.h;$('#box').style.gridTemplateColumns=`repeat(${b.cols},1fr)`;
-  $('#box-cap').textContent=`上から見た${boxOf(S.b).full}。数字は植える順で、空いた枠には何も植えないか、別の種類の植物を植えます。`+(S.b==='planter.triangle'?'三角の植木鉢は 4 枠がどれも隣どうしで、図は枠をおおよその位置に置いています。':'');
+  $('#box-cap').textContent=M('box_cap',{box:boxOf(S.b).full})+(S.b==='planter.triangle'?'三角の植木鉢は 4 枠がどれも隣どうしで、図は枠をおおよその位置に置いています。':'');
   $('#eff-sub').textContent=`${plant.name} ／ ${p.res}`;
   const li=(name,v)=>`<div class="ra-rd-li"><span class="ra-rd-name">${name}</span><span class="ra-rd-n">${v}</span></div>`;
-  $('#eff-grow').innerHTML=li(`育つ速さ (G ${e.n.G})`,x2(e.growth))+li(`実の量 (Y ${e.n.Y})`,x2(e.yield))+li(`クローン (基本 ${e.base} + Y ÷ 2)`,`${e.clones}<small>本</small>`);
-  $('#eff-env').innerHTML=li(`吸う水 (W ${e.n.W})`,x2(e.water))+li(`温度の条件 (H ${e.n.H})`,`+ ${e.temp.toFixed(2)}`)}
+  $('#eff-grow').innerHTML=li(M('grow',{n:e.n.G}),x2(e.growth))+li(M('yield',{n:e.n.Y}),x2(e.yield))+li(M('clone',{base:e.base}),M('n_clone',{n:e.clones}));
+  $('#eff-env').innerHTML=li(M('water',{n:e.n.W}),x2(e.water))+li(M('temp',{n:e.n.H}),`+ ${e.temp.toFixed(2)}`)}
 // add the genes v (from the box or a row read from a picture); false when they cannot be added
 const addGenes=(v=$('#g-in').value,fromBox=true)=>{v=String(v).toUpperCase().replace(/\s/g,'');
   if(!ok6(v)){$('#g-msg').textContent=v.includes('?')?'「?」は読めなかった文字です。G・Y・H・W・X のどれかに直してください。':'G・Y・H・W・X の 6 文字で入れてください。';return false}
-  if(S.g.length>=MAX){$('#g-msg').textContent=`苗は ${MAX} 株までです。使わない苗を外してください。`;return false}
-  S.g.push(v);if(fromBox)$('#g-in').value='';$('#g-msg').textContent=`${L(S.g.length-1)} として ${v} を足しました。`;save();render();return true};
+  if(S.g.length>=MAX){$('#g-msg').textContent=M('full',{max:MAX});return false}
+  S.g.push(v);if(fromBox)$('#g-in').value='';$('#g-msg').textContent=M('added',{s:L(S.g.length-1),g:v});save();render();return true};
 // Reading a picture: it stays in this browser. The rows found are shown to check (and fix '?') before adding.
 const showFound=(rows,dim)=>{const box=$('#found');box.hidden=false;
-  box.innerHTML=rows.length?`<p class="ra-rd-hint">${rows.length} 列の遺伝子が見つかりました。確かめて (「?」は読めなかった文字) から足してください。</p>`+
-    rows.map((r,i)=>`<div class="gp-found-row">${chips(r.genes.replace(/\?/g,'X'),'gp-found-chips')}<input class="gp-in" value="${esc(r.genes)}" maxlength="6" aria-label="読んだ遺伝子 ${i+1}" data-found><button type="button" class="ra-button" data-take>足す</button></div>`).join(''):
+  box.innerHTML=rows.length?`<p class="ra-rd-hint">${M('found',{n:rows.length})}</p>`+
+    rows.map((r,i)=>`<div class="gp-found-row">${chips(r.genes.replace(/\?/g,'X'),'gp-found-chips')}<input class="gp-in" value="${esc(r.genes)}" maxlength="6" aria-label="${M('found_i',{i:i+1})}" data-found><button type="button" class="ra-button" data-take>足す</button></div>`).join(''):
     dim?'<p class="ra-rd-hint">遺伝子の並びらしい所は見つかりましたが、文字が小さいかぼやけていて読めませんでした。縮めずに撮った画像 (PNG がよい) を使うか、遺伝子の所を拡大して切り取ってください。</p>':
     '<p class="ra-rd-hint">遺伝子の並び (緑と赤の丸に白い文字が 6 つ) が見つかりませんでした。苗の説明か、植わった株の表示が写った画像を使ってください。丸が無く文字に色が付いた古い表示は読めません。</p>';
   // the chips show '?' too
@@ -486,8 +489,7 @@ const screenTick=()=>{const v=live&&live.video;if(!v||live.starting)return;if(!v
     const step=liveStep(live.state,rows);live.state=step.state;
     if(step.add){if(addGenes(step.add,false)){live.added++;tone()}}
     const seen=rows&&rows.length?rows[0].genes:null;
-    liveShow(r===null?'細かい模様が多く、この画面は読めませんでした。':seen?`読んでいます: ${live.added} 株を足しました。`:
-      `画面を読んでいます (${live.added} 株を足しました)。ゲームで苗の説明か、植わった株の表示を出してください。`,seen)}
+    liveShow(r===null?'細かい模様が多く、この画面は読めませんでした。':seen?M('live_n',{n:live.added}):M('live_wait',{n:live.added}),seen)}
   finally{if(live)live.worker.postMessage(0)}};
 const startScreen=async()=>{if(live){stopScreen();return}
   live={starting:true};$('#read-screen').disabled=true;   // a second press while the share is being chosen does nothing
@@ -514,9 +516,9 @@ stockSec.addEventListener('drop',ev=>{stockSec.classList.remove('gp-drop');const
   ev.preventDefault();const f=fs.find(f=>/^image\//.test(f.type));if(f)readPicture(f);else $('#g-msg').textContent='画像のファイル (PNG・JPEG) を落としてください。'});
 $('#found').addEventListener('click',ev=>{const b=ev.target.closest('[data-take]');if(!b)return;const row=b.closest('.gp-found-row');
   if(addGenes(row.querySelector('[data-found]').value,false)){row.remove();if(!$('#found').querySelector('.gp-found-row'))$('#found').hidden=true}});
-$('#g-add').addEventListener('click',addGenes);
+$('#g-add').addEventListener('click',()=>addGenes());   // not addGenes itself: the click event would be read as the genes
 $('#g-in').addEventListener('keydown',ev=>{if(ev.key==='Enter')addGenes()});
-const dropped=()=>{$('#g-msg').textContent=extra?`保存してあった ${MAX + 1} 株目から後ろの ${extra} 株も、保存から消えました。`:HINT;extra=0};
+const dropped=()=>{$('#g-msg').textContent=extra?M('dropped',{from:MAX+1,n:extra}):HINT;extra=0};
 $('#stock').addEventListener('click',ev=>{const b=ev.target.closest('[data-del]');if(!b)return;S.g.splice(+b.dataset.del,1);S.r=null;save();dropped();render()});
 $('#g-clear').addEventListener('click',()=>{S.g=[];S.r=null;save();dropped();render()});
 $('#plant').addEventListener('change',ev=>{S.p=ev.target.value;const raw=stored(S.p).join('.');S.g=parseList(raw);S.r=null;save(false);
@@ -532,11 +534,11 @@ noteCut(fromLink,held);
 const card=()=>drawCard(`Gene Planner ／ ${V.plant.name}`,[],h=>{const{x,W:CW,L:LX,C,f,T,box,rule}=h,p=V.pick,e=V.e;
   const gene=(g,px,py,sz)=>{for(let i=0;i<6;i++){const gx=px+i*(sz+3);box(GOOD.has(g[i])?css('--added'):css('--removed'),gx,py,sz,sz*1.15);
     x.font=f(600,Math.round(sz*0.6),'mono');const w=x.measureText(g[i]).width;T(g[i],gx+(sz-w)/2,py+sz*0.82,f(600,Math.round(sz*0.6),'mono'),'#ffffff')}};
-  T(p.d===0?'目標どおりの苗':`目標 ${S.t} と ${p.d} 文字違い`,LX,122,f(400,14,'sans'),C.mute);gene(p.res,LX,136,40);
-  T('植え方',LX,250,f(400,14,'sans'),C.mute);T(planName(p)+' の順',LX,278,f(600,22,'sans'),C.ink);
-  T(`苗 ${p.n} 株。書いた順に植えれば必ずこの苗になる`,LX,304,f(400,14,'sans'),C.mute);
+  T(p.d===0?'目標どおりの苗':M('card_off',{t:S.t,d:p.d}),LX,122,f(400,14,'sans'),C.mute);gene(p.res,LX,136,40);
+  T('植え方',LX,250,f(400,14,'sans'),C.mute);T(M('plan_row',{plan:planName(p)}),LX,278,f(600,22,'sans'),C.ink);
+  T(M('card_n',{n:p.n}),LX,304,f(400,14,'sans'),C.mute);
   T('効き目',LX,350,f(400,14,'sans'),C.mute);
-  T(`育つ速さ ${x2(e.growth)} ／ 実の量 ${x2(e.yield)} ／ クローン ${e.clones} 本`,LX,378,f(600,18,'sans'),C.ink);
+  T(M('card_eff',{g:x2(e.growth),y:x2(e.yield),c:e.clones}),LX,378,f(600,18,'sans'),C.ink);
   T('使う苗',LX,426,f(400,14,'sans'),C.mute);
   [p.ci,...p.oi].forEach((i,k)=>{const yy=446+k*34;T(L(i),LX,yy+18,f(600,16,'mono'),C.ink);gene(S.g[i],LX+24,yy,20)});
   // the planter, right
@@ -550,7 +552,7 @@ const card=()=>drawCard(`Gene Planner ／ ${V.plant.name}`,[],h=>{const{x,W:CW,L
       x.font=f(600,22,'mono');const w=x.measureText(L(si)).width;T(L(si),cx+(cw-w)/2,cy+cw/2,f(600,22,'mono'),C.ink);
       gene(S.g[si],cx+(cw-6*(12+3))/2,cy+cw/2+12,12)}});
   T(bx.full,ox,oy+cw*Z.n+44,f(400,13,'sans'),C.mute)});
-shareUI(card,()=>`rust-gene-${S.p}-${V.pick.res}.png`,()=>`${V.plant.name}: ${V.pick.res} を作る植え方 ${planName(V.pick)}`,
+shareUI(card,()=>`rust-gene-${S.p}-${V.pick.res}.png`,()=>M('summary',{plant:V.plant.name,res:V.pick.res,plan:planName(V.pick)}),
   'リンクを開くと、同じ手持ちと目標のまま計算機が開きます。画像は、植え方と効き目を 1 枚にまとめたものです。');
 </script>
 </body></html>

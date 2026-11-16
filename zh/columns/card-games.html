@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<script>(()=>{try{if(/bot|crawl|spider|slurp|lighthouse|inspection/i.test(navigator.userAgent))return;const A={"ja":"../../columns/card-games.html","en":"../../en/columns/card-games.html","zh":"../../zh/columns/card-games.html","ko":"../../ko/columns/card-games.html","ru":"../../ru/columns/card-games.html"},S=["ja","en","zh","ko","ru"];let w=localStorage.getItem('ra-lang');if(!w){for(const l of navigator.languages||[navigator.language||'']){const c=String(l).toLowerCase().split('-')[0];if(S.includes(c)){w=c;break}}w=w||'en'}if(!A[w])w=A.en?'en':null;if(w&&w!=='zh')location.replace(A[w]+location.search+location.hash)}catch(_){}})()</script><title>21 点和扑克，靠算牌能赢吗？ | Rust Analysis</title>
+<meta name="description" content="根据阅读服务器代码的结果，检验 21 点机台和牌桌。牌堆每局都会重新生成，算牌不会带来任何优势。庄家优势约为 0.8%。">
+<meta name="theme-color" content="#f2f4f5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15181a" media="(prefers-color-scheme: dark)">
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+<link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rust Analysis">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:title" content="21 点和扑克，靠算牌能赢吗？ | Rust Analysis">
+<meta property="og:description" content="根据阅读服务器代码的结果，检验 21 点机台和牌桌。牌堆每局都会重新生成，算牌不会带来任何优势。庄家优势约为 0.8%。">
+<meta property="og:url" content="https://maco165.github.io/rust-patch-notes/zh/columns/card-games.html">
+<meta property="og:image" content="https://maco165.github.io/rust-patch-notes/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://maco165.github.io/rust-patch-notes/zh/columns/card-games.html">
+<link rel="alternate" hreflang="ja" href="https://maco165.github.io/rust-patch-notes/columns/card-games.html">
+<link rel="alternate" hreflang="en" href="https://maco165.github.io/rust-patch-notes/en/columns/card-games.html">
+<link rel="alternate" hreflang="zh" href="https://maco165.github.io/rust-patch-notes/zh/columns/card-games.html">
+<link rel="alternate" hreflang="ko" href="https://maco165.github.io/rust-patch-notes/ko/columns/card-games.html">
+<link rel="alternate" hreflang="ru" href="https://maco165.github.io/rust-patch-notes/ru/columns/card-games.html">
+<link rel="alternate" hreflang="x-default" href="https://maco165.github.io/rust-patch-notes/columns/card-games.html">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "21 点和扑克，靠算牌能赢吗？", "description": "根据阅读服务器代码的结果，检验 21 点机台和牌桌。牌堆每局都会重新生成，算牌不会带来任何优势。庄家优势约为 0.8%。", "inLanguage": "zh", "datePublished": "2026-11-12", "dateModified": "2026-11-12", "url": "https://maco165.github.io/rust-patch-notes/zh/columns/card-games.html", "mainEntityOfPage": "https://maco165.github.io/rust-patch-notes/zh/columns/card-games.html", "image": "https://maco165.github.io/rust-patch-notes/assets/og.png", "author": {"@type": "Organization", "name": "Rust Analysis", "url": "https://maco165.github.io/rust-patch-notes/"}, "publisher": {"@type": "Organization", "name": "Rust Analysis", "url": "https://maco165.github.io/rust-patch-notes/"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Rust Analysis", "item": "https://maco165.github.io/rust-patch-notes/zh/tools.html"}, {"@type": "ListItem", "position": 2, "name": "文章", "item": "https://maco165.github.io/rust-patch-notes/zh/columns.html"}, {"@type": "ListItem", "position": 3, "name": "21 点和扑克，靠算牌能赢吗？", "item": "https://maco165.github.io/rust-patch-notes/zh/columns/card-games.html"}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+JP:wght@400;600&display=swap&family=Noto+Sans+SC:wght@400;600">
+<style>html:lang(zh){--font-sans:"Noto Sans SC","IBM Plex Sans JP",system-ui,sans-serif;--font-display:"Big Shoulders Display","Noto Sans SC",sans-serif}</style>
+<link rel="stylesheet" href="../../assets/style.css">
+</head><body>
+<header class="ra-site">
+  <a class="ra-site-name" href="../tools.html"><b>Rust</b> Analysis</a>
+  <nav class="ra-nav" aria-label="页面"><a href="../columns.html" aria-current="page"><i class="ra-ico ra-ico-columns" aria-hidden="true"></i>文章</a><a href="../tools.html"><i class="ra-ico ra-ico-tools" aria-hidden="true"></i>工具</a></nav>
+  <span class="ra-site-meta">2026-11-05</span>
+  <span class="ra-site-lang"><a href="../../columns/card-games.html" lang="ja" hreflang="ja" data-lang="ja">日本語</a><a href="../../en/columns/card-games.html" lang="en" hreflang="en" data-lang="en">English</a><a href="../../ko/columns/card-games.html" lang="ko" hreflang="ko" data-lang="ko">한국어</a><a href="../../ru/columns/card-games.html" lang="ru" hreflang="ru" data-lang="ru">Русский</a></span><a class="ra-site-link" href="https://github.com/maco165/rust-patch-notes" rel="noopener"><i class="ra-ico ra-ico-github" aria-hidden="true"></i>GitHub</a>
+</header>
+<script>(()=>{const n=document.querySelector('.ra-nav'),a=n&&n.querySelector('[aria-current]');if(a&&n.scrollWidth>n.clientWidth)n.scrollLeft=a.offsetLeft-(n.clientWidth-a.offsetWidth)/2})()</script>
+<main class="ra-page"><article class="ra-prose"><p class="ra-patch-meta"><a class="ra-link" href="../columns.html">文章</a><time datetime="2026-11-12">2026-11-12</time><span><i class="ra-ico ra-ico-economy" aria-hidden="true"></i> 经济与商店</span><span class="ra-src ra-src-export"><i class="ra-ico ra-ico-export" aria-hidden="true"></i>游戏版本 2026-11-07</span></p><div class="ra-tp-head"><span class="ra-ti ra-ti-page" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke-linecap="round" stroke-linejoin="round">
+<path d="M8 16.8Q20.4 13 33.2 10.4Q38 27.6 42 45.2Q29.6 49 16.8 51.6Q12 34.4 8 16.8Z" fill="#1d4f91" stroke="#1d4f91" stroke-width="3"/>
+<path d="M13.6 20.4Q21.6 17.8 30 16.2" stroke="#dbe6f6" stroke-width="2.2"/>
+<path d="M29.4 15Q42 16.8 55 19.6Q52.4 37.4 48.6 55Q35.8 53.2 23 50.4Q25.8 32.6 29.4 15Z" fill="#dbe6f6" stroke="#1d4f91" stroke-width="3"/>
+<path d="M40.4 26.2L46 36L37.8 44L32.2 34.2Z" fill="#9c1b3d" stroke="#9c1b3d" stroke-width="2.2"/>
+<path d="M32.6 21.4h.01M45.4 48.6h.01" stroke="#9c1b3d" stroke-width="4"/>
+</svg></span><h1 class="ra-prose-title">21 点和扑克，靠算牌能赢吗？</h1></div><p class="ra-prose-lead">根据阅读服务器代码的结果，检验 21 点机台和牌桌。牌堆每局都会重新生成，算牌不会带来任何优势。庄家优势约为 0.8%。</p><div class="ra-callout">
+<p class="ra-callout-label">结论</p>
+<p class="ra-callout-main">算牌不会让你占到任何优势</p>
+<p>每局开始时，牌堆都会重新生成并洗牌。21 点用 10 副 520 张，扑克用 1 副 52 张。上一局发出的牌，不会给下一局留下任何影响。</p>
+</div>
+<ul class="ra-facts">
+<li><span class="ra-facts-n">520 张</span><span class="ra-facts-l">21 点的牌堆。每局重新生成</span></li>
+<li><span class="ra-facts-n">约 −0.8%</span><span class="ra-facts-l">21 点按基本策略玩时的平均结果（估算）</span></li>
+<li><span class="ra-facts-n">0</span><span class="ra-facts-l">扑克中庄家抽取的部分。全部返还给玩家</span></li>
+</ul>
+<p>21 点只要按规矩打，亏损速度比转盘（最好的下注方式是 −4%）慢得多。但平均来说仍然会亏。扑克没有庄家抽成，输赢只取决于你和其他玩家之间的胜负。</p>
+<p>本文讨论的是 Bandit Camp 等地的 21 点机台（类名 <code>BlackjackMachine</code>）和牌桌（<code>CardTable</code>，可玩的是德州扑克）。</p>
+<h2 class="ra-section">21 点是这样运作的</h2>
+<h3>一局的流程</h3>
+<ol class="ra-timeline" aria-label="21 点一局的流程">
+<li class="ra-timeline-hot" style="--w:14"><strong>生成牌堆</strong><span>瞬间</span><small>重新排好 10 副 520 张并洗牌。在下注之前</small></li>
+<li style="--w:30"><strong>接受下注</strong><span>最长 30 秒</span><small>5～500 Scrap</small></li>
+<li style="--w:14"><strong>发牌</strong><span>1 秒</span><small>按座位编号顺序每人 2 张。庄家有 1 张暗牌</small></li>
+<li style="--w:30"><strong>玩家回合</strong><span>每次操作 30 秒</span><small>所有人同时进行</small></li>
+<li style="--w:20"><strong>庄家回合</strong><span>每秒 1 张</span><small>只看点数合计，机械地要牌</small></li>
+<li style="--w:14"><strong>赔付</strong><span>1 秒后</span><small>4 秒后开始下一局</small></li>
+</ol>
+<p>牌堆是在接受下注<strong>之前</strong>生成的。不存在看了下注金额再去排牌的代码。</p>
+<h3>规则</h3>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">项目</th><th scope="col">这台机器的规则</th><th scope="col">对玩家而言</th></tr></thead><tbody><tr><td>牌堆</td><td>10 副 520 张。每局重新生成</td><td>算牌没有意义</td></tr><tr><td>庄家</td><td>17 点及以上停牌。但软 17（把 A 算作 11 时的 17）要继续要牌</td><td>略微不利</td></tr><tr><td>Blackjack（2 张牌 21 点）</td><td>3:2。返还下注额的 2.5 倍（小数部分舍去）</td><td>标准</td></tr><tr><td>庄家的暗牌</td><td>直到最后才检查。如果庄家是 2 张牌的 21 点，加倍或分牌时追加的赌注也一并输掉</td><td>略微不利</td></tr><tr><td>加倍</td><td>起手 2 张不含 A 时，不论点数都可以。含 A 的手牌不能加倍</td><td>略微不利</td></tr><tr><td>分牌</td><td>只能 1 次。像 10 和人头牌这样点数相同的牌也能组成对子。A 分牌后各发 1 张即结束</td><td>标准</td></tr><tr><td>分牌后的加倍</td><td>可以（不含 A 时）</td><td>有利</td></tr><tr><td>分牌后的 2 张牌 21 点</td><td>同样按 3:2 赔付</td><td>有利</td></tr><tr><td>保险</td><td>庄家明牌是 A 时。付出赌注的一半，命中则 2:1</td><td>买了吃亏</td></tr><tr><td>投降、边注</td><td>没有</td><td>—</td></tr><tr><td>赌注</td><td>5～500 Scrap。上限可用服务器设置 <code>blackjackmachine.maxbet</code>（25～1,000,000）更改</td><td>—</td></tr><tr><td>座位</td><td>每台 3 个座位</td><td>—</td></tr></tbody></table></div>
+<p>胜负的规则如下。玩家先超过 21 点时，当场判负。之后即使庄家也爆牌，也不会返还。庄家优势就来自这里。</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">结果</th><th scope="col">返还</th></tr></thead><tbody><tr><td>以 2 张牌 21 点获胜（庄家是 3 张及以上的 21 点时也算赢）</td><td>下注额的 2.5 倍</td></tr><tr><td>普通获胜</td><td>2 倍</td></tr><tr><td>平局</td><td>原样退回下注额</td></tr><tr><td>输、爆牌</td><td>0</td></tr><tr><td>保险命中（庄家是 2 张牌 21 点）</td><td>保险金额的 3 倍</td></tr></tbody></table></div>
+<p>2.5 倍的小数部分会被舍去。下注 5 时返还的是 12 而不是 12.5，所以<strong>下注金额取偶数</strong>就不会吃亏。</p>
+<h3>决定发牌时用到的和用不到的</h3>
+<div class="ra-uses">
+<div><p class="ra-uses-head ra-uses-yes">用到的</p><ul><li>为这一局重新排好的牌堆</li><li>加密用的随机数（只在洗牌时）</li><li>牌的点数合计（庄家是否要牌）</li></ul></div>
+<div><p class="ra-uses-head ra-uses-no">用不到的</p><ul><li>之前各局的牌和结果</li><li>时间、局数</li><li>服务器人数</li><li>下注金额</li><li>下注者、其输赢记录</li><li>机台至今已赔出的金额</li></ul></div>
+</div>
+<p>下注的 Scrap 在一局结束时消失，返还的部分是新生成的。机台并不持有“攒下来的钱”，所以根本不存在“差不多该吐钱了”这种状态。</p>
+<h2 class="ra-section">牌堆的洗法</h2>
+<p>洗牌代码调用的随机数只有 .NET 自带的 <code>System.Security.Cryptography.RandomNumberGenerator.GetInt32</code>。这是操作系统的加密用随机数，没有种子，也不带任何游戏内的状态。它和转盘使用的 Unity 随机数是两回事。</p>
+<p>用文字描述洗牌方式，就是下面这样。</p>
+<pre class="ra-code">生成新牌堆时：
+  从黑桃 2 到梅花 A，按副数依次排好
+  从牌堆最上方的位置开始，依次向下：
+    在该位置“下方”的某处等概率选 1 个位置，交换两张牌
+发牌时：
+  从最上方每次取 1 张</pre>
+<h3>只有 1 张牌的偏差</h3>
+<p>教科书上的洗法（Fisher–Yates）会把“该位置本身”也算进交换对象，因为牌碰巧不动也是允许的。这台机器只从“该位置下方”选交换对象。这种形式称为 Sattolo 算法，<strong>任何一张牌都绝不会留在洗牌前自己所在的位置。</strong></p>
+<p>新牌堆最上面的 13 张，洗牌前是这个顺序（全是梅花）。</p>
+<div class="ra-strip" role="img" aria-label="洗牌前牌堆最上面的 13 张。梅花 A、K、Q、J、10、9、8、7、6、5、4、3、2"><span class="ra-strip-hot">A</span><span>K</span><span>Q</span><span>J</span><span>10</span><span>9</span><span>8</span><span>7</span><span>6</span><span>5</span><span>4</span><span>3</span><span>2</span></div>
+<p>洗牌后，最上面的牌从“原本在最上面的梅花 A”以外的所有牌中等概率选出。第 2 张从“原本在第 2 位的梅花 K”以外的牌中选出，依此类推。也就是说，<strong>发出的第 1 张牌唯独不会是那张梅花 A。</strong></p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">牌堆</th><th scope="col">第 1 张是 A 的概率</th><th scope="col">均匀洗牌时</th></tr></thead><tbody><tr><td>21 点（520 张）</td><td>39/519 = 7.51%</td><td>40/520 = 7.69%</td></tr><tr><td>扑克（52 张）</td><td>3/51 = 5.88%</td><td>4/52 = 7.69%</td></tr></tbody></table></div>
+<p>偏差只有 1 张牌的份量。我们计算出它会让 21 点的庄家优势增加约 0.1 个百分点（见后文）。由于牌堆每局重新生成，偏差不会跨局累积。</p>
+<h2 class="ra-section">庄家优势</h2>
+<h3>每下注 100 Scrap 平均亏损的量</h3>
+<ol class="ra-gbars ra-loss" style="--max:16" aria-label="每下注 100 Scrap 平均亏损的量"><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">基本策略</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:0.8"></span></span><span class="ra-gbar-n">−0.8</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">转盘（1、3、5）</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:4"></span></span><span class="ra-gbar-n">−4</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">照庄家的方式要牌</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:5.9"></span></span><span class="ra-gbar-n">−5.9</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">12 点及以上必停</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:6"></span></span><span class="ra-gbar-n">−6.0</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">保险</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:7.9"></span></span><span class="ra-gbar-n">−7.9</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">转盘（20）</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:16"></span></span><span class="ra-gbar-n">−16</span></span></li></ol>
+<p>21 点的数字是用后文介绍的自制程序得出的<strong>估算</strong>。转盘的数字取自专栏《Big Wheel 转盘有必胜规律吗？》。</p>
+<p>同一台机器，打法不同差距可达 7 倍以上。“凭感觉”打的话，结果比转盘还差。</p>
+<h3>不要买保险</h3>
+<p>庄家明牌是 A 时，暗牌是 10 或人头牌的概率是 159/518 = 30.7%（暗牌所在的位置不会出现洗牌前在那里的那 1 张人头牌，所以比均匀洗牌时的 160/519 略低）。命中返还 3 倍，平均为 3 × 0.307 − 1 = <strong>−7.9%</strong>。这比主注差了约 10 倍。无论自己的手牌好坏，不买更划算。</p>
+<h3>基本策略</h3>
+<p>这张表按这台机器的规则，算出了每种手牌平均结果最好的操作。H 是要牌，S 是停牌，D 是加倍，P 是分牌。列是庄家的明牌。</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table ra-prose-short"><thead><tr><th scope="col">自己的手牌（不含 A）</th><th scope="col">2</th><th scope="col">3</th><th scope="col">4</th><th scope="col">5</th><th scope="col">6</th><th scope="col">7</th><th scope="col">8</th><th scope="col">9</th><th scope="col">10</th><th scope="col">A</th></tr></thead><tbody><tr><td>8 及以下</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td></tr><tr><td>9</td><td>H</td><td>D</td><td>D</td><td>D</td><td>D</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td></tr><tr><td>10、11</td><td>D</td><td>D</td><td>D</td><td>D</td><td>D</td><td>D</td><td>D</td><td>D</td><td>H</td><td>H</td></tr><tr><td>12</td><td>H</td><td>H</td><td>S</td><td>S</td><td>S</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td></tr><tr><td>13～16</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td></tr><tr><td>17 及以上</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td></tr></tbody></table></div>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table ra-prose-short"><thead><tr><th scope="col">自己的手牌（A 算作 11）</th><th scope="col">2</th><th scope="col">3</th><th scope="col">4</th><th scope="col">5</th><th scope="col">6</th><th scope="col">7</th><th scope="col">8</th><th scope="col">9</th><th scope="col">10</th><th scope="col">A</th></tr></thead><tbody><tr><td>13～17</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td></tr><tr><td>18</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>H</td><td>H</td><td>H</td></tr><tr><td>19 及以上</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td></tr></tbody></table></div>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table ra-prose-short"><thead><tr><th scope="col">对子</th><th scope="col">2</th><th scope="col">3</th><th scope="col">4</th><th scope="col">5</th><th scope="col">6</th><th scope="col">7</th><th scope="col">8</th><th scope="col">9</th><th scope="col">10</th><th scope="col">A</th></tr></thead><tbody><tr><td>2、3、7</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>H</td><td>H</td><td>H</td><td>H</td></tr><tr><td>4</td><td>H</td><td>H</td><td>H</td><td>P</td><td>P</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td></tr><tr><td>5</td><td>D</td><td>D</td><td>D</td><td>D</td><td>D</td><td>D</td><td>D</td><td>D</td><td>H</td><td>H</td></tr><tr><td>6</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>H</td><td>H</td><td>H</td><td>H</td><td>H</td></tr><tr><td>8</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>H</td><td>H</td></tr><tr><td>9</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>S</td><td>P</td><td>P</td><td>S</td><td>S</td></tr><tr><td>10、人头牌</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td><td>S</td></tr><tr><td>A</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td><td>P</td></tr></tbody></table></div>
+<p>和常见的策略表相比有 2 处不同。一是<strong>含 A 的手牌不能加倍</strong>，所以 A 算作 11 的那几行只有 H 或 S。二是<strong>庄家明牌为 10 或 A 时</strong>。这台机器直到最后才检查庄家是否为 2 张牌 21 点，追加的赌注可能会一起输掉。因此即使是 11 也不加倍，一对 8 也不分牌。</p>
+<h2 class="ra-section">行为相同的程序</h2>
+<p>这是我们根据读懂的规则，自己从零写的程序。没有抄游戏代码。牌堆、庄家要牌方式和赔付的部分就是下面这些。</p>
+<pre class="ra-code ra-code-src">DECKS = 10
+VALUES = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11]  # 一种花色。2～K，最后是 A（11）
+SHOE = VALUES * 4 * DECKS                                # 按顺序排好的 520 张。末尾是牌堆最上方
+
+class Shoe:
+    def __init__(self, rng, fair=False, cards=SHOE):
+        self.cards, self.n, self.rng, self.fair = cards[:], len(cards), rng, fair
+
+    def take(self):
+        """从上方取 1 张。先把位置 n 与 n 下方的某处交换，再取牌（不会选 n 本身）"""
+        self.n -= 1
+        n = self.n
+        if n:
+            k = self.rng.randrange(n + 1 if self.fair else n)
+            self.cards[k], self.cards[n] = self.cards[n], self.cards[k]
+        return self.cards[n]
+
+def dealer_draws(hard, ace):
+    """hard 是把 A 算作 1 的合计。17 及以上和软 18～21 停牌。软 17 要牌"""
+    return not (hard &gt;= 17 or (ace and 18 &lt;= hard + 10 &lt;= 21))
+
+def settle(cards, bet, dealer):
+    """一手牌的返还。2 张牌 21 点为 2.5 倍（舍去小数），赢为 2 倍，平局为 1 倍"""
+    mine, natural = best(*state(cards)), len(cards) == 2 and best(*state(cards)) == 21
+    if mine &gt; 21:
+        return 0
+    house = best(*state(dealer))
+    if len(dealer) == 2 and house == 21:
+        return bet if natural else 0
+    if house &gt; 21:
+        house = 0
+    if mine &gt; house or (mine == house and natural):
+        return bet * 5 // 2 if natural else bet * 2
+    return bet if mine == house else 0</pre>
+<p><code>state</code> 把手牌转换为“把 A 算作 1 的合计”和“是否有 A”，<code>best</code> 在可以把 1 张 A 算作 11 时返还这样算的合计（完整代码在文件里）。</p>
+<p>洗牌被写成在“取那张牌时”才做该位置的交换。位置 n 在轮到自己交换之后就再也不会移动，所以结果与先全部洗完再取牌相同。随机数用的是 Python 的方式，所以出牌顺序不会和游戏一致，但洗法和规则相同。</p>
+<p><code>take</code> 和 <code>settle</code> 都没有接收之前各局结果、时间或下注者的地方。传进去的只有随机数来源和这一局的牌。</p>
+<p>基本策略也在同一个程序里计算。把牌堆视为“每种点数始终以 13 分之 1 的概率出现”，对每种手牌比较停牌、要牌、加倍、分牌的平均结果，选出最好的。上面的表就是它的输出。</p>
+<h3>100 万局的结果</h3>
+<p>1 人入座，每局下注 10 Scrap，共 100 万局（随机数种子为 1）。结果是相对于初始赌注的比例。</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table ra-prose-short"><thead><tr><th scope="col">打法</th><th scope="col">平均（每局）</th><th scope="col">误差</th><th scope="col">赢</th><th scope="col">平</th><th scope="col">输</th></tr></thead><tbody><tr><td>基本策略</td><td>−0.66%</td><td>±0.11</td><td>43.43%</td><td>8.63%</td><td>47.94%</td></tr><tr><td>照庄家的方式要牌（不加倍也不分牌）</td><td>−5.86%</td><td>±0.10</td><td>41.11%</td><td>9.70%</td><td>49.19%</td></tr><tr><td>12 点及以上必停</td><td>−6.02%</td><td>±0.10</td><td>42.61%</td><td>6.51%</td><td>50.87%</td></tr></tbody></table></div>
+<p>同样的基本策略，不用模拟而用计算得出的结果如下。</p>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">方法</th><th scope="col">平均</th></tr></thead><tbody><tr><td>计算（视牌堆为无限）</td><td>−0.79%</td></tr><tr><td>计算（在上面的基础上，最初 4 张按这台机器洗法的概率）</td><td>−0.87%</td></tr><tr><td>模拟 100 万局</td><td>−0.66%（±0.11）</td></tr><tr><td>模拟 550 万局（种子 1 的 100 万局，加上种子 2、3、4 各 150 万局）</td><td>−0.77%（±0.05）</td></tr></tbody></table></div>
+<p>21 点每局的波动很大，即使 100 万局也还留有 ±0.1 个百分点的幅度。综合计算和模拟，我们认为<strong>庄家优势约为 0.8%（0.7～0.9%）</strong>。</p>
+<p>2 张牌 21 点出现的比例是 4.69%。比均匀洗牌时的 4.74% 略低，这就是“第 1 张牌唯独不会是那张 A”带来的差异。</p>
+<p>完整程序放在 <a class="ra-link" href="card-games.py">card-games.py</a>。运行 <code>python3 card-games.py</code> 会得到相同的数字（大约需要 1 分钟）。</p>
+<h2 class="ra-section">扑克（德州扑克）</h2>
+<ul class="ra-facts">
+<li><span class="ra-facts-n">52 张</span><span class="ra-facts-l">牌堆为 1 副。每手牌重新生成</span></li>
+<li><span class="ra-facts-n">5 / 10</span><span class="ra-facts-l">盲注。没有前注</span></li>
+<li><span class="ra-facts-n">100～1,000</span><span class="ra-facts-l">可以带上桌的 Scrap</span></li>
+</ul>
+<ol class="ra-timeline" aria-label="德州扑克一手牌的流程">
+<li class="ra-timeline-hot" style="--w:14"><strong>生成牌堆</strong><span>瞬间</span><small>重新排好 52 张并洗牌</small></li>
+<li style="--w:20"><strong>盲注和底牌</strong><span>自动</span><small>下 5 和 10 的盲注，每人发 2 张</small></li>
+<li style="--w:36"><strong>4 轮下注</strong><span>每人 30 秒</span><small>中间依次发翻牌 3 张、转牌、河牌</small></li>
+<li style="--w:16"><strong>摊牌</strong><span>瞬间</span><small>用 2 张底牌 + 5 张公共牌比牌型</small></li>
+<li style="--w:14"><strong>赔付</strong><span>瞬间</span><small>底池全额归赢家。8 秒后开始下一手</small></li>
+</ol>
+<div class="ra-delta-wrap"><table class="ra-delta ra-prose-table"><thead><tr><th scope="col">项目</th><th scope="col">牌桌的规则</th></tr></thead><tbody><tr><td>人数</td><td>2 人起。牌桌有 2、3、4、6 座 4 种</td></tr><tr><td>盲注</td><td>庄位的下一位下 5，再下一位下 10（2 人时由庄位下 5）。庄位每手牌向旁边移动一位</td></tr><tr><td>买入</td><td>在座位的储物格放 100～1,000 Scrap。不足 10 时从下一手起被排除</td></tr><tr><td>最小加注</td><td>10 及以上（不能小于上一次的加注幅度）</td></tr><tr><td>超时</td><td>30 秒自动弃牌。4 分钟没有任何操作会被请离座位</td></tr><tr><td>牌型判定</td><td>用 2 张底牌和 5 张公共牌共 7 张比较。平手时平分底池</td></tr><tr><td>庄家抽成（抽水）</td><td><strong>没有</strong></td></tr></tbody></table></div>
+<p>赔付代码按下注额从少到多的层级，依次把底池交给赢家，最后检查“底池应该已经空了”。不存在机台抽走任何东西的代码。<strong>下注的 Scrap 会全额回到某位玩家手里。</strong></p>
+<p>所以，扑克没有“相对于庄家的平均返还”。把桌上所有人的盈亏加起来，总是 0。能不能赢，只取决于你是否比对手打得好。</p>
+<h2 class="ra-section">验证常见说法</h2>
+<div class="ra-myth"><p class="ra-myth-q">“记住出过的牌，就能在有利时下大注”</p><p class="ra-myth-a"><span class="ra-verdict">不成立</span>算牌只在用过的牌不回到牌堆、直接进入下一局的情况下才有效。这台机器每局都重新生成 520 张，所以记下的信息无法带到下一局。牌堆在下注前就已生成，因此也不可能先看到这一局的牌再下注。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">“连输了好几把。机台在攒钱，差不多该赢了”</p><p class="ra-myth-a"><span class="ra-verdict">不成立</span>机台既不记得赔出了多少，也不记得收进了多少。下注的 Scrap 在一局结束时消失，返还的部分是新生成的。局与局之间带过去的只有座位和玩家手上的 Scrap。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">“下大注就会来烂牌”</p><p class="ra-myth-a"><span class="ra-verdict">没有关系</span>在接受下注之前，牌堆就已经洗好了。洗牌和发牌的代码都没有查看下注金额或下注者的地方。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">“庄家会看你的手牌改变要牌方式”</p><p class="ra-myth-a"><span class="ra-verdict">不会改变</span>庄家是否要牌，只由庄家自己的点数合计决定。17 点及以上停牌，软 17 要牌。玩家的手牌和赌注都不会被用到。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">“时间段或服务器人数会影响赢的概率”</p><p class="ra-myth-a"><span class="ra-verdict">不会改变</span>随机数只在洗牌这 1 处使用，而且是操作系统的加密用随机数。时间和人数都不会传进去。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">“用工具可以偷看庄家的暗牌”</p><p class="ra-myth-a"><span class="ra-verdict">没有发送</span>一局进行中，服务器不会把暗牌的内容发给客户端。扑克中其他人的底牌也一样。无论怎样检查本地一侧，看不到本来就不存在的东西。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">“保险就是保障，手牌好的时候应该买”</p><p class="ra-myth-a"><span class="ra-verdict">买了吃亏</span>保险是与主注分开的另一笔下注，平均为 −7.9%。不会因为自己手牌的好坏而改变。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">“输了就加倍再下，最后一定能赢”</p><p class="ra-myth-a"><span class="ra-verdict">平均不变</span>每局的结果与之前各局无关，所以下注金额的顺序不会改变平均结果。上限是 500，所以即使从 5 开始，连输 7 局后，下一次的加倍（640）就已经下不了了。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">“坐的座位不同，来的牌就不同”</p><p class="ra-myth-a"><span class="ra-verdict">只差 1 张牌的份量</span>牌按座位编号顺序发出，而洗法有上面提到的 1 张牌的偏差。下一节会加以验证。差距并没有大到能左右胜负。</p></div>
+<div class="ra-myth"><p class="ra-myth-q">“扑克的牌桌会让大牌互相碰撞来制造气氛”</p><p class="ra-myth-a"><span class="ra-verdict">没有这样做</span>只是把 52 张洗好再从上面发而已。不存在选择给谁发什么牌的代码。牌桌本身没有抽成，也就没有制造气氛的理由。</p></div>
+<h2 class="ra-section">座位与洗法的偏差</h2>
+<p>不论庄位在哪里，牌总是从编号最小的座位开始发。洗法的偏差（第 1 张牌不会是梅花 A）会直接体现在这个座位上。</p>
+<p>我们统计了 2 人玩扑克时，每个座位拿到梅花 A 的比例，共 100 万手。</p>
+<ol class="ra-gbars ra-plain" style="--max:4" aria-label="2 人扑克中，每个座位拿到梅花 A 的比例"><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">先发牌的座位（这台机器的洗法）</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:1.97"></span></span><span class="ra-gbar-n">1.97%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">后发牌的座位（这台机器的洗法）</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:3.91"></span></span><span class="ra-gbar-n">3.91%</span></span></li><li><span class="ra-gbar"><span></span><span class="ra-gbar-name">两个座位（均匀洗牌时）</span><span class="ra-gbar-track"><span class="ra-gbar-fill" style="--v:3.85"></span></span><span class="ra-gbar-n">3.85%</span></span></li></ol>
+<p>先发牌的座位拿到梅花 A 的次数只有一半。因为第 1 张绝不会是它，只能在第 2 张拿到。同样地，后发牌的座位有 1 个位置不会来梅花 K，公共牌则分别有 1 个位置不会来梅花 10、9、8。</p>
+<p>那么这会影响胜负吗？几乎没有影响。</p>
+<ul><li><strong>扑克：</strong> 假设所有人都不弃牌、打到最后，模拟 100 万次，2 人时底池的分配看不出差别（49.97% 和 50.03%，误差 ±0.05）。6 人时，第一个座位为 16.57%，只比均分的 16.67% 低约 0.1 个百分点（误差 ±0.04）。</li><li><strong>21 点：</strong> 这是 520 张中的 1 张，所以影响更小。我们计算出 1 人入座时，庄家优势增加 0.09 个百分点。3 人入座时，编号最小的座位增加 0.15 个百分点，其他座位增加 0.03～0.04 个百分点。这些都只是计算出的数字，没有做 3 人入座的模拟。3 人的数字是用与本文程序不同的一次性程序得出的。</li></ul>
+<p>差距并没有大到可以说“这个座位赢不了”。我们只是把“读代码可知存在 1 张牌的偏差”作为事实记录下来。</p>
+<h2 class="ra-section">尚不清楚的地方</h2>
+<ul><li><strong>编号最小的座位在哪个位置。</strong> 我们没有确认牌桌上哪个座位是 0 号。</li><li><strong>牌型判定的内部实现。</strong> 比较牌型的部分交给了一个与常见公开评估器形式相同的组件。我们没有读到它的内部。</li><li><strong>3 人及以上的全下。</strong> 筹码较少的玩家全下并获胜时，边池是否按通常规则分配。读代码看，有些地方的分配方式可能与通常不同。我们没有实际玩来确认。</li><li><strong>庄家优势的精确数位。</strong> 约 0.8% 是自制程序得出的估算。计算是把牌堆视为无限的近似，模拟有 ±0.05～0.1 个百分点的误差。</li><li><strong>本文的适用范围。</strong> 2026-11-07 版本的 PC 版服务器，赌注上限为默认的 500 的情况。上限可以按服务器更改，规则也可能在今后的更新中改变。</li></ul>
+<h2 class="ra-section">调查方法</h2>
+<p>我们阅读了服务器本体的代码（21 点和扑克相关类的中间代码），并从数据文件中读取了机台和牌桌的设置值。没有启动服务器。牌堆张数、庄家的要牌方式、赔付倍率、下注范围、盲注和时间，全都是读到的值。</p>
+<p>庄家优势、基本策略表和各座位的比例，是用我们把读到的规则重新写成的程序计算和模拟得出的。到拿到梅花 A 的比例为止，都可以由 <a class="ra-link" href="card-games.py">card-games.py</a> 得出。扑克的底池分配和 21 点 3 人时各座位的差异，是用另一个一次性程序得出的。</p>
+<p>这些并不是在游戏里实际玩并统计的结果，而是对“代码就是这样写的”的确认。</p><h2 class="ra-section">出处</h2><ul><li><a class="ra-link" href="https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.randomnumbergenerator.getint32" rel="noopener">.NET documentation, RandomNumberGenerator.GetInt32</a></li><li><a class="ra-link" href="https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle" rel="noopener">Wikipedia, Fisher–Yates shuffle (section on Sattolo&#x27;s algorithm)</a></li></ul></article></main>
+<footer class="ra-foot"><p>本站为个人分析制作的非官方网站，与 Facepunch Studios 无关。数值读取自游戏服务器的数据与代码，不保证准确。</p>
+<p>部分图标来自 <a class="ra-link" href="https://lucide.dev/" rel="noopener">Lucide</a> (ISC License)。</p></footer>
+<script>document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('[data-lang]');if(a)try{localStorage.setItem('ra-lang',a.dataset.lang)}catch(_){}})</script></body></html>
